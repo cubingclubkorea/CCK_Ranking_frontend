@@ -7,8 +7,6 @@ export const env = {
   MODE: import.meta.env.MODE ?? 'development',
 } as const;
 
-export type Env = typeof env;
-
-export const getEnv = (): Env => env;
-
-export default env;
+export const API_URL = env.API_URL;
+export const ANALYTICS_ID = env.ANALYTICS_ID;
+export const MODE = env.MODE;
