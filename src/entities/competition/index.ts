@@ -1,5 +1,7 @@
-export * from './eventFeeDTO';
-export * from './competitionCreateDTO';
-export * from './eventFee';
-export * from './competitionDTO';
+export {
+  getCompetitionPast,
+  getCompetitionNow,
+  getCompetitionFuture,
+  getCompetition,
+} from './api/getCompetition';
 export * from './types';

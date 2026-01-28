@@ -1,4 +1,6 @@
 // Barrel for `src/shared`
 // Add shared utilities, hooks, and primitives here
-export { API_URL, ANALYTICS_ID, MODE } from './config';
+export { API_URL, SSO_URL, ANALYTICS_ID, MODE } from './config';
 export { apiClient } from './api/base';
+export { ssoClient } from './api/auth_base';
+export type { Page } from './model/page';
