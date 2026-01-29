@@ -1,11 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '@/features/auth';
+import { LOGIN_URL } from '@/shared';
 
-/**
- * 로그아웃 페이지
- * 자동으로 로그아웃 처리 후 로그인 페이지로 리다이렉트
- */
 export const LogoutPage = () => {
   const navigate = useNavigate();
 
@@ -13,18 +10,11 @@ export const LogoutPage = () => {
     const handleLogout = async () => {
       try {
         await logout();
-        console.log('로그아웃 성공');
-        
-        // 로그인 페이지로 이동
-        navigate('/login', { replace: true });
+        window.location.href=LOGIN_URL;
       } catch (error) {
-        console.error('로그아웃 실패:', error);
-        
-        // 에러가 발생해도 로그인 페이지로 이동
-        navigate('/login', { replace: true });
+        window.location.href=LOGIN_URL;
       }
     };
-
     handleLogout();
   }, [navigate]);
 

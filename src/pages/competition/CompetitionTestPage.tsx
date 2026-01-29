@@ -4,9 +4,7 @@ import {
   getCompetitionNow,
   getCompetitionFuture,
   getCompetition,
-  type Competition,
 } from '@/entities/competition';
-import type { Page } from '@/shared/model/page';
 
 export const CompetitionTestPage = () => {
   const [result, setResult] = useState<any>(null);
