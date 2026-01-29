@@ -1,8 +1,14 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { 
+  DashboardPage,
   CompetitionTestPage, 
   CompetitionCUDTestPage, 
   CubeEventTestPage,
+  RoundTestPage,
+  RoundCUDTestPage,
+  RecordTestPage,
+  RecordCUDTestPage,
+  ScrambleTestPage,
   ConfirmPage, 
   LogoutPage 
 } from '@/pages';
@@ -25,6 +31,10 @@ const LoginRedirect = () => {
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <DashboardPage />,
+  },
+  {
+    path: '/competition',
     element: <CompetitionTestPage />,
   },
   {
@@ -34,6 +44,26 @@ export const router = createBrowserRouter([
   {
     path: '/event',
     element: <CubeEventTestPage />,
+  },
+  {
+    path: '/round',
+    element: <RoundTestPage />,
+  },
+  {
+    path: '/round/cud',
+    element: <RoundCUDTestPage />,
+  },
+  {
+    path: '/record',
+    element: <RecordTestPage />,
+  },
+  {
+    path: '/record/cud',
+    element: <RecordCUDTestPage />,
+  },
+  {
+    path: '/scramble',
+    element: <ScrambleTestPage />,
   },
   {
     path: '/confirm',
