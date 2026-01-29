@@ -5,8 +5,7 @@ import {
   deleteCompetition,
   type CompetitionCreateDTO,
   type CompetitionUpdateDTO,
-} from '@/features/competition/api';
-import type { EventFeeDTO } from '@/entities/competition/api/dto/eventFee.dto';
+} from '@/features/competition';
 
 export const CompetitionCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);

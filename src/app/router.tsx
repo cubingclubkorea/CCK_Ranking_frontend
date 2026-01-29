@@ -3,6 +3,8 @@ import {
   CompetitionTestPage, 
   CompetitionCUDTestPage, 
   CubeEventTestPage,
+  RoundTestPage,
+  RoundCUDTestPage,
   ConfirmPage, 
   LogoutPage 
 } from '@/pages';
@@ -34,6 +36,14 @@ export const router = createBrowserRouter([
   {
     path: '/event',
     element: <CubeEventTestPage />,
+  },
+  {
+    path: '/round',
+    element: <RoundTestPage />,
+  },
+  {
+    path: '/round/cud',
+    element: <RoundCUDTestPage />,
   },
   {
     path: '/confirm',

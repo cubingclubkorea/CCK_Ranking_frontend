@@ -1,1 +1,1 @@
-export * from './api/createCubeEvent';
+export * from './create/api/createCubeEvent';
