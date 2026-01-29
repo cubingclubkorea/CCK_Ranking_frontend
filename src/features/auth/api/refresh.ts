@@ -55,7 +55,7 @@ export const refreshTokenOnUnauthorized = async <T>(
     // 이미 갱신 중이면 대기
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
-        refreshSubscribers.push(async (token: string) => {
+        refreshSubscribers.push(async () => {
           try {
             const result = await apiCall();
             resolve(result);

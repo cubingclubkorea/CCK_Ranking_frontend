@@ -42,27 +42,36 @@ export const ScrambleTestPage = () => {
       <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
         <h2>🎲 스크램블 발급</h2>
         <div style={{ display: 'grid', gap: '10px' }}>
-          <input
-            type="number"
-            value={scramblerForm.compIdx}
-            onChange={(e) => setScramblerForm({ ...scramblerForm, compIdx: Number(e.target.value) })}
-            placeholder="대회 ID"
-            style={{ padding: '8px' }}
-          />
-          <input
-            type="text"
-            value={scramblerForm.playerUid}
-            onChange={(e) => setScramblerForm({ ...scramblerForm, playerUid: e.target.value })}
-            placeholder="플레이어 UID (RFID)"
-            style={{ padding: '8px' }}
-          />
-          <input
-            type="text"
-            value={scramblerForm.scramblerUid}
-            onChange={(e) => setScramblerForm({ ...scramblerForm, scramblerUid: e.target.value })}
-            placeholder="스크램블러 UID (RFID)"
-            style={{ padding: '8px' }}
-          />
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compIdx (대회 ID)</label>
+            <input
+              type="number"
+              value={scramblerForm.compIdx}
+              onChange={(e) => setScramblerForm({ ...scramblerForm, compIdx: Number(e.target.value) })}
+              placeholder="1"
+              style={{ padding: '8px', width: '100%' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>playerUid (플레이어 UID)</label>
+            <input
+              type="text"
+              value={scramblerForm.playerUid}
+              onChange={(e) => setScramblerForm({ ...scramblerForm, playerUid: e.target.value })}
+              placeholder="RFID 태그"
+              style={{ padding: '8px', width: '100%' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>scramblerUid (스크램블러 UID)</label>
+            <input
+              type="text"
+              value={scramblerForm.scramblerUid}
+              onChange={(e) => setScramblerForm({ ...scramblerForm, scramblerUid: e.target.value })}
+              placeholder="RFID 태그"
+              style={{ padding: '8px', width: '100%' }}
+            />
+          </div>
           <button
             onClick={handleUpdateScrambler}
             disabled={loading}

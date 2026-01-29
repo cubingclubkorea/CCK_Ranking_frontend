@@ -178,110 +178,135 @@ export const RoundCUDTestPage = () => {
             </div>
             <div style={{ display: 'grid', gap: '10px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                <input
-                  type="number"
-                  value={item.comp}
-                  onChange={(e) => {
-                    const newList = [...createList];
-                    newList[index] = { ...newList[index], comp: Number(e.target.value) };
-                    setCreateList(newList);
-                  }}
-                  placeholder="대회 ID"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="text"
-                  value={item.cubeEvent}
-                  onChange={(e) => {
-                    const newList = [...createList];
-                    newList[index] = { ...newList[index], cubeEvent: e.target.value };
-                    setCreateList(newList);
-                  }}
-                  placeholder="큐브 이벤트명"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="text"
-                  value={item.roundName}
-                  onChange={(e) => {
-                    const newList = [...createList];
-                    newList[index] = { ...newList[index], roundName: e.target.value };
-                    setCreateList(newList);
-                  }}
-                  placeholder="라운드명"
-                  style={{ padding: '8px' }}
-                />
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>comp (대회 ID)</label>
+                  <input
+                    type="number"
+                    value={item.comp}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], comp: Number(e.target.value) };
+                      setCreateList(newList);
+                    }}
+                    placeholder="1"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cubeEvent (대회 종목)</label>
+                  <input
+                    type="text"
+                    value={item.cubeEvent}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], cubeEvent: e.target.value };
+                      setCreateList(newList);
+                    }}
+                    placeholder="3x3x3"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>roundName (라운드명)</label>
+                  <input
+                    type="text"
+                    value={item.roundName}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], roundName: e.target.value };
+                      setCreateList(newList);
+                    }}
+                    placeholder="1라운드"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <input
-                  type="datetime-local"
-                  value={item.eventStart}
-                  onChange={(e) => {
-                    const newList = [...createList];
-                    newList[index] = { ...newList[index], eventStart: e.target.value + ':00' };
-                    setCreateList(newList);
-                  }}
-                  placeholder="시작 시간"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="datetime-local"
-                  value={item.eventEnd}
-                  onChange={(e) => {
-                    const newList = [...createList];
-                    newList[index] = { ...newList[index], eventEnd: e.target.value + ':00' };
-                    setCreateList(newList);
-                  }}
-                  placeholder="종료 시간"
-                  style={{ padding: '8px' }}
-                />
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventStart (시작 시간)</label>
+                  <input
+                    type="datetime-local"
+                    value={item.eventStart}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], eventStart: e.target.value + ':00' };
+                      setCreateList(newList);
+                    }}
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventEnd (종료 시간)</label>
+                  <input
+                    type="datetime-local"
+                    value={item.eventEnd}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], eventEnd: e.target.value + ':00' };
+                      setCreateList(newList);
+                    }}
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cutoff (컷오프)</label>
+                  <input
+                    type="number"
+                    value={item.cutoff || ''}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], cutoff: e.target.value ? Number(e.target.value) : undefined };
+                      setCreateList(newList);
+                    }}
+                    placeholder="120"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>timeLimit (시간 제한)</label>
+                  <input
+                    type="number"
+                    value={item.timeLimit || ''}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], timeLimit: e.target.value ? Number(e.target.value) : undefined };
+                      setCreateList(newList);
+                    }}
+                    placeholder="600"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advance (통과 인원)</label>
+                  <input
+                    type="number"
+                    value={item.advance || ''}
+                    onChange={(e) => {
+                      const newList = [...createList];
+                      newList[index] = { ...newList[index], advance: e.target.value ? Number(e.target.value) : undefined };
+                      setCreateList(newList);
+                    }}
+                    placeholder="10"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>groupList (그룹 리스트)</label>
                 <input
-                  type="number"
-                  value={item.cutoff || ''}
+                  type="text"
+                  value={item.groupList?.join(', ') || ''}
                   onChange={(e) => {
                     const newList = [...createList];
-                    newList[index] = { ...newList[index], cutoff: e.target.value ? Number(e.target.value) : undefined };
+                    newList[index] = { ...newList[index], groupList: e.target.value ? e.target.value.split(',').map(g => g.trim()) : [] };
                     setCreateList(newList);
                   }}
-                  placeholder="Cutoff"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="number"
-                  value={item.timeLimit || ''}
-                  onChange={(e) => {
-                    const newList = [...createList];
-                    newList[index] = { ...newList[index], timeLimit: e.target.value ? Number(e.target.value) : undefined };
-                    setCreateList(newList);
-                  }}
-                  placeholder="Time Limit"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="number"
-                  value={item.advance || ''}
-                  onChange={(e) => {
-                    const newList = [...createList];
-                    newList[index] = { ...newList[index], advance: e.target.value ? Number(e.target.value) : undefined };
-                    setCreateList(newList);
-                  }}
-                  placeholder="Advance"
-                  style={{ padding: '8px' }}
+                  placeholder="A, B, C"
+                  style={{ padding: '8px', width: '100%' }}
                 />
               </div>
-              <input
-                type="text"
-                value={item.groupList?.join(', ') || ''}
-                onChange={(e) => {
-                  const newList = [...createList];
-                  newList[index] = { ...newList[index], groupList: e.target.value ? e.target.value.split(',').map(g => g.trim()) : [] };
-                  setCreateList(newList);
-                }}
-                placeholder="그룹 리스트 (쉼표로 구분: A, B, C)"
-                style={{ padding: '8px' }}
-              />
             </div>
           </div>
         ))}
@@ -310,119 +335,149 @@ export const RoundCUDTestPage = () => {
             </div>
             <div style={{ display: 'grid', gap: '10px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
-                <input
-                  type="number"
-                  value={item.idx}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], idx: Number(e.target.value) };
-                    setUpdateList(newList);
-                  }}
-                  placeholder="라운드 ID"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="number"
-                  value={item.comp}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], comp: Number(e.target.value) };
-                    setUpdateList(newList);
-                  }}
-                  placeholder="대회 ID"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="text"
-                  value={item.cubeEvent}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], cubeEvent: e.target.value };
-                    setUpdateList(newList);
-                  }}
-                  placeholder="큐브 이벤트명"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="text"
-                  value={item.roundName}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], roundName: e.target.value };
-                    setUpdateList(newList);
-                  }}
-                  placeholder="라운드명"
-                  style={{ padding: '8px' }}
-                />
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (라운드 ID)</label>
+                  <input
+                    type="number"
+                    value={item.idx}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], idx: Number(e.target.value) };
+                      setUpdateList(newList);
+                    }}
+                    placeholder="1"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>comp (대회 ID)</label>
+                  <input
+                    type="number"
+                    value={item.comp}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], comp: Number(e.target.value) };
+                      setUpdateList(newList);
+                    }}
+                    placeholder="1"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cubeEvent (대회 종목)</label>
+                  <input
+                    type="text"
+                    value={item.cubeEvent}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], cubeEvent: e.target.value };
+                      setUpdateList(newList);
+                    }}
+                    placeholder="3x3x3"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>roundName (라운드명)</label>
+                  <input
+                    type="text"
+                    value={item.roundName}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], roundName: e.target.value };
+                      setUpdateList(newList);
+                    }}
+                    placeholder="결승"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <input
-                  type="datetime-local"
-                  value={item.eventStart}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], eventStart: e.target.value + ':00' };
-                    setUpdateList(newList);
-                  }}
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="datetime-local"
-                  value={item.eventEnd}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], eventEnd: e.target.value + ':00' };
-                    setUpdateList(newList);
-                  }}
-                  style={{ padding: '8px' }}
-                />
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventStart (시작 시간)</label>
+                  <input
+                    type="datetime-local"
+                    value={item.eventStart}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], eventStart: e.target.value + ':00' };
+                      setUpdateList(newList);
+                    }}
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventEnd (종료 시간)</label>
+                  <input
+                    type="datetime-local"
+                    value={item.eventEnd}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], eventEnd: e.target.value + ':00' };
+                      setUpdateList(newList);
+                    }}
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cutoff (컷오프)</label>
+                  <input
+                    type="number"
+                    value={item.cutoff || ''}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], cutoff: e.target.value ? Number(e.target.value) : undefined };
+                      setUpdateList(newList);
+                    }}
+                    placeholder="90"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>timeLimit (시간 제한)</label>
+                  <input
+                    type="number"
+                    value={item.timeLimit || ''}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], timeLimit: e.target.value ? Number(e.target.value) : undefined };
+                      setUpdateList(newList);
+                    }}
+                    placeholder="600"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advance (통과 인원)</label>
+                  <input
+                    type="number"
+                    value={item.advance || ''}
+                    onChange={(e) => {
+                      const newList = [...updateList];
+                      newList[index] = { ...newList[index], advance: e.target.value ? Number(e.target.value) : undefined };
+                      setUpdateList(newList);
+                    }}
+                    placeholder="3"
+                    style={{ padding: '8px', width: '100%' }}
+                  />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>groupList (그룹 리스트)</label>
                 <input
-                  type="number"
-                  value={item.cutoff || ''}
+                  type="text"
+                  value={item.groupList?.join(', ') || ''}
                   onChange={(e) => {
                     const newList = [...updateList];
-                    newList[index] = { ...newList[index], cutoff: e.target.value ? Number(e.target.value) : undefined };
+                    newList[index] = { ...newList[index], groupList: e.target.value ? e.target.value.split(',').map(g => g.trim()) : [] };
                     setUpdateList(newList);
                   }}
-                  placeholder="Cutoff"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="number"
-                  value={item.timeLimit || ''}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], timeLimit: e.target.value ? Number(e.target.value) : undefined };
-                    setUpdateList(newList);
-                  }}
-                  placeholder="Time Limit"
-                  style={{ padding: '8px' }}
-                />
-                <input
-                  type="number"
-                  value={item.advance || ''}
-                  onChange={(e) => {
-                    const newList = [...updateList];
-                    newList[index] = { ...newList[index], advance: e.target.value ? Number(e.target.value) : undefined };
-                    setUpdateList(newList);
-                  }}
-                  placeholder="Advance"
-                  style={{ padding: '8px' }}
+                  placeholder="A, B, C"
+                  style={{ padding: '8px', width: '100%' }}
                 />
               </div>
-              <input
-                type="text"
-                value={item.groupList?.join(', ') || ''}
-                onChange={(e) => {
-                  const newList = [...updateList];
-                  newList[index] = { ...newList[index], groupList: e.target.value ? e.target.value.split(',').map(g => g.trim()) : [] };
-                  setUpdateList(newList);
-                }}
-                placeholder="그룹 리스트 (쉼표로 구분: A, B, C)"
-                style={{ padding: '8px' }}
-              />
             </div>
           </div>
         ))}
@@ -438,50 +493,57 @@ export const RoundCUDTestPage = () => {
       {/* DELETE */}
       <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
         <h2>🗑️ 라운드 삭제 (Delete)</h2>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ marginBottom: '10px' }}>
+          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (라운드 ID)</label>
           <input
             type="number"
             value={deleteIdx}
             onChange={(e) => setDeleteIdx(Number(e.target.value))}
-            placeholder="라운드 ID"
-            style={{ padding: '8px', flex: 1 }}
+            placeholder="1"
+            style={{ padding: '8px', width: '100%' }}
           />
-          <button
-            onClick={handleDelete}
-            disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-          >
-            라운드 삭제
-          </button>
         </div>
+        <button
+          onClick={handleDelete}
+          disabled={loading}
+          style={{ padding: '10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%' }}
+        >
+          라운드 삭제
+        </button>
       </div>
 
       {/* UPDATE ADVANCE */}
       <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
         <h2>🎯 Advance 인원 조정 (Update Advance)</h2>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input
-            type="number"
-            value={advanceRoundIdx}
-            onChange={(e) => setAdvanceRoundIdx(Number(e.target.value))}
-            placeholder="라운드 ID"
-            style={{ padding: '8px', flex: 1 }}
-          />
-          <input
-            type="number"
-            value={advanceCount}
-            onChange={(e) => setAdvanceCount(Number(e.target.value))}
-            placeholder="Advance 인원"
-            style={{ padding: '8px', flex: 1 }}
-          />
-          <button
-            onClick={handleUpdateAdvance}
-            disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#17a2b8', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-          >
-            Advance 변경
-          </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advanceRoundIdx (라운드 ID)</label>
+            <input
+              type="number"
+              value={advanceRoundIdx}
+              onChange={(e) => setAdvanceRoundIdx(Number(e.target.value))}
+              placeholder="1"
+              style={{ padding: '8px', width: '100%' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advanceCount (통과 인원)</label>
+            <input
+              type="number"
+              value={advanceCount}
+              onChange={(e) => setAdvanceCount(Number(e.target.value))}
+              placeholder="10"
+              style={{ padding: '8px', width: '100%' }}
+            />
+          </div>
         </div>
+        <button
+          onClick={handleUpdateAdvance}
+          disabled={loading}
+          style={{ padding: '10px', backgroundColor: '#17a2b8', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%' }}
+        >
+          Advance 변경
+        </button>
       </div>
 
       {/* STATUS */}

@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance } from 'axios';
-import { API_URL } from '@/shared';
+import { API_URL, type ErrorResponse } from '@/shared';
 
 export class ApiClient {
   private axiosInstance: AxiosInstance;
@@ -30,8 +30,37 @@ export class ApiClient {
       (response) => response,
       (error) => {
         if (error.response) {
-          console.error('API Error:', error.response.status, error.response.data);
-          return Promise.reject(error);
+          const errorData: ErrorResponse | undefined = error.response.data;
+          
+          // 401 에러 시 토큰 제거 (인증 만료 또는 유효하지 않은 토큰)
+          if (error.response.status === 401) {
+            console.warn('401 Unauthorized: 토큰이 만료되었거나 유효하지 않습니다. 토큰을 제거합니다.');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+          }
+          
+          // 백엔드 커스텀 에러 메시지 파싱
+          let customMessage = '';
+          if (errorData?.message) {
+            customMessage = errorData.message;
+            if (errorData.detailMessage) {
+              customMessage += `: ${errorData.detailMessage}`;
+            }
+            customMessage += ` [${errorData.code}]`;
+          } else {
+            customMessage = error.response.statusText || '알 수 없는 에러';
+          }
+          
+          console.error('API Error:', {
+            status: error.response.status,
+            code: errorData?.code,
+            name: errorData?.name,
+            message: customMessage
+          });
+          
+          // 커스텀 에러 메시지를 포함한 Error 객체 생성
+          const customError = new Error(customMessage);
+          return Promise.reject(customError);
         } else if (error.request) {
           console.error('No response received:', error.request);
           throw new Error('네트워크 오류: 서버로부터 응답이 없습니다. CORS 설정을 확인하세요.');
@@ -78,8 +107,13 @@ export class ApiClient {
     return data;
   }
 
-  public async delete<TResult = unknown>(endpoint: string): Promise<TResult> {
-    const { data } = await this.axiosInstance.delete<TResult>(endpoint);
+  public async delete<TResult = unknown, TData = unknown>(
+    endpoint: string,
+    body?: TData
+  ): Promise<TResult> {
+    const { data } = await this.axiosInstance.delete<TResult>(endpoint, {
+      data: body,
+    });
     return data;
   }
 

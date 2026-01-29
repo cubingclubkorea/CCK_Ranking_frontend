@@ -73,63 +73,87 @@ export const CompetitionCUDTestPage = () => {
       <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
         <h2>➕ 대회 생성 (Create)</h2>
         <div style={{ display: 'grid', gap: '10px' }}>
-          <input
-            type="text"
-            value={createForm.compName}
-            onChange={(e) => setCreateForm({ ...createForm, compName: e.target.value })}
-            placeholder="대회명"
-            style={{ padding: '8px' }}
-          />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <input
-              type="date"
-              value={createForm.compDateStart}
-              onChange={(e) => setCreateForm({ ...createForm, compDateStart: e.target.value })}
-              style={{ padding: '8px' }}
-            />
-            <input
-              type="date"
-              value={createForm.compDateEnd}
-              onChange={(e) => setCreateForm({ ...createForm, compDateEnd: e.target.value })}
-              style={{ padding: '8px' }}
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <input
-              type="datetime-local"
-              value={createForm.joinDateStart}
-              onChange={(e) => setCreateForm({ ...createForm, joinDateStart: e.target.value + ':00' })}
-              style={{ padding: '8px' }}
-            />
-            <input
-              type="datetime-local"
-              value={createForm.joinDateEnd}
-              onChange={(e) => setCreateForm({ ...createForm, joinDateEnd: e.target.value + ':00' })}
-              style={{ padding: '8px' }}
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-            <input
-              type="number"
-              value={createForm.baseFee}
-              onChange={(e) => setCreateForm({ ...createForm, baseFee: Number(e.target.value) })}
-              placeholder="기본 참가비"
-              style={{ padding: '8px' }}
-            />
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compName (대회명)</label>
             <input
               type="text"
-              value={createForm.location}
-              onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })}
-              placeholder="장소"
-              style={{ padding: '8px' }}
+              value={createForm.compName}
+              onChange={(e) => setCreateForm({ ...createForm, compName: e.target.value })}
+              placeholder="테스트 대회"
+              style={{ padding: '8px', width: '100%' }}
             />
-            <input
-              type="number"
-              value={createForm.maxParticipate}
-              onChange={(e) => setCreateForm({ ...createForm, maxParticipate: Number(e.target.value) })}
-              placeholder="최대 참가자"
-              style={{ padding: '8px' }}
-            />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compDateStart (대회 시작일)</label>
+              <input
+                type="date"
+                value={createForm.compDateStart}
+                onChange={(e) => setCreateForm({ ...createForm, compDateStart: e.target.value })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compDateEnd (대회 종료일)</label>
+              <input
+                type="date"
+                value={createForm.compDateEnd}
+                onChange={(e) => setCreateForm({ ...createForm, compDateEnd: e.target.value })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>joinDateStart (참가 신청 시작)</label>
+              <input
+                type="datetime-local"
+                value={createForm.joinDateStart}
+                onChange={(e) => setCreateForm({ ...createForm, joinDateStart: e.target.value + ':00' })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>joinDateEnd (참가 신청 마감)</label>
+              <input
+                type="datetime-local"
+                value={createForm.joinDateEnd}
+                onChange={(e) => setCreateForm({ ...createForm, joinDateEnd: e.target.value + ':00' })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>baseFee (기본 참가비)</label>
+              <input
+                type="number"
+                value={createForm.baseFee}
+                onChange={(e) => setCreateForm({ ...createForm, baseFee: Number(e.target.value) })}
+                placeholder="10000"
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>location (장소)</label>
+              <input
+                type="text"
+                value={createForm.location}
+                onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })}
+                placeholder="서울"
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>maxParticipate (최대 참가자)</label>
+              <input
+                type="number"
+                value={createForm.maxParticipate}
+                onChange={(e) => setCreateForm({ ...createForm, maxParticipate: Number(e.target.value) })}
+                placeholder="100"
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
           </div>
           
           {/* EventFeeList for Create */}
@@ -197,70 +221,97 @@ export const CompetitionCUDTestPage = () => {
       <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
         <h2>✏️ 대회 수정 (Update)</h2>
         <div style={{ display: 'grid', gap: '10px' }}>
-          <input
-            type="number"
-            value={updateForm.idx}
-            onChange={(e) => setUpdateForm({ ...updateForm, idx: Number(e.target.value) })}
-            placeholder="대회 ID"
-            style={{ padding: '8px' }}
-          />
-          <input
-            type="text"
-            value={updateForm.compName}
-            onChange={(e) => setUpdateForm({ ...updateForm, compName: e.target.value })}
-            placeholder="대회명"
-            style={{ padding: '8px' }}
-          />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <input
-              type="date"
-              value={updateForm.compDateStart}
-              onChange={(e) => setUpdateForm({ ...updateForm, compDateStart: e.target.value })}
-              style={{ padding: '8px' }}
-            />
-            <input
-              type="date"
-              value={updateForm.compDateEnd}
-              onChange={(e) => setUpdateForm({ ...updateForm, compDateEnd: e.target.value })}
-              style={{ padding: '8px' }}
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <input
-              type="datetime-local"
-              value={updateForm.joinDateStart}
-              onChange={(e) => setUpdateForm({ ...updateForm, joinDateStart: e.target.value + ':00' })}
-              style={{ padding: '8px' }}
-            />
-            <input
-              type="datetime-local"
-              value={updateForm.joinDateEnd}
-              onChange={(e) => setUpdateForm({ ...updateForm, joinDateEnd: e.target.value + ':00' })}
-              style={{ padding: '8px' }}
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (대회 ID)</label>
             <input
               type="number"
-              value={updateForm.baseFee}
-              onChange={(e) => setUpdateForm({ ...updateForm, baseFee: Number(e.target.value) })}
-              placeholder="기본 참가비"
-              style={{ padding: '8px' }}
+              value={updateForm.idx}
+              onChange={(e) => setUpdateForm({ ...updateForm, idx: Number(e.target.value) })}
+              placeholder="1"
+              style={{ padding: '8px', width: '100%' }}
             />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compName (대회명)</label>
             <input
               type="text"
-              value={updateForm.location}
-              onChange={(e) => setUpdateForm({ ...updateForm, location: e.target.value })}
-              placeholder="장소"
-              style={{ padding: '8px' }}
+              value={updateForm.compName}
+              onChange={(e) => setUpdateForm({ ...updateForm, compName: e.target.value })}
+              placeholder="수정된 대회"
+              style={{ padding: '8px', width: '100%' }}
             />
-            <input
-              type="number"
-              value={updateForm.maxParticipate}
-              onChange={(e) => setUpdateForm({ ...updateForm, maxParticipate: Number(e.target.value) })}
-              placeholder="최대 참가자"
-              style={{ padding: '8px' }}
-            />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compDateStart (대회 시작일)</label>
+              <input
+                type="date"
+                value={updateForm.compDateStart}
+                onChange={(e) => setUpdateForm({ ...updateForm, compDateStart: e.target.value })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compDateEnd (대회 종료일)</label>
+              <input
+                type="date"
+                value={updateForm.compDateEnd}
+                onChange={(e) => setUpdateForm({ ...updateForm, compDateEnd: e.target.value })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>joinDateStart (참가 신청 시작)</label>
+              <input
+                type="datetime-local"
+                value={updateForm.joinDateStart}
+                onChange={(e) => setUpdateForm({ ...updateForm, joinDateStart: e.target.value + ':00' })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>joinDateEnd (참가 신청 마감)</label>
+              <input
+                type="datetime-local"
+                value={updateForm.joinDateEnd}
+                onChange={(e) => setUpdateForm({ ...updateForm, joinDateEnd: e.target.value + ':00' })}
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>baseFee (기본 참가비)</label>
+              <input
+                type="number"
+                value={updateForm.baseFee}
+                onChange={(e) => setUpdateForm({ ...updateForm, baseFee: Number(e.target.value) })}
+                placeholder="15000"
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>location (장소)</label>
+              <input
+                type="text"
+                value={updateForm.location}
+                onChange={(e) => setUpdateForm({ ...updateForm, location: e.target.value })}
+                placeholder="부산"
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>maxParticipate (최대 참가자)</label>
+              <input
+                type="number"
+                value={updateForm.maxParticipate}
+                onChange={(e) => setUpdateForm({ ...updateForm, maxParticipate: Number(e.target.value) })}
+                placeholder="150"
+                style={{ padding: '8px', width: '100%' }}
+              />
+            </div>
           </div>
           
           {/* EventFeeList for Update */}
@@ -327,14 +378,17 @@ export const CompetitionCUDTestPage = () => {
       {/* DELETE */}
       <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
         <h2>🗑️ 대회 삭제 (Delete)</h2>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input
-            type="number"
-            value={deleteIdx}
-            onChange={(e) => setDeleteIdx(Number(e.target.value))}
-            placeholder="대회 ID"
-            style={{ padding: '8px', flex: 1 }}
-          />
+        <div style={{ display: 'grid', gap: '10px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (대회 ID)</label>
+            <input
+              type="number"
+              value={deleteIdx}
+              onChange={(e) => setDeleteIdx(Number(e.target.value))}
+              placeholder="1"
+              style={{ padding: '8px', width: '100%' }}
+            />
+          </div>
           <button
             onClick={handleDelete}
             disabled={loading}

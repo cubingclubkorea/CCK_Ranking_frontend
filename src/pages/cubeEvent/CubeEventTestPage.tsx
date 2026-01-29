@@ -69,37 +69,35 @@ export const CubeEventTestPage = () => {
         </button>
       </div>
 
-      <div style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '15px' }}>
-        <h2>큐브 이벤트 생성</h2>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            이벤트명:
+      <div style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '15px', borderRadius: '5px' }}>
+        <h2>➕ 큐브 이벤트 생성</h2>
+        <div style={{ display: 'grid', gap: '10px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventName (이벤트명)</label>
             <input
               type="text"
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
-              style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
+              placeholder="3x3x3"
+              style={{ padding: '8px', width: '100%' }}
             />
-          </label>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            평균 계산 방식:
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>avgCalc (평균 계산 방식)</label>
             <input
               type="text"
               value={avgCalc}
               onChange={(e) => setAvgCalc(e.target.value)}
-              style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
+              placeholder="ao5"
+              style={{ padding: '8px', width: '100%' }}
             />
-          </label>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            색상 타입:
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>colorType (색상 타입)</label>
             <select
               value={colorType}
               onChange={(e) => setColorType(e.target.value as ColorType)}
-              style={{ marginLeft: '10px', padding: '5px' }}
+              style={{ padding: '8px', width: '100%' }}
             >
               <option value={ColorType.cube}>cube</option>
               <option value={ColorType.tetra}>tetra</option>
@@ -109,26 +107,24 @@ export const CubeEventTestPage = () => {
               <option value={ColorType.square}>square</option>
               <option value={ColorType.none}>none</option>
             </select>
-          </label>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            이미지 파일:
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>file (이미지 파일)</label>
             <input
               type="file"
               onChange={handleFileChange}
-              style={{ marginLeft: '10px', padding: '5px' }}
+              style={{ padding: '8px', width: '100%' }}
             />
-          </label>
-          {file && <span style={{ marginLeft: '10px' }}>선택됨: {file.name}</span>}
+            {file && <span style={{ marginTop: '5px', display: 'block', color: '#28a745' }}>✅ 선택됨: {file.name}</span>}
+          </div>
+          <button
+            onClick={handleCreate}
+            disabled={loading}
+            style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+          >
+            큐브 이벤트 생성
+          </button>
         </div>
-        <button
-          onClick={handleCreate}
-          disabled={loading}
-          style={{ padding: '10px 20px' }}
-        >
-          큐브 이벤트 생성
-        </button>
       </div>
 
       {loading && (
