@@ -1,0 +1,1 @@
+export type { ScramblerUpdateDTO } from './api/dto/scramblerUpdate.dto';

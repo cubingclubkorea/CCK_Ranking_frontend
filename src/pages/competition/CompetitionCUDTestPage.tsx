@@ -6,11 +6,15 @@ import {
   type CompetitionCreateDTO,
   type CompetitionUpdateDTO,
 } from '@/features/competition';
+import { createApiHandler } from '@/shared';
 
 export const CompetitionCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // API 핸들러 생성
+  const handleApi = createApiHandler(setLoading, setError, setResult);
 
   // Create Form State
   const [createForm, setCreateForm] = useState<CompetitionCreateDTO>({
@@ -46,56 +50,20 @@ export const CompetitionCUDTestPage = () => {
   // Delete State
   const [deleteIdx, setDeleteIdx] = useState<number>(1);
 
-  const handleCreate = async () => {
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      await createCompetition(createForm);
-      setResult('대회 생성 성공!');
-      console.log('생성 성공:', createForm);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
-      setError(errorMessage);
-      console.error('생성 에러:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleCreate = () => handleApi(
+    () => createCompetition(createForm),
+    '대회 생성 성공!'
+  );
 
-  const handleUpdate = async () => {
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      await updateCompetition(updateForm);
-      setResult('대회 수정 성공!');
-      console.log('수정 성공:', updateForm);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
-      setError(errorMessage);
-      console.error('수정 에러:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleUpdate = () => handleApi(
+    () => updateCompetition(updateForm),
+    '대회 수정 성공!'
+  );
 
-  const handleDelete = async () => {
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      await deleteCompetition(deleteIdx);
-      setResult(`대회 ${deleteIdx} 삭제 성공!`);
-      console.log('삭제 성공:', deleteIdx);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
-      setError(errorMessage);
-      console.error('삭제 에러:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleDelete = () => handleApi(
+    () => deleteCompetition(deleteIdx),
+    `대회 ${deleteIdx} 삭제 성공!`
+  );
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '800px' }}>

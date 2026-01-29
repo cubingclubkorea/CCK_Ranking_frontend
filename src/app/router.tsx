@@ -5,6 +5,7 @@ import {
   CubeEventTestPage,
   RoundTestPage,
   RoundCUDTestPage,
+  ScrambleTestPage,
   ConfirmPage, 
   LogoutPage 
 } from '@/pages';
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
   {
     path: '/round/cud',
     element: <RoundCUDTestPage />,
+  },
+  {
+    path: '/scramble',
+    element: <ScrambleTestPage />,
   },
   {
     path: '/confirm',
