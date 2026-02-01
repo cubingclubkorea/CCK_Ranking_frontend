@@ -1,3 +1,1 @@
-// Barrel for `src/widgets`
-// Add reusable UI component exports here
-export {};
+export { default as Header } from './Header';
