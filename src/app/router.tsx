@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { 
   DashboardPage,
   CompetitionTestPage, 
@@ -76,9 +76,5 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginRedirect />,
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" replace />,
-  },
+  }
 ]);
