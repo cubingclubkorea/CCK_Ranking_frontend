@@ -177,6 +177,7 @@ export const CompetitionMapper = (dto: CompetitionDTO): Competition => ({
 
 각 엔티티의 상세 가이드:
 
+- [Auth (선수 정보)](./auth/README.md)
 - [Competition (대회)](./competition/README.md)
 - [Round (라운드)](./round/README.md)
 - [Record (기록)](./record/README.md)

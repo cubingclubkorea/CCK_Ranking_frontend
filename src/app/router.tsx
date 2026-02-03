@@ -10,7 +10,8 @@ import {
   RecordCUDTestPage,
   ScrambleTestPage,
   ConfirmPage, 
-  LogoutPage 
+  LogoutPage,
+  AuthTestPage
 } from '@/pages';
 import { LOGIN_URL } from '@/shared/config';
 import { useEffect } from 'react';
@@ -64,6 +65,10 @@ export const router = createBrowserRouter([
   {
     path: '/scramble',
     element: <ScrambleTestPage />,
+  },
+  {
+    path: '/auth',
+    element: <AuthTestPage />,
   },
   {
     path: '/confirm',
