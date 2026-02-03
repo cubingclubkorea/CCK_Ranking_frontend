@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { 
   DashboardPage,
   CompetitionTestPage, 
@@ -10,7 +10,8 @@ import {
   RecordCUDTestPage,
   ScrambleTestPage,
   ConfirmPage, 
-  LogoutPage 
+  LogoutPage,
+  AuthTestPage
 } from '@/pages';
 import { LOGIN_URL } from '@/shared/config';
 import { useEffect } from 'react';
@@ -66,6 +67,10 @@ export const router = createBrowserRouter([
     element: <ScrambleTestPage />,
   },
   {
+    path: '/auth',
+    element: <AuthTestPage />,
+  },
+  {
     path: '/confirm',
     element: <ConfirmPage />,
   },
@@ -76,9 +81,5 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginRedirect />,
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" replace />,
-  },
+  }
 ]);

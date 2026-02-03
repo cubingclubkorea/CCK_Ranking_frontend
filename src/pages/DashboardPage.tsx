@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 export const DashboardPage = () => {
   const menuItems = [
+    { path: '/auth', label: '선수 조회', icon: '⚙️' },
     { path: '/competition', label: '대회 조회', icon: '🏆' },
     { path: '/competition/cud', label: '대회 관리 (CUD)', icon: '⚙️' },
     { path: '/event', label: '큐브 이벤트', icon: '🎲' },
