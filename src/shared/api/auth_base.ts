@@ -13,6 +13,17 @@ export class SSOClient {
       withCredentials: true,
     });
 
+    this.axiosInstance.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('access_token');
+        if (token && config.headers) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
     // 응답 인터셉터: 에러 처리
     this.axiosInstance.interceptors.response.use(
       (response) => response,
