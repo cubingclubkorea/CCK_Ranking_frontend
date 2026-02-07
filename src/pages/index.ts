@@ -12,3 +12,4 @@ export { RecordCUDTestPage } from './record/RecordCUDTestPage';
 export { ScrambleTestPage } from './scramble/ScrambleTestPage';
 export { ConfirmPage } from './auth/ConfirmPage';
 export { LogoutPage } from './auth/LogoutPage';
+export { NotFoundPage } from './NotFoundPage';

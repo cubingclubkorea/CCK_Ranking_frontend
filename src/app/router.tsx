@@ -12,6 +12,7 @@ import {
   ScrambleTestPage,
   ConfirmPage,
   LogoutPage,
+  NotFoundPage,
 } from "@/pages";
 import { LOGIN_URL } from "@/shared/config";
 import { useEffect, useState } from "react";
@@ -108,7 +109,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <Navigate to="/" replace />,
+        element: <NotFoundPage />,
       },
     ],
   },
