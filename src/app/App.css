@@ -1,31 +1,13 @@
 
 
 /* ===== Header ===== */
-
-.header {
-  background : #F7F7FB;
-  height : 80px;
-  display : flex;
-  align-items : center;
-  padding : 0 20px;
-}
-
-.logo-wrapper {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  height : 60px;
-}
-
 .header {
   height: 64px;
   background: #f7f7fb;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -36,13 +18,13 @@
   cursor: pointer;
 }
 
-.logo {
-  height: 48px;
+.logo-wrapper {
+  display: flex;
+  align-items: center;
 }
 
-.title {
-  font-size: 18px;
-  font-weight: 700;
+.logo {
+  height: 48px;
 }
 
 .header-center {
