@@ -1,14 +1,83 @@
+:root {
+  --bs-body-font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui;
+}
 
+* {
+  box-sizing: border-box;
+}
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui;
+  background: #F7F7FB;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  text-align: center;
+}
+
+.app-layout {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.content-area {
+  position: fixed;
+  top: 70px;
+  left: 260px;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  background: #F7F7FB;
+}
+
+.content-area.collapsed {
+  left: 72px;
+}
+.content-inner {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.page-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 /* ===== Header ===== */
+/* TODO: 비행기 내리면 Figma 확인하고 상세한 값으로 수정하기*/
+
 .header {
-  height: 64px;
+  height: 70px;
   background: #f7f7fb;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 0 35px;
+  border-bottom: 1px solid #E5E5EC;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 .header-left {
@@ -25,6 +94,29 @@
 
 .logo {
   height: 48px;
+}
+
+
+.collapse-btn {
+  background: #e1e6f2;
+  border: 1px solid #E5E5EC;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #444;
+}
+
+.collapse-btn:hover {
+  background: #d6ddf0;
+}
+
+.collapse-btn:active {
+  transform: translateY(1px);
+}
+
+.header-collapse-btn {
+  margin-left: 6px;
 }
 
 .header-center {
@@ -64,4 +156,75 @@
 
 .login-btn:hover {
   opacity: 0.9;
+}
+
+/* ===== Side Bar ===== */
+
+.sidebar {
+  width: 260px;
+  height: calc(100vh - 70px);
+  background: #f7f7fb;
+  padding: 16px 12px;
+  transition: 0.25s ease;
+  border-right: 1px solid #E5E5EC;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 900;
+}
+
+.sidebar.collapsed {
+  width: 72px;
+}
+
+.menu-group {
+  margin-bottom: 30px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #444;
+}
+
+.menu-item:hover {
+  background: #D5DBED;
+}
+
+.menu-item .icon {
+  font-size: 18px;
+}
+
+.sidebar.collapsed .menu-item .text {
+  display: none;
+}
+
+/* 관리자 */
+.admin-group {
+  margin-top: auto;
+}
+
+.admin-title {
+  font-size: 13px;
+  color: #666;
+  margin: 12px;
+  cursor: pointer;
+}
+
+.sidebar.collapsed .admin-title {
+  display: none;
+}
+
+
+
+/* ===== Main Page ===== */
+
+.comp-text {
+
 }

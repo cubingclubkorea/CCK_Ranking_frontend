@@ -1,20 +1,21 @@
-import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
-import { 
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import {
+  MainPage,
   DashboardPage,
-  CompetitionTestPage, 
-  CompetitionCUDTestPage, 
+  CompetitionTestPage,
+  CompetitionCUDTestPage,
   CubeEventTestPage,
   RoundTestPage,
   RoundCUDTestPage,
   RecordTestPage,
   RecordCUDTestPage,
   ScrambleTestPage,
-  ConfirmPage, 
-  LogoutPage 
-} from '@/pages';
-import { LOGIN_URL } from '@/shared/config';
-import { useEffect } from 'react';
-import { Header } from '@/widgets';
+  ConfirmPage,
+  LogoutPage,
+} from "@/pages";
+import { LOGIN_URL } from "@/shared/config";
+import { useEffect, useState } from "react";
+import { Header, Sidebar } from "@/widgets";
 
 /**
  * 로그인 페이지 리다이렉트 컴포넌트
@@ -26,71 +27,87 @@ const LoginRedirect = () => {
   return null;
 };
 
-const AppLayout = () => (
-  <>
-    <Header />
-    <Outlet />
-  </>
-);
+const AppLayout = () => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  return (
+    <div className="app-layout">
+      <Header
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(prev => !prev)}
+      />
+      <Sidebar collapsed={sidebarCollapsed} />
+      <main className={`content-area ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <div className="content-inner">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+};
 
 /**
  * 애플리케이션 라우트 설정
  */
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <AppLayout />,
     children: [
       {
         index: true,
+        element: <MainPage />,
+      },
+      {
+        path: "dashboard",
         element: <DashboardPage />,
       },
       {
-        path: 'competition',
+        path: "competition",
         element: <CompetitionTestPage />,
       },
       {
-        path: 'competition/cud',
+        path: "competition/cud",
         element: <CompetitionCUDTestPage />,
       },
       {
-        path: 'event',
+        path: "event",
         element: <CubeEventTestPage />,
       },
       {
-        path: 'round',
+        path: "round",
         element: <RoundTestPage />,
       },
       {
-        path: 'round/cud',
+        path: "round/cud",
         element: <RoundCUDTestPage />,
       },
       {
-        path: 'record',
+        path: "record",
         element: <RecordTestPage />,
       },
       {
-        path: 'record/cud',
+        path: "record/cud",
         element: <RecordCUDTestPage />,
       },
       {
-        path: 'scramble',
+        path: "scramble",
         element: <ScrambleTestPage />,
       },
       {
-        path: 'confirm',
+        path: "confirm",
         element: <ConfirmPage />,
       },
       {
-        path: 'logout',
+        path: "logout",
         element: <LogoutPage />,
       },
       {
-        path: 'login',
+        path: "login",
         element: <LoginRedirect />,
       },
       {
-        path: '*',
+        path: "*",
         element: <Navigate to="/" replace />,
       },
     ],

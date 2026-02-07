@@ -1,5 +1,6 @@
 // Barrel for `src/pages`
 // Add page exports here (route components)
+export { MainPage } from './MainPage';
 export { DashboardPage } from './DashboardPage';
 export { CompetitionTestPage } from './competition/CompetitionTestPage';
 export { CompetitionCUDTestPage } from './competition/CompetitionCUDTestPage';

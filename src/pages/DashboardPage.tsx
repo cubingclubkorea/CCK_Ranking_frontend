@@ -51,13 +51,13 @@ export const DashboardPage = () => {
               e.currentTarget.style.backgroundColor = "#e9ecef";
               e.currentTarget.style.borderColor = "#0d6efd";
               e.currentTarget.style.transform = "translateY(-5px)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+              e.currentTarget.style.borderColor = "#0d6efd";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "#f8f9fa";
               e.currentTarget.style.borderColor = "#dee2e6";
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.borderColor = "#dee2e6";
             }}
           >
             <div style={{ fontSize: "3rem" }}>{item.icon}</div>
