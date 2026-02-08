@@ -7,8 +7,13 @@ function Header({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => v
     <div className="header">
       {/* 로고 & 사이드바 토글 */}
       <div className="header-left">
-        <img src="logo/cck-ranking-black.png" className="logo" onClick={() => navigate("")} />
-        <button className="collapse-btn header-collapse-btn" onClick={onToggle} aria-pressed={collapsed} aria-label={collapsed ? "사이드바 펼치기" : "사이드바 접기"}>
+        <img
+          src="/logo/cck-ranking-black.png"
+          className="logo"
+          onClick={() => navigate("/")}
+          draggable={false}
+        />
+        <button className="collapse-btn" onClick={onToggle} aria-pressed={collapsed} aria-label={collapsed ? "사이드바 펼치기" : "사이드바 접기"}>
           ☰
         </button>
       </div>

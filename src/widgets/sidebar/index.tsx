@@ -20,14 +20,15 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
       <div className="menu-group">
         <MenuItem text="대회 목록" icon={icons.list} to="/" />
         <MenuItem text="신기록" icon={icons.record} to="/record" />
-        <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" end />
+        <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" />
         <MenuItem text="나의 정보" icon={icons.person} to="/profile/" />
-        <MenuItem text="기록 이전 신청" icon={icons.form} to="/scramble" />
+        <MenuItem text="기록 이전 신청" icon={icons.form} to="/record-transfer" />
       </div>
+
+      <div className="sidebar-divider" />
 
       {/* 관리자 메뉴 */}
       <div className="admin-group">
-        <div className="sidebar-divider" />
         <MenuItem text="회원 관리" icon={icons.personData} to="/admin/member" />
         <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" />
         <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" />
