@@ -72,11 +72,18 @@ export class ApiClient {
     );
   }
 
+  private normalizeEndpoint(endpoint: string): string {
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+      return endpoint;
+    }
+    return endpoint.replace(/^\/+/, '');
+  }
+
   public async get<TResult = unknown>(
     endpoint: string,
     queryParams?: Record<string, any>
   ): Promise<TResult> {
-    const { data } = await this.axiosInstance.get<TResult>(endpoint, {
+    const { data } = await this.axiosInstance.get<TResult>(this.normalizeEndpoint(endpoint), {
       params: queryParams,
     });
     return data;
@@ -87,7 +94,11 @@ export class ApiClient {
     body: TData,
     config?: any
   ): Promise<TResult> {
-    const { data } = await this.axiosInstance.post<TResult>(endpoint, body, config);
+    const { data } = await this.axiosInstance.post<TResult>(
+      this.normalizeEndpoint(endpoint),
+      body,
+      config
+    );
     return data;
   }
 
@@ -95,7 +106,10 @@ export class ApiClient {
     endpoint: string,
     body: TData
   ): Promise<TResult> {
-    const { data } = await this.axiosInstance.put<TResult>(endpoint, body);
+    const { data } = await this.axiosInstance.put<TResult>(
+      this.normalizeEndpoint(endpoint),
+      body
+    );
     return data;
   }
 
@@ -103,7 +117,10 @@ export class ApiClient {
     endpoint: string,
     body: TData
   ): Promise<TResult> {
-    const { data } = await this.axiosInstance.patch<TResult>(endpoint, body);
+    const { data } = await this.axiosInstance.patch<TResult>(
+      this.normalizeEndpoint(endpoint),
+      body
+    );
     return data;
   }
 
@@ -111,9 +128,12 @@ export class ApiClient {
     endpoint: string,
     body?: TData
   ): Promise<TResult> {
-    const { data } = await this.axiosInstance.delete<TResult>(endpoint, {
-      data: body,
-    });
+    const { data } = await this.axiosInstance.delete<TResult>(
+      this.normalizeEndpoint(endpoint),
+      {
+        data: body,
+      }
+    );
     return data;
   }
 

@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import {
   MainPage,
   DashboardPage,
@@ -21,6 +21,7 @@ import { Header, Sidebar } from "@/widgets";
 /**
  * 로그인 페이지 리다이렉트 컴포넌트
  */
+// eslint-disable-next-line react-refresh/only-export-components
 const LoginRedirect = () => {
   useEffect(() => {
     window.location.href = LOGIN_URL;
@@ -28,7 +29,9 @@ const LoginRedirect = () => {
   return null;
 };
 
-const AppLayout = () => {
+const
+    // eslint-disable-next-line react-refresh/only-export-components
+    AppLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (

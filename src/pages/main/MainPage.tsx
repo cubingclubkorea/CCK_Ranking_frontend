@@ -32,9 +32,9 @@ export const MainPage = () => {
     const fetchData = async () => {
       try {
         const [future, now, past] = await Promise.all([
-          getCompetitionFuture({ page: 0, size: 1 }),
-          getCompetitionNow({ page: 0, size: 1 }),
-          getCompetitionPast({ page: 0, size: 1 }),
+          getCompetitionFuture({ page: 0, size: 200 }),
+          getCompetitionNow({ page: 0, size: 200 }),
+          getCompetitionPast({ page: 0, size: 200 }),
         ]);
 
         if (!mounted) return;

@@ -22,7 +22,7 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
         <MenuItem text="신기록" icon={icons.record} to="/record" />
         <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" />
         <MenuItem text="나의 정보" icon={icons.person} to="/profile/" />
-        <MenuItem text="기록 이전 신청" icon={icons.form} to="/record-transfer" />
+        <MenuItem text="기록 이전 신청" icon={icons.form} to="/transfer-record" />
       </div>
 
       <div className="sidebar-divider" />
