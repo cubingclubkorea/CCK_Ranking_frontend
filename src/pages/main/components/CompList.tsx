@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 type CompVariant = "default" | "ongoing" | "ended";
 
 export type CompListItem = {
@@ -5,6 +7,7 @@ export type CompListItem = {
   meta: string;
   badge: string;
   variant?: CompVariant;
+  href?: string;
 };
 
 type CompListProps = {
@@ -27,11 +30,8 @@ const CompList = ({ items, emptyText }: CompListProps) => {
       ) : (
         items.map((item, index) => {
           const variantClass = getVariantClass(item.variant);
-          return (
-            <div
-              className={`card-list ${variantClass}`.trim()}
-              key={`${item.title}-${index}`}
-            >
+          const content = (
+            <>
               <div className="card-list-body">
                 <div className="card-list-title">{item.title}</div>
                 <div className="card-list-meta">{item.meta}</div>
@@ -39,6 +39,27 @@ const CompList = ({ items, emptyText }: CompListProps) => {
               <span className={`card-list-pill ${variantClass}`.trim()}>
                 {item.badge}
               </span>
+            </>
+          );
+
+          if (item.href) {
+            return (
+              <Link
+                className={`card-list ${variantClass}`.trim()}
+                key={`${item.title}-${index}`}
+                to={item.href}
+              >
+                {content}
+              </Link>
+            );
+          }
+
+          return (
+            <div
+              className={`card-list ${variantClass}`.trim()}
+              key={`${item.title}-${index}`}
+            >
+              {content}
             </div>
           );
         })

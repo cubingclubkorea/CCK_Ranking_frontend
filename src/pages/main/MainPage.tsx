@@ -44,6 +44,7 @@ export const MainPage = () => {
             title: item.compName,
             meta: `${formatDate(item.compDateStart)} · ${item.location}`,
             badge: getDDay(item.compDateStart),
+            href: `/comp/${item.idx}`,
           }))
         );
 
@@ -53,6 +54,7 @@ export const MainPage = () => {
             meta: `${formatDate(item.compDateStart)} · ${item.location}`,
             badge: "Now",
             variant: "ongoing",
+            href: `/comp/${item.idx}`,
           }))
         );
 
@@ -62,6 +64,7 @@ export const MainPage = () => {
             meta: `${formatDate(item.compDateStart)} · ${item.location}`,
             badge: "종료",
             variant: "ended",
+            href: `/comp/${item.idx}`,
           }))
         );
       } catch (error) {

@@ -4,6 +4,7 @@ import {
   DashboardPage,
   CompetitionTestPage,
   CompetitionCUDTestPage,
+  CompetitionPage,
   CubeEventTestPage,
   RoundTestPage,
   RoundCUDTestPage,
@@ -13,6 +14,8 @@ import {
   ConfirmPage,
   LogoutPage,
   NotFoundPage,
+  ForbiddenPage,
+  ComingSoonPage
 } from "@/pages";
 import { LOGIN_URL } from "@/shared/config";
 import { useEffect, useState } from "react";
@@ -63,40 +66,40 @@ export const router = createBrowserRouter([
         element: <MainPage />,
       },
       {
-        path: "dashboard",
-        element: <DashboardPage />,
-      },
-      {
-        path: "competition",
-        element: <CompetitionTestPage />,
-      },
-      {
-        path: "competition/cud",
-        element: <CompetitionCUDTestPage />,
-      },
-      {
-        path: "event",
-        element: <CubeEventTestPage />,
-      },
-      {
-        path: "round",
-        element: <RoundTestPage />,
-      },
-      {
-        path: "round/cud",
-        element: <RoundCUDTestPage />,
+        path: "comp/:compIdx",
+        element: <CompetitionPage />,
       },
       {
         path: "record",
-        element: <RecordTestPage />,
+        element: <ComingSoonPage />,
       },
       {
-        path: "record/cud",
-        element: <RecordCUDTestPage />,
+        path: "ranking",
+        element: <ComingSoonPage />,
       },
       {
-        path: "scramble",
-        element: <ScrambleTestPage />,
+        path: "profile",
+        element: <ComingSoonPage />,
+      },
+      {
+        path: "transfer-record",
+        element: <ComingSoonPage />,
+      },
+      {
+        path: "admin/member",
+        element: <ForbiddenPage />,
+      },
+      {
+        path: "admin/competition",
+        element: <ForbiddenPage />,
+      },
+      {
+        path: "admin/event",
+        element: <ForbiddenPage />,
+      },
+      {
+        path: "admin/oauth",
+        element: <ForbiddenPage />,
       },
       {
         path: "confirm",
@@ -109,6 +112,42 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginRedirect />,
+      },
+      {
+        path: "dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "dashboard/competition",
+        element: <CompetitionTestPage />,
+      },
+      {
+        path: "dashboard/competition/cud",
+        element: <CompetitionCUDTestPage />,
+      },
+      {
+        path: "dashboard/event",
+        element: <CubeEventTestPage />,
+      },
+      {
+        path: "dashboard/round",
+        element: <RoundTestPage />,
+      },
+      {
+        path: "dashboard/round/cud",
+        element: <RoundCUDTestPage />,
+      },
+      {
+        path: "dashboard/record",
+        element: <RecordTestPage />,
+      },
+      {
+        path: "dashboard/record/cud",
+        element: <RecordCUDTestPage />,
+      },
+      {
+        path: "dashboard/scramble",
+        element: <ScrambleTestPage />,
       },
       {
         path: "*",

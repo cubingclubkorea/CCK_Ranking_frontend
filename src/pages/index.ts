@@ -2,14 +2,18 @@
 // Add page exports here (route components)
 export { MainPage } from './main/MainPage.tsx';
 export { DashboardPage } from './dashboard/DashboardPage.tsx';
-export { CompetitionTestPage } from './competition/CompetitionTestPage';
-export { CompetitionCUDTestPage } from './competition/CompetitionCUDTestPage';
-export { CubeEventTestPage } from './cubeEvent/CubeEventTestPage';
-export { RoundTestPage } from './round/RoundTestPage';
-export { RoundCUDTestPage } from './round/RoundCUDTestPage';
-export { RecordTestPage } from './record/RecordTestPage';
-export { RecordCUDTestPage } from './record/RecordCUDTestPage';
-export { ScrambleTestPage } from './scramble/ScrambleTestPage';
+export { CompetitionTestPage } from './dashboard/competition/CompetitionTestPage';
+export { CompetitionCUDTestPage } from './dashboard/competition/CompetitionCUDTestPage';
+export { CompetitionPage } from './competition/CompetitionPage';
+export { CubeEventTestPage } from './dashboard/cubeEvent/CubeEventTestPage';
+export { RoundTestPage } from './dashboard/round/RoundTestPage';
+export { RoundCUDTestPage } from './dashboard/round/RoundCUDTestPage';
+export { RecordTestPage } from './dashboard/record/RecordTestPage';
+export { RecordCUDTestPage } from './dashboard/record/RecordCUDTestPage';
+export { ScrambleTestPage } from './dashboard/scramble/ScrambleTestPage';
 export { ConfirmPage } from './auth/ConfirmPage';
 export { LogoutPage } from './auth/LogoutPage';
+
 export { NotFoundPage } from './error/NotFoundPage.tsx';
+export { ForbiddenPage } from './error/ForbiddenPage';
+export { ComingSoonPage } from './error/ComingSoonPage';

@@ -425,3 +425,102 @@ body {
     left: 0;
   }
 }
+
+/* ===== Competition Page ===== */
+
+.comp-page {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.comp-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 4px;
+}
+
+.comp-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comp-title-label {
+  font-size: 14px;
+  color: #9aa0b2;
+  letter-spacing: 0.02em;
+}
+
+.comp-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #111322;
+}
+
+.comp-title-meta {
+  font-size: 14px;
+  color: #9aa0b2;
+}
+
+.comp-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.comp-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e4ef;
+  background: #ffffff;
+  color: #1f2937;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.05);
+}
+
+.comp-action-btn--ghost {
+  background: #f8f9ff;
+  color: #3a3f55;
+}
+
+.comp-action-btn:hover {
+  border-color: #c8ccdd;
+}
+
+.comp-action-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8ebf5;
+}
+
+.comp-action-icon--active {
+  background: #d9e6f2;
+}
+
+.comp-action-icon--danger {
+  background: #f5dfe3;
+}
+
+.comp-content {
+  min-height: 320px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(19, 21, 35, 0.04);
+}

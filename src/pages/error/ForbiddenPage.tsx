@@ -13,4 +13,4 @@ export const ForbiddenPage = () => {
       </button>
     </div>
   );
-};
+}
