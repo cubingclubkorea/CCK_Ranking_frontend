@@ -22,11 +22,11 @@ export const CompetitionHeader = ({ title, dateStart, location, compIdx }: Compe
       <div className="page-title-area">
         <h1 className="page-title">{title}</h1>
         <div className="page-title-meta">
-          <span className="page-title-meta-item">{formatDate(dateStart)}</span>
+          <span>{formatDate(dateStart)}</span>
           {location ? (
             <>
               <span className="page-title-meta-divider">·</span>
-              <span className="page-title-meta-item">{location}</span>
+              <span>{location}</span>
             </>
           ) : null}
         </div>

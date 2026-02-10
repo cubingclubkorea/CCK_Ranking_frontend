@@ -6,6 +6,7 @@ import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { RoundHeader } from "./components/RoundHeader";
 import { RecordTable } from "./components/RecordTable";
+import { RecordDetailModal } from "./components/RecordDetailModal";
 
 const formatTimeValue = (value?: number) => {
   if (value === null || value === undefined) {
@@ -38,6 +39,7 @@ export const RoundPage = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<{ record: Record; rank: number } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -124,6 +126,7 @@ export const RoundPage = () => {
           eventName={round.cubeEventName}
           subtitle={round.compName}
           compIdx={Number(backTarget)}
+          roundIdx={Number(round.idx)}
         />
       </div>
 
@@ -148,8 +151,16 @@ export const RoundPage = () => {
           advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
           getAttemptValue={getAttemptValue}
+          onSelect={(record, rank) => setSelectedRecord({ record, rank })}
         />
       </section>
+
+      <RecordDetailModal
+        selected={selectedRecord}
+        onClose={() => setSelectedRecord(null)}
+        formatTimeValue={formatTimeValue}
+        getAttemptValue={getAttemptValue}
+      />
     </div>
   );
 };

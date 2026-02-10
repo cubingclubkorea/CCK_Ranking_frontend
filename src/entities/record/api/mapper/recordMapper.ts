@@ -6,7 +6,8 @@ import { AttemptMapper } from './attemptMapper';
 export const RecordMapper = (dto: RecordDTO): Record => ({
   idx: dto.idx,
   pdx: dto.pdx,
-  name: dto.name,
+  name: dto.name ?? dto.account?.name ?? '',
+  enName: dto.enName || dto.account?.enName,
   state: dto.state,
   cckId: dto.cckId,
   roundIdx: dto.roundIdx,

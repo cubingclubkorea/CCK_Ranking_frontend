@@ -5,10 +5,13 @@ type RoundHeaderProps = {
   eventName?: string;
   subtitle?: string;
   compIdx?: number;
+  roundIdx?: number;
 };
 
-export const RoundHeader = ({ title, eventName, subtitle, compIdx }: RoundHeaderProps) => {
+export const RoundHeader = ({ title, eventName, subtitle, compIdx, roundIdx }: RoundHeaderProps) => {
   const navigate = useNavigate();
+  const roundManagePath =
+    compIdx && roundIdx ? `/admin/competition/${compIdx}/round/${roundIdx}` : null;
 
   return (
     <>
@@ -36,16 +39,25 @@ export const RoundHeader = ({ title, eventName, subtitle, compIdx }: RoundHeader
           </h1>
           {subtitle ? (
             <div className="page-title-meta">
-              <span className="page-title-meta-item">{subtitle}</span>
+              <span>{subtitle}</span>
             </div>
           ) : null}
         </div>
       </div>
       {compIdx ? (
         <div className="page-actions">
-          <button className="page-action-btn" type="button" onClick={() => navigate(`/admin/competition/${compIdx}`)}>
+          <button
+            className="page-action-btn"
+            type="button"
+            onClick={() => {
+              if (roundManagePath) {
+                navigate(roundManagePath);
+              }
+            }}
+            disabled={!roundManagePath}
+          >
             <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
-            대회 관리
+            라운드 관리
           </button>
           <button className="page-action-btn" type="button" onClick={() => navigate(`/competition/${compIdx}`)}>
             <img className="page-action-icon" src="/icon/button/back.svg" alt="" aria-hidden="true" />
