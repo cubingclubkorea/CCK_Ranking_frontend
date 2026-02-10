@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
+
 type CompetitionHeaderProps = {
   title: string;
   dateStart: Date;
   location?: string;
+  compIdx?: number;
 };
 
 const formatDate = (date: Date) => {
@@ -11,19 +14,45 @@ const formatDate = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-export const CompetitionHeader = ({ title, dateStart, location }: CompetitionHeaderProps) => {
+export const CompetitionHeader = ({ title, dateStart, location, compIdx }: CompetitionHeaderProps) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="comp-title-area">
-      <h1 className="comp-title">{title}</h1>
-      <div className="comp-title-meta">
-        <span className="comp-title-meta-item">{formatDate(dateStart)}</span>
-        {location ? (
-          <>
-            <span className="comp-title-meta-divider">·</span>
-            <span className="comp-title-meta-item">{location}</span>
-          </>
-        ) : null}
+    <>
+      <div className="page-title-area">
+        <h1 className="page-title">{title}</h1>
+        <div className="page-title-meta">
+          <span className="page-title-meta-item">{formatDate(dateStart)}</span>
+          {location ? (
+            <>
+              <span className="page-title-meta-divider">·</span>
+              <span className="page-title-meta-item">{location}</span>
+            </>
+          ) : null}
+        </div>
       </div>
-    </div>
+      {compIdx ? (
+        <div className="page-actions">
+          <button className="page-action-btn" type="button" onClick={() => navigate(`/admin/competition/${compIdx}`)}>
+            <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
+            대회 관리
+          </button>
+          <button className="page-action-btn" type="button" onClick={() => navigate("/")}>
+            <img className="page-action-icon" src="/icon/button/home.svg" alt="" aria-hidden="true" />
+            랭킹 홈
+          </button>
+          <button
+            className="page-action-btn"
+            type="button"
+            onClick={() => {
+              window.location.href = "https://cubingclub.com/pages/competition";
+            }}
+          >
+            <img className="page-action-icon page-action-icon--logo" src="/logo/cck-logo.png" alt="" aria-hidden="true" />
+            대회 정보
+          </button>
+        </div>
+      ) : null}
+    </>
   );
 };

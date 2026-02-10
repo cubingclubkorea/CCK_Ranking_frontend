@@ -1,16 +1,17 @@
 // Barrel for `src/pages`
 // Add page exports here (route components)
 export { MainPage } from './main/MainPage.tsx';
-export { DashboardPage } from './dashboard/DashboardPage.tsx';
-export { CompetitionTestPage } from './dashboard/competition/CompetitionTestPage';
-export { CompetitionCUDTestPage } from './dashboard/competition/CompetitionCUDTestPage';
+export { ApiDashboardPage } from './admin/apiDashboard/ApiDashboardPage.tsx';
+export { ApiDashboardCompetitionTestPage } from './admin/apiDashboard/competition/ApiDashboardCompetitionTestPage';
+export { ApiDashboardCompetitionCUDTestPage } from './admin/apiDashboard/competition/ApiDashboardCompetitionCUDTestPage';
 export { CompetitionPage } from './competition/CompetitionPage';
-export { CubeEventTestPage } from './dashboard/cubeEvent/CubeEventTestPage';
-export { RoundTestPage } from './dashboard/round/RoundTestPage';
-export { RoundCUDTestPage } from './dashboard/round/RoundCUDTestPage';
-export { RecordTestPage } from './dashboard/record/RecordTestPage';
-export { RecordCUDTestPage } from './dashboard/record/RecordCUDTestPage';
-export { ScrambleTestPage } from './dashboard/scramble/ScrambleTestPage';
+export { RoundPage } from './round/RoundPage';
+export { ApiDashboardCubeEventTestPage } from './admin/apiDashboard/cubeEvent/ApiDashboardCubeEventTestPage';
+export { ApiDashboardRoundTestPage } from './admin/apiDashboard/round/ApiDashboardRoundTestPage';
+export { ApiDashboardRoundCUDTestPage } from './admin/apiDashboard/round/ApiDashboardRoundCUDTestPage';
+export { ApiDashboardRecordTestPage } from './admin/apiDashboard/record/ApiDashboardRecordTestPage';
+export { ApiDashboardRecordCUDTestPage } from './admin/apiDashboard/record/ApiDashboardRecordCUDTestPage';
+export { ApiDashboardScrambleTestPage } from './admin/apiDashboard/scramble/ApiDashboardScrambleTestPage';
 export { ConfirmPage } from './auth/ConfirmPage';
 export { LogoutPage } from './auth/LogoutPage';
 export { CompetitionAdminPage } from './admin/competition/CompetitionAdminPage.tsx';

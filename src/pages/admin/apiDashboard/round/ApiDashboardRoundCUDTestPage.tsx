@@ -8,7 +8,7 @@ import {
   type RoundUpdateDTO,
 } from '@/features/round';
 
-export const RoundCUDTestPage = () => {
+export const ApiDashboardRoundCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -159,7 +159,7 @@ export const RoundCUDTestPage = () => {
   };
 
   return (
-    <div className="dashboard-test-page">
+    <div className="page-layout">
       <h1 className="dashboard-test-title">Round CUD API 테스트</h1>
 
       <div className="dashboard-test-section">

@@ -6,7 +6,7 @@ import {
   getRound,
 } from '@/entities/round';
 
-export const RoundTestPage = () => {
+export const ApiDashboardRoundTestPage = () => {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +30,7 @@ export const RoundTestPage = () => {
   };
 
   return (
-    <div className="dashboard-test-page">
+    <div className="page-layout">
       <h1 className="dashboard-test-title">Round API 테스트</h1>
 
       <div className="dashboard-test-section">

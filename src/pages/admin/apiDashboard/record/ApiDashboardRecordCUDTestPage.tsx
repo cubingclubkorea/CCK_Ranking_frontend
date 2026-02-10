@@ -14,7 +14,7 @@ import {
 } from '@/features/record';
 import { createApiHandler } from '@/shared';
 
-export const RecordCUDTestPage = () => {
+export const ApiDashboardRecordCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

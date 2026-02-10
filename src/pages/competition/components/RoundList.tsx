@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Round, RoundDayCount } from "@/entities/round";
 
 type RoundListProps = {
@@ -63,7 +64,11 @@ export const RoundList = ({ schedule, loading }: RoundListProps) => {
   return (
     <div className="round-list">
       {items.map(({ round, status }) => (
-        <div className={`round-card ${status}`} key={round.idx}>
+        <Link
+          className={`round-card ${status} round-card-link`}
+          key={round.idx}
+          to={`/competition/${round.compIdx}/round/${round.idx}`}
+        >
           <div className="round-card-icon" aria-hidden="true">
             <img
               className="round-card-icon-img"
@@ -90,7 +95,7 @@ export const RoundList = ({ schedule, loading }: RoundListProps) => {
           <div className={`round-card-time ${status}`}>
             {formatTimeRange(round.eventStart, round.eventEnd)}
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

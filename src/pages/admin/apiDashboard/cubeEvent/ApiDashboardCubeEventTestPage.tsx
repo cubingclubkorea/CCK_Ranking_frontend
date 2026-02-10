@@ -3,7 +3,7 @@ import { getCubeEventList } from '@/entities/cubeEvent';
 import { createCubeEvent } from '@/features/cubeEvent';
 import { ColorType } from '@/entities/cubeEvent/model/cubeEvent';
 
-export const CubeEventTestPage = () => {
+export const ApiDashboardCubeEventTestPage = () => {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

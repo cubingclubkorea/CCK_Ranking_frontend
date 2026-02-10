@@ -1,19 +1,19 @@
 import { Link } from "react-router-dom";
 
-export const DashboardPage = () => {
+export const ApiDashboardPage = () => {
   const menuItems = [
-    { path: "/dashboard/competition", label: "대회 조회", icon: "🏆" },
-    { path: "/dashboard/competition/cud", label: "대회 관리 (CUD)", icon: "⚙️" },
-    { path: "/dashboard/event", label: "큐브 이벤트", icon: "🎲" },
-    { path: "/dashboard/round", label: "라운드 조회", icon: "🔄" },
-    { path: "/dashboard/round/cud", label: "라운드 관리 (CUD)", icon: "⚙️" },
-    { path: "/dashboard/record", label: "기록 조회", icon: "📊" },
-    { path: "/dashboard/record/cud", label: "기록 관리 (CUD)", icon: "⚙️" },
-    { path: "/dashboard/scramble", label: "스크램블", icon: "🔀" },
+    { path: "/admin/api-dashboard/competition", label: "대회 조회", icon: "🏆" },
+    { path: "/admin/api-dashboard/competition/cud", label: "대회 관리 (CUD)", icon: "⚙️" },
+    { path: "/admin/api-dashboard/event", label: "큐브 이벤트", icon: "🎲" },
+    { path: "/admin/api-dashboard/round", label: "라운드 조회", icon: "🔄" },
+    { path: "/admin/api-dashboard/round/cud", label: "라운드 관리 (CUD)", icon: "⚙️" },
+    { path: "/admin/api-dashboard/record", label: "기록 조회", icon: "📊" },
+    { path: "/admin/api-dashboard/record/cud", label: "기록 관리 (CUD)", icon: "⚙️" },
+    { path: "/admin/api-dashboard/scramble", label: "스크램블", icon: "🔀" },
   ];
 
   return (
-    <div className="dashboard-page">
+    <div className="page-layout">
       <h1 className="dashboard-title">CCK Ranking API Dashboard</h1>
 
       <div className="dashboard-grid">

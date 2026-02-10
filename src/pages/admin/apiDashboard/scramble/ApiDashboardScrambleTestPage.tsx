@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { updateScrambler, type ScramblerUpdateDTO } from '@/features/scramble';
 
-export const ScrambleTestPage = () => {
+export const ApiDashboardScrambleTestPage = () => {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,7 @@ export const ScrambleTestPage = () => {
   };
 
   return (
-    <div className="dashboard-test-page">
+    <div className="page-layout">
       <h1 className="dashboard-test-title">Scramble API 테스트</h1>
 
       {/* UPDATE SCRAMBLER */}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getRecordList } from '@/entities/record';
 
-export const RecordTestPage = () => {
+export const ApiDashboardRecordTestPage = () => {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

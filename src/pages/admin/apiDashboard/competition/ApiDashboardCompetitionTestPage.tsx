@@ -6,7 +6,7 @@ import {
   getCompetition,
 } from '@/entities/competition';
 
-export const CompetitionTestPage = () => {
+export const ApiDashboardCompetitionTestPage = () => {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
