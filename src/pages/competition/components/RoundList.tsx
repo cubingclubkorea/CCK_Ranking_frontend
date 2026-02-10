@@ -72,7 +72,12 @@ export const RoundList = ({ schedule, loading }: RoundListProps) => {
               loading="lazy"
               onError={(event) => {
                 const target = event.currentTarget;
-                target.style.display = "none";
+                if (target.dataset.fallback === "true") {
+                  target.style.display = "none";
+                  return;
+                }
+                target.dataset.fallback = "true";
+                target.src = "/icon/events/Question.svg";
               }}
             />
           </div>

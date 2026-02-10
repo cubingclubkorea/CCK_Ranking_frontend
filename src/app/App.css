@@ -552,12 +552,6 @@ body {
   gap: 8px;
 }
 
-.comp-title-label {
-  font-size: 14px;
-  color: #9aa0b2;
-  letter-spacing: 0.02em;
-}
-
 .comp-title {
   margin: 0;
   font-size: 35px;
@@ -598,11 +592,6 @@ body {
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 1px 1px rgba(15, 23, 42, 0.05);
-}
-
-.comp-action-btn--ghost {
-  background: #f8f9ff;
-  color: #3a3f55;
 }
 
 .comp-action-btn:hover {

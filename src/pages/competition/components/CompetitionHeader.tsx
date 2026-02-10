@@ -14,7 +14,6 @@ const formatDate = (date: Date) => {
 export const CompetitionHeader = ({ title, dateStart, location }: CompetitionHeaderProps) => {
   return (
     <div className="comp-title-area">
-      <div className="comp-title-label">큐빙클럽코리아 큐브 대회</div>
       <h1 className="comp-title">{title}</h1>
       <div className="comp-title-meta">
         <span className="comp-title-meta-item">{formatDate(dateStart)}</span>
