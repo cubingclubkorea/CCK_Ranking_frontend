@@ -1,6 +1,7 @@
 type CompetitionHeaderProps = {
   title: string;
   dateStart: Date;
+  location?: string;
 };
 
 const formatDate = (date: Date) => {
@@ -10,12 +11,20 @@ const formatDate = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-export const CompetitionHeader = ({ title, dateStart }: CompetitionHeaderProps) => {
+export const CompetitionHeader = ({ title, dateStart, location }: CompetitionHeaderProps) => {
   return (
     <div className="comp-title-area">
-      <div className="comp-title-label">대회</div>
+      <div className="comp-title-label">큐빙클럽코리아 큐브 대회</div>
       <h1 className="comp-title">{title}</h1>
-      <div className="comp-title-meta">{formatDate(dateStart)}</div>
+      <div className="comp-title-meta">
+        <span className="comp-title-meta-item">{formatDate(dateStart)}</span>
+        {location ? (
+          <>
+            <span className="comp-title-meta-divider">·</span>
+            <span className="comp-title-meta-item">{location}</span>
+          </>
+        ) : null}
+      </div>
     </div>
   );
 };

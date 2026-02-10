@@ -1,10 +1,16 @@
 const ACCESS_TOKEN_KEY = 'access_token';
+const AUTH_EVENT = 'auth-change';
+
+const notifyAuthChange = () => {
+  window.dispatchEvent(new Event(AUTH_EVENT));
+};
 
 /**
  * Access Token 저장
  */
 export const setAccessToken = (token: string): void => {
   localStorage.setItem(ACCESS_TOKEN_KEY, token);
+  notifyAuthChange();
 };
 
 /**
@@ -19,6 +25,7 @@ export const getAccessToken = (): string | null => {
  */
 export const removeAccessToken = (): void => {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
+  notifyAuthChange();
 };
 
 /**
@@ -27,3 +34,5 @@ export const removeAccessToken = (): void => {
 export const hasAccessToken = (): boolean => {
   return !!getAccessToken();
 };
+
+export const authChangeEvent = AUTH_EVENT;

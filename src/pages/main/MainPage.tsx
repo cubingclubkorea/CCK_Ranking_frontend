@@ -18,6 +18,11 @@ export const MainPage = () => {
     return `${year}-${month}-${day}`;
   };
 
+  const formatMeta = (date: Date, location?: string) => {
+    const base = formatDate(date);
+    return location ? `${base} · ${location}` : base;
+  };
+
   const getDDay = (date: Date) => {
     const today = new Date();
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -42,7 +47,7 @@ export const MainPage = () => {
         setUpcoming(
           future.content.map(item => ({
             title: item.compName,
-            meta: `${formatDate(item.compDateStart)} · ${item.location}`,
+            meta: formatMeta(item.compDateStart, item.location),
             badge: getDDay(item.compDateStart),
             href: `/comp/${item.idx}`,
           }))
@@ -51,7 +56,7 @@ export const MainPage = () => {
         setOngoing(
           now.content.map(item => ({
             title: item.compName,
-            meta: `${formatDate(item.compDateStart)} · ${item.location}`,
+            meta: formatMeta(item.compDateStart, item.location),
             badge: "Now",
             variant: "ongoing",
             href: `/comp/${item.idx}`,
@@ -61,7 +66,7 @@ export const MainPage = () => {
         setEnded(
           past.content.map(item => ({
             title: item.compName,
-            meta: `${formatDate(item.compDateStart)} · ${item.location}`,
+            meta: formatMeta(item.compDateStart, item.location),
             badge: "종료",
             variant: "ended",
             href: `/comp/${item.idx}`,

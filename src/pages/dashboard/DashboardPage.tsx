@@ -21,7 +21,7 @@ export const DashboardPage = () => {
         margin: "0 auto",
       }}
     >
-      <h1 style={{ textAlign: "center", marginBottom: "40px", fontSize: "2.5rem" }}>CCK Ranking Dashboard</h1>
+      <h1 style={{ textAlign: "center", marginBottom: "40px", fontSize: "2.5rem" }}>CCK Ranking API Dashboard</h1>
 
       <div
         style={{

@@ -51,6 +51,7 @@ export const CompetitionPage = () => {
         <CompetitionHeader
           title={competition.compName}
           dateStart={competition.compDateStart}
+          location={competition.location}
         />
         <CompetitionActions />
       </div>
