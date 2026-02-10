@@ -130,8 +130,9 @@ export const CompetitionPage = () => {
                 type="button"
                 onClick={() => setDayCount(item.dayCount)}
               >
-                <span className="round-day-tab-label">{item.dayCount + 1}일차</span>
-                <span className="round-day-tab-date">{formatDate(item.date)}</span>
+                <span className="round-day-tab-label">
+                  {item.dayCount + 1}일차 · {formatDate(item.date)}
+                </span>
               </button>
             ))}
           </div>
