@@ -55,49 +55,49 @@ export const CubeEventTestPage = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>CubeEvent API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">CubeEvent API 테스트</h1>
 
-      <div style={{ marginBottom: '20px' }}>
-        <h2>조회 API 테스트</h2>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">조회 API 테스트</h2>
         <button
           onClick={() => handleTest(() => getCubeEventList(), '큐브 이벤트 목록 조회')}
           disabled={loading}
-          style={{ marginRight: '10px', padding: '10px' }}
+          className="dashboard-test-button dashboard-test-button--primary"
         >
           큐브 이벤트 목록 조회
         </button>
       </div>
 
-      <div style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '15px', borderRadius: '5px' }}>
-        <h2>➕ 큐브 이벤트 생성</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventName (이벤트명)</label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">➕ 큐브 이벤트 생성</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">eventName (이벤트명)</label>
             <input
               type="text"
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
               placeholder="3x3x3"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>avgCalc (평균 계산 방식)</label>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">avgCalc (평균 계산 방식)</label>
             <input
               type="text"
               value={avgCalc}
               onChange={(e) => setAvgCalc(e.target.value)}
               placeholder="ao5"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>colorType (색상 타입)</label>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">colorType (색상 타입)</label>
             <select
               value={colorType}
               onChange={(e) => setColorType(e.target.value as ColorType)}
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-select"
             >
               <option value={ColorType.cube}>cube</option>
               <option value={ColorType.tetra}>tetra</option>
@@ -108,43 +108,29 @@ export const CubeEventTestPage = () => {
               <option value={ColorType.none}>none</option>
             </select>
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>file (이미지 파일)</label>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              style={{ padding: '8px', width: '100%' }}
-            />
-            {file && <span style={{ marginTop: '5px', display: 'block', color: '#28a745' }}>✅ 선택됨: {file.name}</span>}
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">file (이미지 파일)</label>
+            <input type="file" onChange={handleFileChange} className="dashboard-test-input" />
+            {file && <span className="dashboard-test-helper">선택됨: {file.name}</span>}
           </div>
           <button
             onClick={handleCreate}
             disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            className="dashboard-test-button dashboard-test-button--success"
           >
             큐브 이벤트 생성
           </button>
         </div>
       </div>
 
-      {loading && (
-        <div style={{ padding: '10px', backgroundColor: '#f0f0f0' }}>
-          로딩 중...
-        </div>
-      )}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
 
-      {error && (
-        <div style={{ padding: '10px', backgroundColor: '#ffcccc', color: '#cc0000' }}>
-          에러: {error}
-        </div>
-      )}
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
 
       {result && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>결과:</h3>
-          <pre style={{ backgroundColor: '#f5f5f5', padding: '10px', overflow: 'auto' }}>
-            {JSON.stringify(result, null, 2)}
-          </pre>
+        <div className="dashboard-test-section dashboard-test-result">
+          <h3 className="dashboard-test-section-title">결과</h3>
+          <pre className="dashboard-test-pre">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>

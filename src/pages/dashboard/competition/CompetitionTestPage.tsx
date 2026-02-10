@@ -29,86 +29,78 @@ export const CompetitionTestPage = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>Competition API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">Competition API 테스트</h1>
 
-      <div style={{ marginBottom: '20px' }}>
-        <h2>페이지네이션 API 테스트</h2>
-        <button
-          onClick={() =>
-            handleTest(
-              () => getCompetitionPast({ page: 0, size: 10 }),
-              'getCompetitionPast'
-            )
-          }
-          disabled={loading}
-          style={{ marginRight: '10px', padding: '10px' }}
-        >
-          종료된 대회 조회
-        </button>
-        <button
-          onClick={() =>
-            handleTest(
-              () => getCompetitionNow({ page: 0, size: 10 }),
-              'getCompetitionNow'
-            )
-          }
-          disabled={loading}
-          style={{ marginRight: '10px', padding: '10px' }}
-        >
-          진행중 대회 조회
-        </button>
-        <button
-          onClick={() =>
-            handleTest(
-              () => getCompetitionFuture({ page: 0, size: 10 }),
-              'getCompetitionFuture'
-            )
-          }
-          disabled={loading}
-          style={{ marginRight: '10px', padding: '10px' }}
-        >
-          예정 대회 조회
-        </button>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">페이지네이션 API 테스트</h2>
+        <div className="dashboard-test-actions">
+          <button
+            onClick={() =>
+              handleTest(
+                () => getCompetitionPast({ page: 0, size: 10 }),
+                'getCompetitionPast'
+              )
+            }
+            disabled={loading}
+            className="dashboard-test-button"
+          >
+            종료된 대회 조회
+          </button>
+          <button
+            onClick={() =>
+              handleTest(
+                () => getCompetitionNow({ page: 0, size: 10 }),
+                'getCompetitionNow'
+              )
+            }
+            disabled={loading}
+            className="dashboard-test-button"
+          >
+            진행중 대회 조회
+          </button>
+          <button
+            onClick={() =>
+              handleTest(
+                () => getCompetitionFuture({ page: 0, size: 10 }),
+                'getCompetitionFuture'
+              )
+            }
+            disabled={loading}
+            className="dashboard-test-button"
+          >
+            예정 대회 조회
+          </button>
+        </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <h2>단일 대회 조회</h2>
-        <input
-          type="number"
-          value={compIdx}
-          onChange={(e) => setCompIdx(Number(e.target.value))}
-          style={{ marginRight: '10px', padding: '8px' }}
-          placeholder="대회 ID"
-        />
-        <button
-          onClick={() =>
-            handleTest(() => getCompetition(compIdx), 'getCompetition')
-          }
-          disabled={loading}
-          style={{ padding: '10px' }}
-        >
-          대회 조회
-        </button>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">단일 대회 조회</h2>
+        <div className="dashboard-test-inline">
+          <input
+            type="number"
+            value={compIdx}
+            onChange={(e) => setCompIdx(Number(e.target.value))}
+            className="dashboard-test-input"
+            placeholder="대회 ID"
+          />
+          <button
+            onClick={() => handleTest(() => getCompetition(compIdx), 'getCompetition')}
+            disabled={loading}
+            className="dashboard-test-button dashboard-test-button--primary"
+          >
+            대회 조회
+          </button>
+        </div>
       </div>
 
-      {loading && <p style={{ color: 'blue' }}>로딩 중...</p>}
-      {error && <p style={{ color: 'red' }}>에러: {error}</p>}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
 
       {result && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>결과:</h3>
-          <pre
-            style={{
-              background: '#f5f5f5',
-              padding: '15px',
-              borderRadius: '5px',
-              overflow: 'auto',
-              maxHeight: '500px',
-            }}
-          >
-            {JSON.stringify(result, null, 2)}
-          </pre>
+        <div className="dashboard-test-section dashboard-test-result">
+          <h3 className="dashboard-test-section-title">결과</h3>
+          <pre className="dashboard-test-pre">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>

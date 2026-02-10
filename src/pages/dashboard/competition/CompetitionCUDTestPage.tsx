@@ -47,90 +47,98 @@ export const CompetitionCUDTestPage = () => {
   const handleDelete = () => handleApi(() => deleteCompetition(deleteIdx), `대회 ${deleteIdx} 삭제 성공!`);
 
   return (
-    <div style={{ padding: "20px", fontFamily: "sans-serif", maxWidth: "800px" }}>
-      <h1>Competition CUD API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">Competition CUD API 테스트</h1>
 
-      {/* CREATE */}
-      <div style={{ marginBottom: "30px", border: "1px solid #ddd", padding: "15px", borderRadius: "5px" }}>
-        <h2>➕ 대회 생성 (Create)</h2>
-        <div style={{ display: "grid", gap: "10px" }}>
-          <div>
-            <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>compName (대회명)</label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">➕ 대회 생성 (Create)</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">compName (대회명)</label>
             <input
               type="text"
               value={createForm.compName}
               onChange={(e) => setCreateForm({ ...createForm, compName: e.target.value })}
               placeholder="테스트 대회"
-              style={{ padding: "8px", width: "100%" }}
+              className="dashboard-test-input"
             />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>compDateStart (대회 시작일)</label>
-              <input type="date" value={createForm.compDateStart} onChange={(e) => setCreateForm({ ...createForm, compDateStart: e.target.value })} style={{ padding: "8px", width: "100%" }} />
+          <div className="dashboard-test-grid dashboard-test-grid-2">
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">compDateStart (대회 시작일)</label>
+              <input
+                type="date"
+                value={createForm.compDateStart}
+                onChange={(e) => setCreateForm({ ...createForm, compDateStart: e.target.value })}
+                className="dashboard-test-input"
+              />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>compDateEnd (대회 종료일)</label>
-              <input type="date" value={createForm.compDateEnd} onChange={(e) => setCreateForm({ ...createForm, compDateEnd: e.target.value })} style={{ padding: "8px", width: "100%" }} />
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">compDateEnd (대회 종료일)</label>
+              <input
+                type="date"
+                value={createForm.compDateEnd}
+                onChange={(e) => setCreateForm({ ...createForm, compDateEnd: e.target.value })}
+                className="dashboard-test-input"
+              />
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>joinDateStart (참가 신청 시작)</label>
+          <div className="dashboard-test-grid dashboard-test-grid-2">
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">joinDateStart (참가 신청 시작)</label>
               <input
                 type="datetime-local"
                 value={createForm.joinDateStart}
                 onChange={(e) => setCreateForm({ ...createForm, joinDateStart: e.target.value + ":00" })}
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>joinDateEnd (참가 신청 마감)</label>
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">joinDateEnd (참가 신청 마감)</label>
               <input
                 type="datetime-local"
                 value={createForm.joinDateEnd}
                 onChange={(e) => setCreateForm({ ...createForm, joinDateEnd: e.target.value + ":00" })}
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>baseFee (기본 참가비)</label>
+          <div className="dashboard-test-grid dashboard-test-grid-3">
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">baseFee (기본 참가비)</label>
               <input
                 type="number"
                 value={createForm.baseFee}
                 onChange={(e) => setCreateForm({ ...createForm, baseFee: Number(e.target.value) })}
                 placeholder="10000"
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>location (장소)</label>
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">location (장소)</label>
               <input
                 type="text"
                 value={createForm.location}
                 onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })}
                 placeholder="서울"
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>maxParticipate (최대 참가자)</label>
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">maxParticipate (최대 참가자)</label>
               <input
                 type="number"
                 value={createForm.maxParticipate}
                 onChange={(e) => setCreateForm({ ...createForm, maxParticipate: Number(e.target.value) })}
                 placeholder="100"
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
           </div>
 
-          {/* EventFeeList for Create */}
-          <div style={{ marginTop: "10px", padding: "10px", backgroundColor: "#f8f9fa", borderRadius: "5px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-              <h4 style={{ margin: 0 }}>이벤트별 참가비</h4>
+          <div className="dashboard-test-subsection">
+            <div className="dashboard-test-card-header">
+              <h4 className="dashboard-test-card-title">이벤트별 참가비</h4>
               <button
                 onClick={() =>
                   setCreateForm({
@@ -138,13 +146,13 @@ export const CompetitionCUDTestPage = () => {
                     eventFeeList: [...(createForm.eventFeeList || []), { eventName: "", eventFee: 0 }],
                   })
                 }
-                style={{ padding: "5px 10px", fontSize: "12px" }}
+                className="dashboard-test-button dashboard-test-button--subtle"
               >
                 + 추가
               </button>
             </div>
             {createForm.eventFeeList?.map((eventFee, index) => (
-              <div key={index} style={{ display: "flex", gap: "10px", marginBottom: "5px" }}>
+              <div key={index} className="dashboard-test-row">
                 <input
                   type="text"
                   value={eventFee.eventName}
@@ -154,7 +162,7 @@ export const CompetitionCUDTestPage = () => {
                     setCreateForm({ ...createForm, eventFeeList: newList });
                   }}
                   placeholder="이벤트명"
-                  style={{ padding: "5px", flex: 1 }}
+                  className="dashboard-test-input"
                 />
                 <input
                   type="number"
@@ -165,14 +173,14 @@ export const CompetitionCUDTestPage = () => {
                     setCreateForm({ ...createForm, eventFeeList: newList });
                   }}
                   placeholder="참가비"
-                  style={{ padding: "5px", width: "120px" }}
+                  className="dashboard-test-input"
                 />
                 <button
                   onClick={() => {
                     const newList = createForm.eventFeeList?.filter((_, i) => i !== index);
                     setCreateForm({ ...createForm, eventFeeList: newList });
                   }}
-                  style={{ padding: "5px 10px", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "3px" }}
+                  className="dashboard-test-button dashboard-test-button--danger"
                 >
                   삭제
                 </button>
@@ -180,97 +188,115 @@ export const CompetitionCUDTestPage = () => {
             ))}
           </div>
 
-          <button onClick={handleCreate} disabled={loading} style={{ padding: "10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+          <button
+            onClick={handleCreate}
+            disabled={loading}
+            className="dashboard-test-button dashboard-test-button--success"
+          >
             대회 생성
           </button>
         </div>
       </div>
 
-      {/* UPDATE */}
-      <div style={{ marginBottom: "30px", border: "1px solid #ddd", padding: "15px", borderRadius: "5px" }}>
-        <h2>✏️ 대회 수정 (Update)</h2>
-        <div style={{ display: "grid", gap: "10px" }}>
-          <div>
-            <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>idx (대회 ID)</label>
-            <input type="number" value={updateForm.idx} onChange={(e) => setUpdateForm({ ...updateForm, idx: Number(e.target.value) })} placeholder="1" style={{ padding: "8px", width: "100%" }} />
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">✏️ 대회 수정 (Update)</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">idx (대회 ID)</label>
+            <input
+              type="number"
+              value={updateForm.idx}
+              onChange={(e) => setUpdateForm({ ...updateForm, idx: Number(e.target.value) })}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
           </div>
-          <div>
-            <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>compName (대회명)</label>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">compName (대회명)</label>
             <input
               type="text"
               value={updateForm.compName}
               onChange={(e) => setUpdateForm({ ...updateForm, compName: e.target.value })}
               placeholder="수정된 대회"
-              style={{ padding: "8px", width: "100%" }}
+              className="dashboard-test-input"
             />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>compDateStart (대회 시작일)</label>
-              <input type="date" value={updateForm.compDateStart} onChange={(e) => setUpdateForm({ ...updateForm, compDateStart: e.target.value })} style={{ padding: "8px", width: "100%" }} />
+          <div className="dashboard-test-grid dashboard-test-grid-2">
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">compDateStart (대회 시작일)</label>
+              <input
+                type="date"
+                value={updateForm.compDateStart}
+                onChange={(e) => setUpdateForm({ ...updateForm, compDateStart: e.target.value })}
+                className="dashboard-test-input"
+              />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>compDateEnd (대회 종료일)</label>
-              <input type="date" value={updateForm.compDateEnd} onChange={(e) => setUpdateForm({ ...updateForm, compDateEnd: e.target.value })} style={{ padding: "8px", width: "100%" }} />
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">compDateEnd (대회 종료일)</label>
+              <input
+                type="date"
+                value={updateForm.compDateEnd}
+                onChange={(e) => setUpdateForm({ ...updateForm, compDateEnd: e.target.value })}
+                className="dashboard-test-input"
+              />
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>joinDateStart (참가 신청 시작)</label>
+          <div className="dashboard-test-grid dashboard-test-grid-2">
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">joinDateStart (참가 신청 시작)</label>
               <input
                 type="datetime-local"
                 value={updateForm.joinDateStart}
                 onChange={(e) => setUpdateForm({ ...updateForm, joinDateStart: e.target.value + ":00" })}
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>joinDateEnd (참가 신청 마감)</label>
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">joinDateEnd (참가 신청 마감)</label>
               <input
                 type="datetime-local"
                 value={updateForm.joinDateEnd}
                 onChange={(e) => setUpdateForm({ ...updateForm, joinDateEnd: e.target.value + ":00" })}
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>baseFee (기본 참가비)</label>
+          <div className="dashboard-test-grid dashboard-test-grid-3">
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">baseFee (기본 참가비)</label>
               <input
                 type="number"
                 value={updateForm.baseFee}
                 onChange={(e) => setUpdateForm({ ...updateForm, baseFee: Number(e.target.value) })}
                 placeholder="15000"
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>location (장소)</label>
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">location (장소)</label>
               <input
                 type="text"
                 value={updateForm.location}
                 onChange={(e) => setUpdateForm({ ...updateForm, location: e.target.value })}
                 placeholder="부산"
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>maxParticipate (최대 참가자)</label>
+            <div className="dashboard-test-field">
+              <label className="dashboard-test-label">maxParticipate (최대 참가자)</label>
               <input
                 type="number"
                 value={updateForm.maxParticipate}
                 onChange={(e) => setUpdateForm({ ...updateForm, maxParticipate: Number(e.target.value) })}
                 placeholder="150"
-                style={{ padding: "8px", width: "100%" }}
+                className="dashboard-test-input"
               />
             </div>
           </div>
 
-          {/* EventFeeList for Update */}
-          <div style={{ marginTop: "10px", padding: "10px", backgroundColor: "#f8f9fa", borderRadius: "5px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-              <h4 style={{ margin: 0 }}>이벤트별 참가비</h4>
+          <div className="dashboard-test-subsection">
+            <div className="dashboard-test-card-header">
+              <h4 className="dashboard-test-card-title">이벤트별 참가비</h4>
               <button
                 onClick={() =>
                   setUpdateForm({
@@ -278,13 +304,13 @@ export const CompetitionCUDTestPage = () => {
                     eventFeeList: [...(updateForm.eventFeeList || []), { eventName: "", eventFee: 0 }],
                   })
                 }
-                style={{ padding: "5px 10px", fontSize: "12px" }}
+                className="dashboard-test-button dashboard-test-button--subtle"
               >
                 + 추가
               </button>
             </div>
             {updateForm.eventFeeList?.map((eventFee, index) => (
-              <div key={index} style={{ display: "flex", gap: "10px", marginBottom: "5px" }}>
+              <div key={index} className="dashboard-test-row">
                 <input
                   type="text"
                   value={eventFee.eventName}
@@ -294,7 +320,7 @@ export const CompetitionCUDTestPage = () => {
                     setUpdateForm({ ...updateForm, eventFeeList: newList });
                   }}
                   placeholder="이벤트명"
-                  style={{ padding: "5px", flex: 1 }}
+                  className="dashboard-test-input"
                 />
                 <input
                   type="number"
@@ -305,14 +331,14 @@ export const CompetitionCUDTestPage = () => {
                     setUpdateForm({ ...updateForm, eventFeeList: newList });
                   }}
                   placeholder="참가비"
-                  style={{ padding: "5px", width: "120px" }}
+                  className="dashboard-test-input"
                 />
                 <button
                   onClick={() => {
                     const newList = updateForm.eventFeeList?.filter((_, i) => i !== index);
                     setUpdateForm({ ...updateForm, eventFeeList: newList });
                   }}
-                  style={{ padding: "5px 10px", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "3px" }}
+                  className="dashboard-test-button dashboard-test-button--danger"
                 >
                   삭제
                 </button>
@@ -320,30 +346,42 @@ export const CompetitionCUDTestPage = () => {
             ))}
           </div>
 
-          <button onClick={handleUpdate} disabled={loading} style={{ padding: "10px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+          <button
+            onClick={handleUpdate}
+            disabled={loading}
+            className="dashboard-test-button dashboard-test-button--primary"
+          >
             대회 수정
           </button>
         </div>
       </div>
 
-      {/* DELETE */}
-      <div style={{ marginBottom: "30px", border: "1px solid #ddd", padding: "15px", borderRadius: "5px" }}>
-        <h2>🗑️ 대회 삭제 (Delete)</h2>
-        <div style={{ display: "grid", gap: "10px" }}>
-          <div>
-            <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", fontWeight: "bold" }}>idx (대회 ID)</label>
-            <input type="number" value={deleteIdx} onChange={(e) => setDeleteIdx(Number(e.target.value))} placeholder="1" style={{ padding: "8px", width: "100%" }} />
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">🗑️ 대회 삭제 (Delete)</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">idx (대회 ID)</label>
+            <input
+              type="number"
+              value={deleteIdx}
+              onChange={(e) => setDeleteIdx(Number(e.target.value))}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
           </div>
-          <button onClick={handleDelete} disabled={loading} style={{ padding: "10px", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+          <button
+            onClick={handleDelete}
+            disabled={loading}
+            className="dashboard-test-button dashboard-test-button--danger"
+          >
             대회 삭제
           </button>
         </div>
       </div>
 
-      {/* STATUS */}
-      {loading && <p style={{ color: "blue", fontWeight: "bold" }}>⏳ 로딩 중...</p>}
-      {error && <p style={{ color: "red", fontWeight: "bold", padding: "10px", backgroundColor: "#ffe6e6", borderRadius: "5px" }}>❌ 에러: {error}</p>}
-      {result && <p style={{ color: "green", fontWeight: "bold", padding: "10px", backgroundColor: "#e6ffe6", borderRadius: "5px" }}>✅ {result}</p>}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
+      {result && <div className="dashboard-test-status dashboard-test-status--success">✅ {result}</div>}
     </div>
   );
 };

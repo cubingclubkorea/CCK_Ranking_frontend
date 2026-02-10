@@ -11,6 +11,8 @@ import {
   RecordTestPage,
   RecordCUDTestPage,
   ScrambleTestPage,
+  CompetitionAdminPage,
+  CompetitionCreatePage,
   ConfirmPage,
   LogoutPage,
   NotFoundPage,
@@ -66,7 +68,7 @@ export const router = createBrowserRouter([
         element: <MainPage />,
       },
       {
-        path: "comp/:compIdx",
+        path: "competition/:compIdx",
         element: <CompetitionPage />,
       },
       {
@@ -91,7 +93,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin/competition",
-        element: <ForbiddenPage />,
+        element: <CompetitionAdminPage />,
+      },
+      {
+        path: "admin/competition/create",
+        element: <CompetitionCreatePage />,
       },
       {
         path: "admin/event",

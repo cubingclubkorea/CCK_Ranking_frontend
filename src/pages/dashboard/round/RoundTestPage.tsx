@@ -30,99 +30,90 @@ export const RoundTestPage = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>Round API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">Round API 테스트</h1>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          대회 ID:
-          <input
-            type="number"
-            value={compIdx}
-            onChange={(e) => setCompIdx(Number(e.target.value))}
-            style={{ marginLeft: '10px', padding: '5px', width: '100px' }}
-          />
-        </label>
-        <label style={{ marginLeft: '20px' }}>
-          라운드 ID:
-          <input
-            type="number"
-            value={roundIdx}
-            onChange={(e) => setRoundIdx(Number(e.target.value))}
-            style={{ marginLeft: '10px', padding: '5px', width: '100px' }}
-          />
-        </label>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <h2>페이지네이션 API 테스트</h2>
-        <button
-          onClick={() =>
-            handleTest(
-              () => getRoundPast(compIdx, { page: 0, size: 10 }),
-              'getRoundPast'
-            )
-          }
-          disabled={loading}
-          style={{ marginRight: '10px', padding: '10px' }}
-        >
-          종료된 라운드 조회
-        </button>
-        <button
-          onClick={() =>
-            handleTest(
-              () => getRoundNow(compIdx, { page: 0, size: 10 }),
-              'getRoundNow'
-            )
-          }
-          disabled={loading}
-          style={{ marginRight: '10px', padding: '10px' }}
-        >
-          진행중인 라운드 조회
-        </button>
-        <button
-          onClick={() =>
-            handleTest(
-              () => getRoundFuture(compIdx, { page: 0, size: 10 }),
-              'getRoundFuture'
-            )
-          }
-          disabled={loading}
-          style={{ marginRight: '10px', padding: '10px' }}
-        >
-          예정된 라운드 조회
-        </button>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <h2>단일 조회 API 테스트</h2>
-        <button
-          onClick={() => handleTest(() => getRound(roundIdx), 'getRound')}
-          disabled={loading}
-          style={{ padding: '10px' }}
-        >
-          라운드 단일 조회
-        </button>
-      </div>
-
-      {loading && (
-        <div style={{ padding: '10px', backgroundColor: '#f0f0f0' }}>
-          로딩 중...
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">조회 대상</h2>
+        <div className="dashboard-test-inline">
+          <label className="dashboard-test-label">
+            대회 ID
+            <input
+              type="number"
+              value={compIdx}
+              onChange={(e) => setCompIdx(Number(e.target.value))}
+              className="dashboard-test-input"
+            />
+          </label>
+          <label className="dashboard-test-label">
+            라운드 ID
+            <input
+              type="number"
+              value={roundIdx}
+              onChange={(e) => setRoundIdx(Number(e.target.value))}
+              className="dashboard-test-input"
+            />
+          </label>
+          <button
+            onClick={() => handleTest(() => getRound(roundIdx), 'getRound')}
+            disabled={loading}
+            className="dashboard-test-button dashboard-test-button--primary"
+          >
+            라운드 단일 조회
+          </button>
         </div>
-      )}
+      </div>
 
-      {error && (
-        <div style={{ padding: '10px', backgroundColor: '#ffcccc', color: '#cc0000' }}>
-          에러: {error}
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">페이지네이션 API 테스트</h2>
+        <div className="dashboard-test-actions">
+          <button
+            onClick={() =>
+              handleTest(
+                () => getRoundPast(compIdx, { page: 0, size: 10 }),
+                'getRoundPast'
+              )
+            }
+            disabled={loading}
+            className="dashboard-test-button"
+          >
+            종료된 라운드 조회
+          </button>
+          <button
+            onClick={() =>
+              handleTest(
+                () => getRoundNow(compIdx, { page: 0, size: 10 }),
+                'getRoundNow'
+              )
+            }
+            disabled={loading}
+            className="dashboard-test-button"
+          >
+            진행중인 라운드 조회
+          </button>
+          <button
+            onClick={() =>
+              handleTest(
+                () => getRoundFuture(compIdx, { page: 0, size: 10 }),
+                'getRoundFuture'
+              )
+            }
+            disabled={loading}
+            className="dashboard-test-button"
+          >
+            예정된 라운드 조회
+          </button>
         </div>
-      )}
+      </div>
+
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
 
       {result && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>결과:</h3>
-          <pre style={{ backgroundColor: '#f5f5f5', padding: '10px', overflow: 'auto' }}>
-            {JSON.stringify(result, null, 2)}
-          </pre>
+        <div className="dashboard-test-section dashboard-test-result">
+          <h3 className="dashboard-test-section-title">결과</h3>
+          <pre className="dashboard-test-pre">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>

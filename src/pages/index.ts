@@ -13,6 +13,8 @@ export { RecordCUDTestPage } from './dashboard/record/RecordCUDTestPage';
 export { ScrambleTestPage } from './dashboard/scramble/ScrambleTestPage';
 export { ConfirmPage } from './auth/ConfirmPage';
 export { LogoutPage } from './auth/LogoutPage';
+export { CompetitionAdminPage } from './admin/competition/CompetitionAdminPage.tsx';
+export { CompetitionCreatePage } from './admin/competition/CompetitionCreatePage';
 
 export { NotFoundPage } from './error/NotFoundPage.tsx';
 export { ForbiddenPage } from './error/ForbiddenPage';

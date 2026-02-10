@@ -122,27 +122,29 @@ export const RecordCUDTestPage = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '1000px' }}>
-      <h1>Record CUD API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">Record CUD API 테스트</h1>
 
-      {/* ADD PLAYER */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>➕ 플레이어 추가 (Add Player)</h2>
-        <button onClick={addPlayerItem} style={{ marginBottom: '10px', padding: '5px 10px' }}>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">➕ 플레이어 추가 (Add Player)</h2>
+        <button onClick={addPlayerItem} className="dashboard-test-button dashboard-test-button--subtle">
           + 플레이어 추가
         </button>
         {playerList.map((player, index) => (
-          <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #eee', borderRadius: '5px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <h4>플레이어 #{index + 1}</h4>
-              <button onClick={() => removePlayerItem(index)} style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}>
+          <div key={index} className="dashboard-test-card">
+            <div className="dashboard-test-card-header">
+              <h4 className="dashboard-test-card-title">플레이어 #{index + 1}</h4>
+              <button
+                onClick={() => removePlayerItem(index)}
+                className="dashboard-test-button dashboard-test-button--danger"
+              >
                 삭제
               </button>
             </div>
-            <div style={{ display: 'grid', gap: '10px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>pdx (플레이어 ID)</label>
+            <div className="dashboard-test-grid">
+              <div className="dashboard-test-grid dashboard-test-grid-3">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">pdx (플레이어 ID)</label>
                   <input
                     type="number"
                     value={player.pdx}
@@ -152,11 +154,11 @@ export const RecordCUDTestPage = () => {
                       setPlayerList(newList);
                     }}
                     placeholder="1"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>name (이름)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">name (이름)</label>
                   <input
                     type="text"
                     value={player.name}
@@ -166,11 +168,11 @@ export const RecordCUDTestPage = () => {
                       setPlayerList(newList);
                     }}
                     placeholder="홍길동"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>state (국가)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">state (국가)</label>
                   <input
                     type="text"
                     value={player.state}
@@ -180,13 +182,13 @@ export const RecordCUDTestPage = () => {
                       setPlayerList(newList);
                     }}
                     placeholder="KOR"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cckId (CCK 아이디)</label>
+              <div className="dashboard-test-grid dashboard-test-grid-3">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">cckId (CCK 아이디)</label>
                   <input
                     type="text"
                     value={player.cckId}
@@ -196,11 +198,11 @@ export const RecordCUDTestPage = () => {
                       setPlayerList(newList);
                     }}
                     placeholder="test123"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>roundIdx (라운드 ID)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">roundIdx (라운드 ID)</label>
                   <input
                     type="number"
                     value={player.roundIdx}
@@ -210,11 +212,11 @@ export const RecordCUDTestPage = () => {
                       setPlayerList(newList);
                     }}
                     placeholder="1"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>roundGroup (그룹)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">roundGroup (그룹)</label>
                   <input
                     type="text"
                     value={player.roundGroup}
@@ -224,12 +226,12 @@ export const RecordCUDTestPage = () => {
                       setPlayerList(newList);
                     }}
                     placeholder="A"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>note (비고)</label>
+              <div className="dashboard-test-field">
+                <label className="dashboard-test-label">note (비고)</label>
                 <input
                   type="text"
                   value={player.note || ''}
@@ -239,7 +241,7 @@ export const RecordCUDTestPage = () => {
                     setPlayerList(newList);
                   }}
                   placeholder="비고 사항"
-                  style={{ padding: '8px', width: '100%' }}
+                  className="dashboard-test-input"
                 />
               </div>
             </div>
@@ -248,28 +250,27 @@ export const RecordCUDTestPage = () => {
         <button
           onClick={handleAddPlayer}
           disabled={loading}
-          style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%' }}
+          className="dashboard-test-button dashboard-test-button--success"
         >
           플레이어 추가
         </button>
       </div>
 
-      {/* UPDATE RECORD */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>✏️ 기록 업데이트 (Update Record)</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (기록 ID)</label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">✏️ 기록 업데이트 (Update Record)</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">idx (기록 ID)</label>
             <input
               type="number"
               value={updateForm.idx}
               onChange={(e) => setUpdateForm({ ...updateForm, idx: Number(e.target.value) })}
               placeholder="1"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>times (기록 타임 배열)</label>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">times (기록 타임 배열)</label>
             <input
               type="text"
               value={updateForm.times.join(', ')}
@@ -278,201 +279,189 @@ export const RecordCUDTestPage = () => {
                 setUpdateForm({ ...updateForm, times });
               }}
               placeholder="12.34, 13.45, 14.56, 15.67, 16.78"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
           <button
             onClick={handleUpdateRecord}
             disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            className="dashboard-test-button dashboard-test-button--primary"
           >
             기록 업데이트
           </button>
         </div>
       </div>
 
-      {/* DELETE RECORD */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>🗑️ 기록 삭제 (Delete Record)</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (기록 ID)</label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">🗑️ 기록 삭제 (Delete Record)</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">idx (기록 ID)</label>
             <input
               type="number"
               value={deleteIdx}
               onChange={(e) => setDeleteIdx(Number(e.target.value))}
               placeholder="1"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
           <button
             onClick={handleDeleteRecord}
             disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            className="dashboard-test-button dashboard-test-button--danger"
           >
             기록 삭제
           </button>
         </div>
       </div>
 
-      {/* QUIT RECORD */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>🚫 기권 처리 (Quit Record)</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>partList (기록 ID 목록)</label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">🚫 기권 처리 (Quit Record)</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">partList (기록 ID 목록)</label>
             <input
               type="text"
               value={quitList}
               onChange={(e) => setQuitList(e.target.value)}
               placeholder="1,2,3"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
           <button
             onClick={handleQuitRecord}
             disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#ffc107', color: 'black', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            className="dashboard-test-button"
           >
             기권 처리
           </button>
         </div>
       </div>
 
-      {/* ADVANCE PLAYER */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>⬆️ 어드밴스 처리 (Advance Player)</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>pastRoundIdx (이전 라운드 ID)</label>
-              <input
-                type="number"
-                value={advanceForm.pastRoundIdx}
-                onChange={(e) => setAdvanceForm({ ...advanceForm, pastRoundIdx: Number(e.target.value) })}
-                placeholder="1"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advanceRoundIdx (다음 라운드 ID)</label>
-              <input
-                type="number"
-                value={advanceForm.advanceRoundIdx}
-                onChange={(e) => setAdvanceForm({ ...advanceForm, advanceRoundIdx: Number(e.target.value) })}
-                placeholder="2"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">⬆️ 어드밴스 처리 (Advance Player)</h2>
+        <div className="dashboard-test-grid dashboard-test-grid-2">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">pastRoundIdx (이전 라운드 ID)</label>
+            <input
+              type="number"
+              value={advanceForm.pastRoundIdx}
+              onChange={(e) => setAdvanceForm({ ...advanceForm, pastRoundIdx: Number(e.target.value) })}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
           </div>
-          <button
-            onClick={handleAdvancePlayer}
-            disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#17a2b8', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-          >
-            어드밴스 처리
-          </button>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">advanceRoundIdx (다음 라운드 ID)</label>
+            <input
+              type="number"
+              value={advanceForm.advanceRoundIdx}
+              onChange={(e) => setAdvanceForm({ ...advanceForm, advanceRoundIdx: Number(e.target.value) })}
+              placeholder="2"
+              className="dashboard-test-input"
+            />
+          </div>
         </div>
+        <button
+          onClick={handleAdvancePlayer}
+          disabled={loading}
+          className="dashboard-test-button dashboard-test-button--primary"
+        >
+          어드밴스 처리
+        </button>
       </div>
 
-      {/* ADD EXTRA */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>➕ 추가 시도 (Add Extra)</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>recordIdx (기록 ID)</label>
-              <input
-                type="number"
-                value={extraForm.recordIdx}
-                onChange={(e) => setExtraForm({ ...extraForm, recordIdx: Number(e.target.value) })}
-                placeholder="1"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>extraNum (추가 시도 번호)</label>
-              <input
-                type="number"
-                value={extraForm.extraNum}
-                onChange={(e) => setExtraForm({ ...extraForm, extraNum: Number(e.target.value) })}
-                placeholder="1"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">➕ 추가 시도 (Add Extra)</h2>
+        <div className="dashboard-test-grid dashboard-test-grid-2">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">recordIdx (기록 ID)</label>
+            <input
+              type="number"
+              value={extraForm.recordIdx}
+              onChange={(e) => setExtraForm({ ...extraForm, recordIdx: Number(e.target.value) })}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>extraTry (시도 횟수)</label>
-              <input
-                type="number"
-                value={extraForm.extraTry}
-                onChange={(e) => setExtraForm({ ...extraForm, extraTry: Number(e.target.value) })}
-                placeholder="1"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>extraReason (추가 사유)</label>
-              <input
-                type="text"
-                value={extraForm.extraReason}
-                onChange={(e) => setExtraForm({ ...extraForm, extraReason: e.target.value })}
-                placeholder="추가 시도 사유"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">extraNum (추가 시도 번호)</label>
+            <input
+              type="number"
+              value={extraForm.extraNum}
+              onChange={(e) => setExtraForm({ ...extraForm, extraNum: Number(e.target.value) })}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
           </div>
-          <button
-            onClick={handleAddExtra}
-            disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-          >
-            추가 시도 추가
-          </button>
         </div>
+        <div className="dashboard-test-grid dashboard-test-grid-2">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">extraTry (시도 횟수)</label>
+            <input
+              type="number"
+              value={extraForm.extraTry}
+              onChange={(e) => setExtraForm({ ...extraForm, extraTry: Number(e.target.value) })}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
+          </div>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">extraReason (추가 사유)</label>
+            <input
+              type="text"
+              value={extraForm.extraReason}
+              onChange={(e) => setExtraForm({ ...extraForm, extraReason: e.target.value })}
+              placeholder="추가 시도 사유"
+              className="dashboard-test-input"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleAddExtra}
+          disabled={loading}
+          className="dashboard-test-button dashboard-test-button--success"
+        >
+          추가 시도 추가
+        </button>
       </div>
 
-      {/* DELETE EXTRA */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>❌ 추가 시도 삭제 (Delete Extra)</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>recordIdx (기록 ID)</label>
-              <input
-                type="number"
-                value={deleteExtraRecordIdx}
-                onChange={(e) => setDeleteExtraRecordIdx(Number(e.target.value))}
-                placeholder="1"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>extraNum (추가 시도 번호)</label>
-              <input
-                type="number"
-                value={deleteExtraNum}
-                onChange={(e) => setDeleteExtraNum(Number(e.target.value))}
-                placeholder="1"
-                style={{ padding: '8px', width: '100%' }}
-              />
-            </div>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">❌ 추가 시도 삭제 (Delete Extra)</h2>
+        <div className="dashboard-test-grid dashboard-test-grid-2">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">recordIdx (기록 ID)</label>
+            <input
+              type="number"
+              value={deleteExtraRecordIdx}
+              onChange={(e) => setDeleteExtraRecordIdx(Number(e.target.value))}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
           </div>
-          <button
-            onClick={handleDeleteExtra}
-            disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-          >
-            추가 시도 삭제
-          </button>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">extraNum (추가 시도 번호)</label>
+            <input
+              type="number"
+              value={deleteExtraNum}
+              onChange={(e) => setDeleteExtraNum(Number(e.target.value))}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
+          </div>
         </div>
+        <button
+          onClick={handleDeleteExtra}
+          disabled={loading}
+          className="dashboard-test-button dashboard-test-button--danger"
+        >
+          추가 시도 삭제
+        </button>
       </div>
 
-      {/* STATUS */}
-      {loading && <p style={{ color: 'blue', fontWeight: 'bold' }}>⏳ 로딩 중...</p>}
-      {error && <p style={{ color: 'red', fontWeight: 'bold', padding: '10px', backgroundColor: '#ffe6e6', borderRadius: '5px' }}>❌ 에러: {error}</p>}
-      {result && <p style={{ color: 'green', fontWeight: 'bold', padding: '10px', backgroundColor: '#e6ffe6', borderRadius: '5px' }}>✅ {result}</p>}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
+      {result && <div className="dashboard-test-status dashboard-test-status--success">✅ {result}</div>}
     </div>
   );
 };

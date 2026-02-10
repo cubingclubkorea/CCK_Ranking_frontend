@@ -159,27 +159,29 @@ export const RoundCUDTestPage = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '1000px' }}>
-      <h1>Round CUD API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">Round CUD API 테스트</h1>
 
-      {/* CREATE */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>➕ 라운드 생성 (Create)</h2>
-        <button onClick={addCreateItem} style={{ marginBottom: '10px', padding: '5px 10px' }}>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">➕ 라운드 생성 (Create)</h2>
+        <button onClick={addCreateItem} className="dashboard-test-button dashboard-test-button--subtle">
           + 라운드 추가
         </button>
         {createList.map((item, index) => (
-          <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #eee', borderRadius: '5px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <h4>라운드 #{index + 1}</h4>
-              <button onClick={() => removeCreateItem(index)} style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}>
+          <div key={index} className="dashboard-test-card">
+            <div className="dashboard-test-card-header">
+              <h4 className="dashboard-test-card-title">라운드 #{index + 1}</h4>
+              <button
+                onClick={() => removeCreateItem(index)}
+                className="dashboard-test-button dashboard-test-button--danger"
+              >
                 삭제
               </button>
             </div>
-            <div style={{ display: 'grid', gap: '10px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>comp (대회 ID)</label>
+            <div className="dashboard-test-grid">
+              <div className="dashboard-test-grid dashboard-test-grid-4">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">comp (대회 ID)</label>
                   <input
                     type="number"
                     value={item.comp}
@@ -189,11 +191,11 @@ export const RoundCUDTestPage = () => {
                       setCreateList(newList);
                     }}
                     placeholder="1"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cubeEvent (대회 종목)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">cubeEvent (대회 종목)</label>
                   <input
                     type="text"
                     value={item.cubeEvent}
@@ -203,11 +205,11 @@ export const RoundCUDTestPage = () => {
                       setCreateList(newList);
                     }}
                     placeholder="3x3x3"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>roundName (라운드명)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">roundName (라운드명)</label>
                   <input
                     type="text"
                     value={item.roundName}
@@ -217,13 +219,13 @@ export const RoundCUDTestPage = () => {
                       setCreateList(newList);
                     }}
                     placeholder="1라운드"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventStart (시작 시간)</label>
+              <div className="dashboard-test-grid dashboard-test-grid-2">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">eventStart (시작 시간)</label>
                   <input
                     type="datetime-local"
                     value={item.eventStart}
@@ -232,11 +234,11 @@ export const RoundCUDTestPage = () => {
                       newList[index] = { ...newList[index], eventStart: e.target.value + ':00' };
                       setCreateList(newList);
                     }}
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventEnd (종료 시간)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">eventEnd (종료 시간)</label>
                   <input
                     type="datetime-local"
                     value={item.eventEnd}
@@ -245,13 +247,13 @@ export const RoundCUDTestPage = () => {
                       newList[index] = { ...newList[index], eventEnd: e.target.value + ':00' };
                       setCreateList(newList);
                     }}
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cutoff (컷오프)</label>
+              <div className="dashboard-test-grid dashboard-test-grid-3">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">cutoff (컷오프)</label>
                   <input
                     type="number"
                     value={item.cutoff || ''}
@@ -261,11 +263,11 @@ export const RoundCUDTestPage = () => {
                       setCreateList(newList);
                     }}
                     placeholder="120"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>timeLimit (시간 제한)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">timeLimit (시간 제한)</label>
                   <input
                     type="number"
                     value={item.timeLimit || ''}
@@ -275,11 +277,11 @@ export const RoundCUDTestPage = () => {
                       setCreateList(newList);
                     }}
                     placeholder="600"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advance (통과 인원)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">advance (통과 인원)</label>
                   <input
                     type="number"
                     value={item.advance || ''}
@@ -289,12 +291,12 @@ export const RoundCUDTestPage = () => {
                       setCreateList(newList);
                     }}
                     placeholder="10"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>groupList (그룹 리스트)</label>
+              <div className="dashboard-test-field">
+                <label className="dashboard-test-label">groupList (그룹 리스트)</label>
                 <input
                   type="text"
                   value={item.groupList?.join(', ') || ''}
@@ -304,7 +306,7 @@ export const RoundCUDTestPage = () => {
                     setCreateList(newList);
                   }}
                   placeholder="A, B, C"
-                  style={{ padding: '8px', width: '100%' }}
+                  className="dashboard-test-input"
                 />
               </div>
             </div>
@@ -313,30 +315,32 @@ export const RoundCUDTestPage = () => {
         <button
           onClick={handleCreate}
           disabled={loading}
-          style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%' }}
+          className="dashboard-test-button dashboard-test-button--success"
         >
           라운드 생성
         </button>
       </div>
 
-      {/* UPDATE */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>✏️ 라운드 수정 (Update)</h2>
-        <button onClick={addUpdateItem} style={{ marginBottom: '10px', padding: '5px 10px' }}>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">✏️ 라운드 수정 (Update)</h2>
+        <button onClick={addUpdateItem} className="dashboard-test-button dashboard-test-button--subtle">
           + 라운드 추가
         </button>
         {updateList.map((item, index) => (
-          <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #eee', borderRadius: '5px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <h4>라운드 #{index + 1}</h4>
-              <button onClick={() => removeUpdateItem(index)} style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}>
+          <div key={index} className="dashboard-test-card">
+            <div className="dashboard-test-card-header">
+              <h4 className="dashboard-test-card-title">라운드 #{index + 1}</h4>
+              <button
+                onClick={() => removeUpdateItem(index)}
+                className="dashboard-test-button dashboard-test-button--danger"
+              >
                 삭제
               </button>
             </div>
-            <div style={{ display: 'grid', gap: '10px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (라운드 ID)</label>
+            <div className="dashboard-test-grid">
+              <div className="dashboard-test-grid dashboard-test-grid-3">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">idx (라운드 ID)</label>
                   <input
                     type="number"
                     value={item.idx}
@@ -346,11 +350,11 @@ export const RoundCUDTestPage = () => {
                       setUpdateList(newList);
                     }}
                     placeholder="1"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>comp (대회 ID)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">comp (대회 ID)</label>
                   <input
                     type="number"
                     value={item.comp}
@@ -360,11 +364,11 @@ export const RoundCUDTestPage = () => {
                       setUpdateList(newList);
                     }}
                     placeholder="1"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cubeEvent (대회 종목)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">cubeEvent (대회 종목)</label>
                   <input
                     type="text"
                     value={item.cubeEvent}
@@ -374,11 +378,11 @@ export const RoundCUDTestPage = () => {
                       setUpdateList(newList);
                     }}
                     placeholder="3x3x3"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>roundName (라운드명)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">roundName (라운드명)</label>
                   <input
                     type="text"
                     value={item.roundName}
@@ -388,13 +392,13 @@ export const RoundCUDTestPage = () => {
                       setUpdateList(newList);
                     }}
                     placeholder="결승"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventStart (시작 시간)</label>
+              <div className="dashboard-test-grid dashboard-test-grid-2">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">eventStart (시작 시간)</label>
                   <input
                     type="datetime-local"
                     value={item.eventStart}
@@ -403,11 +407,11 @@ export const RoundCUDTestPage = () => {
                       newList[index] = { ...newList[index], eventStart: e.target.value + ':00' };
                       setUpdateList(newList);
                     }}
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>eventEnd (종료 시간)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">eventEnd (종료 시간)</label>
                   <input
                     type="datetime-local"
                     value={item.eventEnd}
@@ -416,13 +420,13 @@ export const RoundCUDTestPage = () => {
                       newList[index] = { ...newList[index], eventEnd: e.target.value + ':00' };
                       setUpdateList(newList);
                     }}
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>cutoff (컷오프)</label>
+              <div className="dashboard-test-grid dashboard-test-grid-3">
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">cutoff (컷오프)</label>
                   <input
                     type="number"
                     value={item.cutoff || ''}
@@ -432,11 +436,11 @@ export const RoundCUDTestPage = () => {
                       setUpdateList(newList);
                     }}
                     placeholder="90"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>timeLimit (시간 제한)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">timeLimit (시간 제한)</label>
                   <input
                     type="number"
                     value={item.timeLimit || ''}
@@ -446,11 +450,11 @@ export const RoundCUDTestPage = () => {
                       setUpdateList(newList);
                     }}
                     placeholder="600"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advance (통과 인원)</label>
+                <div className="dashboard-test-field">
+                  <label className="dashboard-test-label">advance (통과 인원)</label>
                   <input
                     type="number"
                     value={item.advance || ''}
@@ -460,12 +464,12 @@ export const RoundCUDTestPage = () => {
                       setUpdateList(newList);
                     }}
                     placeholder="3"
-                    style={{ padding: '8px', width: '100%' }}
+                    className="dashboard-test-input"
                   />
                 </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>groupList (그룹 리스트)</label>
+              <div className="dashboard-test-field">
+                <label className="dashboard-test-label">groupList (그룹 리스트)</label>
                 <input
                   type="text"
                   value={item.groupList?.join(', ') || ''}
@@ -475,7 +479,7 @@ export const RoundCUDTestPage = () => {
                     setUpdateList(newList);
                   }}
                   placeholder="A, B, C"
-                  style={{ padding: '8px', width: '100%' }}
+                  className="dashboard-test-input"
                 />
               </div>
             </div>
@@ -484,72 +488,71 @@ export const RoundCUDTestPage = () => {
         <button
           onClick={handleUpdate}
           disabled={loading}
-          style={{ padding: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%' }}
+          className="dashboard-test-button dashboard-test-button--primary"
         >
           라운드 수정
         </button>
       </div>
 
-      {/* DELETE */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>🗑️ 라운드 삭제 (Delete)</h2>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>idx (라운드 ID)</label>
-          <input
-            type="number"
-            value={deleteIdx}
-            onChange={(e) => setDeleteIdx(Number(e.target.value))}
-            placeholder="1"
-            style={{ padding: '8px', width: '100%' }}
-          />
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">🗑️ 라운드 삭제 (Delete)</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">idx (라운드 ID)</label>
+            <input
+              type="number"
+              value={deleteIdx}
+              onChange={(e) => setDeleteIdx(Number(e.target.value))}
+              placeholder="1"
+              className="dashboard-test-input"
+            />
+          </div>
+          <button
+            onClick={handleDelete}
+            disabled={loading}
+            className="dashboard-test-button dashboard-test-button--danger"
+          >
+            라운드 삭제
+          </button>
         </div>
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          style={{ padding: '10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%' }}
-        >
-          라운드 삭제
-        </button>
       </div>
 
-      {/* UPDATE ADVANCE */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>🎯 Advance 인원 조정 (Update Advance)</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advanceRoundIdx (라운드 ID)</label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">🎯 Advance 인원 조정 (Update Advance)</h2>
+        <div className="dashboard-test-grid dashboard-test-grid-2">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">advanceRoundIdx (라운드 ID)</label>
             <input
               type="number"
               value={advanceRoundIdx}
               onChange={(e) => setAdvanceRoundIdx(Number(e.target.value))}
               placeholder="1"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>advanceCount (통과 인원)</label>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">advanceCount (통과 인원)</label>
             <input
               type="number"
               value={advanceCount}
               onChange={(e) => setAdvanceCount(Number(e.target.value))}
               placeholder="10"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
         </div>
         <button
           onClick={handleUpdateAdvance}
           disabled={loading}
-          style={{ padding: '10px', backgroundColor: '#17a2b8', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%' }}
+          className="dashboard-test-button dashboard-test-button--primary"
         >
           Advance 변경
         </button>
       </div>
 
-      {/* STATUS */}
-      {loading && <p style={{ color: 'blue', fontWeight: 'bold' }}>⏳ 로딩 중...</p>}
-      {error && <p style={{ color: 'red', fontWeight: 'bold', padding: '10px', backgroundColor: '#ffe6e6', borderRadius: '5px' }}>❌ 에러: {error}</p>}
-      {result && <p style={{ color: 'green', fontWeight: 'bold', padding: '10px', backgroundColor: '#e6ffe6', borderRadius: '5px' }}>✅ {result}</p>}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
+      {result && <div className="dashboard-test-status dashboard-test-status--success">✅ {result}</div>}
     </div>
   );
 };
