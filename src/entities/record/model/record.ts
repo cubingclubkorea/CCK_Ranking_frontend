@@ -5,6 +5,7 @@ export interface Record {
   idx: number;
   pdx: number;
   name: string;
+  enName?: string;
   state: string;
   cckId: string;
   roundIdx: number;

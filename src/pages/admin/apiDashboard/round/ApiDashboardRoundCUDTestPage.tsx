@@ -8,7 +8,7 @@ import {
   type RoundUpdateDTO,
 } from '@/features/round';
 
-export const RoundCUDTestPage = () => {
+export const ApiDashboardRoundCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

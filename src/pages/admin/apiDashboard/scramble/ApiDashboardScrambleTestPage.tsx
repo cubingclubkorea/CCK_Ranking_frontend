@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { updateScrambler, type ScramblerUpdateDTO } from '@/features/scramble';
 
-export const ScrambleTestPage = () => {
+export const ApiDashboardScrambleTestPage = () => {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

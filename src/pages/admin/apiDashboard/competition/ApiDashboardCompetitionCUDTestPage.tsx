@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createCompetition, updateCompetition, deleteCompetition, type CompetitionCreateDTO, type CompetitionUpdateDTO } from "@/features/competition";
 import { createApiHandler } from "@/shared";
 
-export const CompetitionCUDTestPage = () => {
+export const ApiDashboardCompetitionCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

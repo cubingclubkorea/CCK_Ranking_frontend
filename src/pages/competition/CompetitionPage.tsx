@@ -5,7 +5,6 @@ import { getRoundByDayCount } from "@/entities/round";
 import type { Competition } from "@/entities/competition";
 import type { RoundDayCount } from "@/entities/round";
 import { CompetitionHeader } from "./components/CompetitionHeader";
-import { CompetitionActions } from "./components/CompetitionActions";
 import { RoundList } from "./components/RoundList";
 
 type DayItem = {
@@ -111,14 +110,14 @@ export const CompetitionPage = () => {
   const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
 
   return (
-    <div className="comp-page">
+    <div className="dashboard-test-page">
       <div className="comp-header">
         <CompetitionHeader
           title={competition.compName}
           dateStart={competition.compDateStart}
           location={competition.location}
+          compIdx={competition.idx}
         />
-        <CompetitionActions compIdx={competition.idx} />
       </div>
       <div className="comp-content">
         <div className="round-schedule">

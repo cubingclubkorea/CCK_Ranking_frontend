@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import {
-  getRoundPast,
-  getRoundNow,
-  getRoundFuture,
-  getRound,
-} from '@/entities/round';
+  getCompetitionPast,
+  getCompetitionNow,
+  getCompetitionFuture,
+  getCompetition,
+} from '@/entities/competition';
 
-export const RoundTestPage = () => {
+export const ApiDashboardCompetitionTestPage = () => {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [compIdx, setCompIdx] = useState<number>(1);
-  const [roundIdx, setRoundIdx] = useState<number>(1);
 
   const handleTest = async (apiFunction: () => Promise<any>, name: string) => {
     setLoading(true);
@@ -31,38 +30,7 @@ export const RoundTestPage = () => {
 
   return (
     <div className="dashboard-test-page">
-      <h1 className="dashboard-test-title">Round API 테스트</h1>
-
-      <div className="dashboard-test-section">
-        <h2 className="dashboard-test-section-title">조회 대상</h2>
-        <div className="dashboard-test-inline">
-          <label className="dashboard-test-label">
-            대회 ID
-            <input
-              type="number"
-              value={compIdx}
-              onChange={(e) => setCompIdx(Number(e.target.value))}
-              className="dashboard-test-input"
-            />
-          </label>
-          <label className="dashboard-test-label">
-            라운드 ID
-            <input
-              type="number"
-              value={roundIdx}
-              onChange={(e) => setRoundIdx(Number(e.target.value))}
-              className="dashboard-test-input"
-            />
-          </label>
-          <button
-            onClick={() => handleTest(() => getRound(roundIdx), 'getRound')}
-            disabled={loading}
-            className="dashboard-test-button dashboard-test-button--primary"
-          >
-            라운드 단일 조회
-          </button>
-        </div>
-      </div>
+      <h1 className="dashboard-test-title">Competition API 테스트</h1>
 
       <div className="dashboard-test-section">
         <h2 className="dashboard-test-section-title">페이지네이션 API 테스트</h2>
@@ -70,44 +38,63 @@ export const RoundTestPage = () => {
           <button
             onClick={() =>
               handleTest(
-                () => getRoundPast(compIdx, { page: 0, size: 10 }),
-                'getRoundPast'
+                () => getCompetitionPast({ page: 0, size: 10 }),
+                'getCompetitionPast'
               )
             }
             disabled={loading}
             className="dashboard-test-button"
           >
-            종료된 라운드 조회
+            종료된 대회 조회
           </button>
           <button
             onClick={() =>
               handleTest(
-                () => getRoundNow(compIdx, { page: 0, size: 10 }),
-                'getRoundNow'
+                () => getCompetitionNow({ page: 0, size: 10 }),
+                'getCompetitionNow'
               )
             }
             disabled={loading}
             className="dashboard-test-button"
           >
-            진행중인 라운드 조회
+            진행중 대회 조회
           </button>
           <button
             onClick={() =>
               handleTest(
-                () => getRoundFuture(compIdx, { page: 0, size: 10 }),
-                'getRoundFuture'
+                () => getCompetitionFuture({ page: 0, size: 10 }),
+                'getCompetitionFuture'
               )
             }
             disabled={loading}
             className="dashboard-test-button"
           >
-            예정된 라운드 조회
+            예정 대회 조회
+          </button>
+        </div>
+      </div>
+
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">단일 대회 조회</h2>
+        <div className="dashboard-test-inline">
+          <input
+            type="number"
+            value={compIdx}
+            onChange={(e) => setCompIdx(Number(e.target.value))}
+            className="dashboard-test-input"
+            placeholder="대회 ID"
+          />
+          <button
+            onClick={() => handleTest(() => getCompetition(compIdx), 'getCompetition')}
+            disabled={loading}
+            className="dashboard-test-button dashboard-test-button--primary"
+          >
+            대회 조회
           </button>
         </div>
       </div>
 
       {loading && <div className="dashboard-test-status">로딩 중...</div>}
-
       {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
 
       {result && (
