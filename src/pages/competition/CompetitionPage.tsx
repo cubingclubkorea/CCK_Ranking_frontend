@@ -118,7 +118,7 @@ export const CompetitionPage = () => {
           dateStart={competition.compDateStart}
           location={competition.location}
         />
-        <CompetitionActions />
+        <CompetitionActions compIdx={competition.idx} />
       </div>
       <div className="comp-content">
         <div className="round-schedule">

@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
-export const CompetitionActions = () => {
+type CompetitionActionsProps = {
+  compIdx: number;
+};
+
+export const CompetitionActions = ({ compIdx }: CompetitionActionsProps) => {
   const navigate = useNavigate();
   return (
     <div className="comp-actions">
-      <button className="comp-action-btn" type="button" onClick={() => navigate('/admin/competition')}>
+      <button className="comp-action-btn" type="button" onClick={() => navigate(`/admin/competition/${compIdx}`)}>
         <img className="comp-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
         대회 관리
       </button>
