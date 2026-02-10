@@ -30,7 +30,7 @@ export const ApiDashboardRoundTestPage = () => {
   };
 
   return (
-    <div className="page-layout">
+    <div className="dashboard-test-page">
       <h1 className="dashboard-test-title">Round API 테스트</h1>
 
       <div className="dashboard-test-section">

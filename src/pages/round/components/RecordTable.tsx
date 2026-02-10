@@ -3,6 +3,7 @@ import type { Record } from "@/entities/record";
 type RecordTableProps = {
   records: Record[];
   emptyMessage: string;
+  advanceCount?: number;
   formatTimeValue: (value?: number) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
 };
@@ -10,6 +11,7 @@ type RecordTableProps = {
 export const RecordTable = ({
   records,
   emptyMessage,
+  advanceCount,
   formatTimeValue,
   getAttemptValue,
 }: RecordTableProps) => {
@@ -34,9 +36,12 @@ export const RecordTable = ({
           </tr>
         </thead>
         <tbody>
-          {records.map((record, index) => (
-            <tr key={record.idx}>
-              <td className="round-rank-cell">{record.ranking ?? index + 1}</td>
+          {records.map((record, index) => {
+            const rank = record.ranking ?? index + 1;
+            const isAdvance = advanceCount ? rank <= advanceCount : false;
+            return (
+              <tr key={record.idx} className={isAdvance ? "round-table-row-advance" : undefined}>
+                <td className="round-rank-cell">{rank}</td>
               <td className="round-name-cell">
                 <div className="round-name">{record.name}</div>
                 <div className="round-sub">{record.cckId}</div>
@@ -48,8 +53,9 @@ export const RecordTable = ({
                   {getAttemptValue(record.attempts, attemptTry)}
                 </td>
               ))}
-            </tr>
-          ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -13,7 +13,7 @@ export const ApiDashboardPage = () => {
   ];
 
   return (
-    <div className="page-layout">
+    <div className="dashboard-page">
       <h1 className="dashboard-title">CCK Ranking API Dashboard</h1>
 
       <div className="dashboard-grid">

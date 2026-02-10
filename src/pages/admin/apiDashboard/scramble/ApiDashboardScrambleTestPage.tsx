@@ -35,7 +35,7 @@ export const ApiDashboardScrambleTestPage = () => {
   };
 
   return (
-    <div className="page-layout">
+    <div className="dashboard-test-page">
       <h1 className="dashboard-test-title">Scramble API 테스트</h1>
 
       {/* UPDATE SCRAMBLER */}

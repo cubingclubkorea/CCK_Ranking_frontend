@@ -117,7 +117,7 @@ export const RoundPage = () => {
   const backTarget = compIdx ?? String(round.compIdx);
 
   return (
-    <div className="page-layout">
+    <div className="dashboard-test-page">
       <div className="comp-header">
         <RoundHeader
           title={round.roundName}
@@ -145,6 +145,7 @@ export const RoundPage = () => {
         <RecordTable
           records={filteredRecords}
           emptyMessage={records.length === 0 ? "아직 기록이 없습니다." : "검색 결과가 없습니다."}
+          advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
           getAttemptValue={getAttemptValue}
         />

@@ -41,7 +41,7 @@ body {
   width: 100%;
 }
 
-.page-layout {
+.dashboard-test-page {
   width: 100%;
   max-width: none;
   display: flex;
@@ -948,6 +948,14 @@ body {
 
 .round-table tbody tr:nth-child(odd) {
   background: #fafbff;
+}
+
+.round-table-row-advance td {
+  background: #e9f7ef;
+}
+
+.round-table-row-advance .round-rank-cell {
+  color: #1e8756;
 }
 
 .round-rank-cell {

@@ -85,7 +85,7 @@ export const MainPage = () => {
   }, []);
 
   return(
-    <div className="page-layout">
+    <div className="main-page">
       <div className="main-section">
         <h2 className="main-section-title">다가오는 대회</h2>
         <CompList items={upcoming} emptyText="다가오는 대회가 없습니다." />

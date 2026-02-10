@@ -110,7 +110,7 @@ export const CompetitionPage = () => {
   const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
 
   return (
-    <div className="page-layout">
+    <div className="dashboard-test-page">
       <div className="comp-header">
         <CompetitionHeader
           title={competition.compName}
