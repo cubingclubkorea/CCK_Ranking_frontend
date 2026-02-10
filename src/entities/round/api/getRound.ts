@@ -1,9 +1,11 @@
 import { apiClient } from '@/shared/api/base';
 import type { RoundDTO } from './dto/round.dto';
+import type { RoundDayCountDTO } from './dto/roundDayCount.dto';
 import type { Page } from '@/shared/model/page';
 import type { PageQuery } from '@/shared/query/pageQuery';
 import { mapPageableToParams } from '@/shared/query/pageQueryMapper';
 import type { Round } from '../model/round';
+import type { RoundDayCount } from '../model/roundDayCount';
 import { RoundMapper } from './mapper/roundMapper';
 
 const BASE_URL = '/round';
@@ -51,4 +53,17 @@ export const getRound = async (roundIdx: number): Promise<Round> => {
   const data = await apiClient.get<RoundDTO>(`${BASE_URL}/${roundIdx}`);
   
   return RoundMapper(data);
+};
+
+/**
+ * 대회 일자별 라운드 조회
+ */
+export const getRoundByDayCount = async (compIdx: number, dayCount: number): Promise<RoundDayCount> => {
+  const data = await apiClient.get<RoundDayCountDTO>(`${BASE_URL}/${compIdx}/day-count/${dayCount}`);
+
+  return {
+    past: data.past.map(RoundMapper),
+    now: data.now.map(RoundMapper),
+    future: data.future.map(RoundMapper),
+  };
 };
