@@ -13,102 +13,25 @@ export const DashboardPage = () => {
   ];
 
   return (
-    <div
-      style={{
-        padding: "40px",
-        fontFamily: "sans-serif",
-        maxWidth: "1200px",
-        margin: "0 auto",
-      }}
-    >
-      <h1 style={{ textAlign: "center", marginBottom: "40px", fontSize: "2.5rem" }}>CCK Ranking API Dashboard</h1>
+    <div className="dashboard-page">
+      <h1 className="dashboard-title">CCK Ranking API Dashboard</h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "20px",
-        }}
-      >
+      <div className="dashboard-grid">
         {menuItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            style={{
-              textDecoration: "none",
-              padding: "30px",
-              backgroundColor: "#f8f9fa",
-              border: "2px solid #dee2e6",
-              borderRadius: "10px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "10px",
-              transition: "all 0.3s ease",
-              cursor: "pointer",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#e9ecef";
-              e.currentTarget.style.borderColor = "#0d6efd";
-              e.currentTarget.style.transform = "translateY(-5px)";
-              e.currentTarget.style.borderColor = "#0d6efd";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#f8f9fa";
-              e.currentTarget.style.borderColor = "#dee2e6";
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.borderColor = "#dee2e6";
-            }}
-          >
-            <div style={{ fontSize: "3rem" }}>{item.icon}</div>
-            <div
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: "bold",
-                color: "#212529",
-                textAlign: "center",
-              }}
-            >
-              {item.label}
-            </div>
+          <Link key={item.path} to={item.path} className="dashboard-card">
+            <div className="dashboard-card-icon">{item.icon}</div>
+            <div className="dashboard-card-label">{item.label}</div>
           </Link>
         ))}
       </div>
 
-      <div
-        style={{
-          marginTop: "60px",
-          textAlign: "center",
-          padding: "20px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "10px",
-          border: "1px solid #dee2e6",
-        }}
-      >
-        <h3 style={{ marginBottom: "10px" }}>인증 테스트</h3>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          <Link
-            to="/login"
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#0d6efd",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: "5px",
-            }}
-          >
+      <div className="dashboard-auth">
+        <h3 className="dashboard-auth-title">인증 테스트</h3>
+        <div className="dashboard-auth-actions">
+          <Link to="/login" className="dashboard-auth-btn dashboard-auth-btn--login">
             로그인
           </Link>
-          <Link
-            to="/logout"
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#dc3545",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: "5px",
-            }}
-          >
+          <Link to="/logout" className="dashboard-auth-btn dashboard-auth-btn--logout">
             로그아웃
           </Link>
         </div>

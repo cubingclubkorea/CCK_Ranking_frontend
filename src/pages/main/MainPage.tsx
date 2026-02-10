@@ -49,7 +49,7 @@ export const MainPage = () => {
             title: item.compName,
             meta: formatMeta(item.compDateStart, item.location),
             badge: getDDay(item.compDateStart),
-            href: `/comp/${item.idx}`,
+            href: `/competition/${item.idx}`,
           }))
         );
 
@@ -57,9 +57,9 @@ export const MainPage = () => {
           now.content.map(item => ({
             title: item.compName,
             meta: formatMeta(item.compDateStart, item.location),
-            badge: "Now",
+            badge: "진행 중",
             variant: "ongoing",
-            href: `/comp/${item.idx}`,
+            href: `/competition/${item.idx}`,
           }))
         );
 
@@ -69,7 +69,7 @@ export const MainPage = () => {
             meta: formatMeta(item.compDateStart, item.location),
             badge: "종료",
             variant: "ended",
-            href: `/comp/${item.idx}`,
+            href: `/competition/${item.idx}`,
           }))
         );
       } catch (error) {

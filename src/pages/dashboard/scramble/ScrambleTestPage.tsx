@@ -35,47 +35,47 @@ export const ScrambleTestPage = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '800px' }}>
-      <h1>Scramble API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">Scramble API 테스트</h1>
 
       {/* UPDATE SCRAMBLER */}
-      <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-        <h2>🎲 스크램블 발급</h2>
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>compIdx (대회 ID)</label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">🎲 스크램블 발급</h2>
+        <div className="dashboard-test-grid">
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">compIdx (대회 ID)</label>
             <input
               type="number"
               value={scramblerForm.compIdx}
               onChange={(e) => setScramblerForm({ ...scramblerForm, compIdx: Number(e.target.value) })}
               placeholder="1"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>playerUid (플레이어 UID)</label>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">playerUid (플레이어 UID)</label>
             <input
               type="text"
               value={scramblerForm.playerUid}
               onChange={(e) => setScramblerForm({ ...scramblerForm, playerUid: e.target.value })}
               placeholder="RFID 태그"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>scramblerUid (스크램블러 UID)</label>
+          <div className="dashboard-test-field">
+            <label className="dashboard-test-label">scramblerUid (스크램블러 UID)</label>
             <input
               type="text"
               value={scramblerForm.scramblerUid}
               onChange={(e) => setScramblerForm({ ...scramblerForm, scramblerUid: e.target.value })}
               placeholder="RFID 태그"
-              style={{ padding: '8px', width: '100%' }}
+              className="dashboard-test-input"
             />
           </div>
           <button
             onClick={handleUpdateScrambler}
             disabled={loading}
-            style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            className="dashboard-test-button dashboard-test-button--success"
           >
             스크램블 발급
           </button>
@@ -83,20 +83,18 @@ export const ScrambleTestPage = () => {
       </div>
 
       {/* STATUS */}
-      {loading && <p style={{ color: 'blue', fontWeight: 'bold' }}>⏳ 로딩 중...</p>}
-      {error && <p style={{ color: 'red', fontWeight: 'bold', padding: '10px', backgroundColor: '#ffe6e6', borderRadius: '5px' }}>❌ 에러: {error}</p>}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
       
       {result && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>결과:</h3>
-          <pre style={{ backgroundColor: '#f5f5f5', padding: '10px', overflow: 'auto', borderRadius: '5px' }}>
-            {JSON.stringify(result, null, 2)}
-          </pre>
+        <div className="dashboard-test-section dashboard-test-result">
+          <h3 className="dashboard-test-section-title">결과</h3>
+          <pre className="dashboard-test-pre">{JSON.stringify(result, null, 2)}</pre>
           
           {/* SVG 표시 (스크램블 발급 결과인 경우) */}
           {result.svg && (
-            <div style={{ marginTop: '20px', border: '1px solid #ddd', padding: '15px', borderRadius: '5px' }}>
-              <h4>스크램블 이미지:</h4>
+            <div className="dashboard-test-subsection">
+              <h4 className="dashboard-test-section-title">스크램블 이미지</h4>
               <div dangerouslySetInnerHTML={{ __html: result.svg }} />
             </div>
           )}

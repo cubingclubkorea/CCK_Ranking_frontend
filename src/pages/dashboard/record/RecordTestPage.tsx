@@ -24,50 +24,43 @@ export const RecordTestPage = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>Record API 테스트</h1>
+    <div className="dashboard-test-page">
+      <h1 className="dashboard-test-title">Record API 테스트</h1>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          라운드 ID:
-          <input
-            type="number"
-            value={roundIdx}
-            onChange={(e) => setRoundIdx(Number(e.target.value))}
-            style={{ marginLeft: '10px', padding: '5px', width: '100px' }}
-          />
-        </label>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">조회 대상</h2>
+        <div className="dashboard-test-inline">
+          <label className="dashboard-test-label">
+            라운드 ID
+            <input
+              type="number"
+              value={roundIdx}
+              onChange={(e) => setRoundIdx(Number(e.target.value))}
+              className="dashboard-test-input"
+            />
+          </label>
+        </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <h2>기록 조회</h2>
+      <div className="dashboard-test-section">
+        <h2 className="dashboard-test-section-title">기록 조회</h2>
         <button
           onClick={() => handleTest(() => getRecordList(roundIdx), '기록 목록 조회')}
           disabled={loading}
-          style={{ padding: '10px' }}
+          className="dashboard-test-button dashboard-test-button--primary"
         >
           라운드별 기록 조회
         </button>
       </div>
 
-      {loading && (
-        <div style={{ padding: '10px', backgroundColor: '#f0f0f0' }}>
-          로딩 중...
-        </div>
-      )}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
 
-      {error && (
-        <div style={{ padding: '10px', backgroundColor: '#ffcccc', color: '#cc0000' }}>
-          에러: {error}
-        </div>
-      )}
+      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
 
       {result && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>결과:</h3>
-          <pre style={{ backgroundColor: '#f5f5f5', padding: '10px', overflow: 'auto' }}>
-            {JSON.stringify(result, null, 2)}
-          </pre>
+        <div className="dashboard-test-section dashboard-test-result">
+          <h3 className="dashboard-test-section-title">결과</h3>
+          <pre className="dashboard-test-pre">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>
