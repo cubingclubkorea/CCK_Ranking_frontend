@@ -16,6 +16,7 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
     card: "/icon/sidebar/card.svg",
     lock: "/icon/sidebar/lock.svg",
     form: "/icon/sidebar/form.svg",
+    dashboard: "/icon/sidebar/dashboard.svg",
   };
 
   useEffect(() => {
@@ -52,7 +53,7 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
             <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" />
             <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" />
             <MenuItem text="OAuth 관리" icon={icons.lock} to="/admin/oauth" />
-            <MenuItem text="API 대시보드" icon={icons.lock} to="/admin/api-dashboard" />
+            <MenuItem text="API 대시보드" icon={icons.dashboard} to="/admin/api-dashboard" />
           </div>
         </>
       )}

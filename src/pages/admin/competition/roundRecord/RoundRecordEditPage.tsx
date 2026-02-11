@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getRound } from "@/entities/round";
+import { getRound, getRoundByDayCount, getRoundFuture, getRoundNow, getRoundPast } from "@/entities/round";
+import { getCompetition } from "@/entities/competition";
 import { getRecordList } from "@/entities/record";
 import { addExtra, updateRecord } from "@/features/record";
 import type { Round } from "@/entities/round";
@@ -10,6 +11,7 @@ import { ExtraAddModal } from "./components/ExtraAddModal";
 import { RecordContextMenu } from "./components/RecordContextMenu";
 import { RecordEditPanel } from "./components/RecordEditPanel";
 import { RecordTablePanel } from "./components/RecordTablePanel";
+import { RoundManagementPanel } from "./components/RoundManagementPanel";
 import {
   formatTimeInput,
   formatTimeValue,
@@ -22,6 +24,26 @@ type ExtraFormState = {
   extraNum: number;
   extraTry: number;
   extraReason: string;
+};
+
+type DayItem = {
+  dayCount: number;
+  date: Date;
+};
+
+const getDayRange = (start: Date, end: Date): DayItem[] => {
+  const items: DayItem[] = [];
+  const current = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const last = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  let dayCount = 0;
+
+  while (current <= last) {
+    items.push({ dayCount, date: new Date(current) });
+    current.setDate(current.getDate() + 1);
+    dayCount += 1;
+  }
+
+  return items;
 };
 
 const getAttemptValue = (attempts: Record["attempts"], attemptTry: number) => {
@@ -38,6 +60,7 @@ export const RoundRecordEditPage = () => {
   const { compIdx, roundIdx } = useParams();
   const [round, setRound] = useState<Round | null>(null);
   const [records, setRecords] = useState<Record[]>([]);
+  const [roundOptions, setRoundOptions] = useState<Round[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nameQuery, setNameQuery] = useState("");
@@ -79,13 +102,55 @@ export const RoundRecordEditPage = () => {
       setError(null);
 
       try {
-        const [roundData, recordData] = await Promise.all([
-          getRound(Number(roundIdx)),
-          getRecordList(Number(roundIdx)),
+        const roundData = await getRound(Number(roundIdx));
+        const recordDataPromise = getRecordList(Number(roundIdx));
+        const pastPromise = getRoundPast(roundData.compIdx, { page: 0, size: 200 }).catch(() => ({ content: [] }));
+        const nowPromise = getRoundNow(roundData.compIdx, { page: 0, size: 200 }).catch(() => ({ content: [] }));
+        const futurePromise = getRoundFuture(roundData.compIdx, { page: 0, size: 200 }).catch(() => ({ content: [] }));
+        const [recordData, pastRounds, nowRounds, futureRounds] = await Promise.all([
+          recordDataPromise,
+          pastPromise,
+          nowPromise,
+          futurePromise,
         ]);
         if (!mounted) return;
         setRound(roundData);
         setRecords(recordData);
+        const merged = [...pastRounds.content, ...nowRounds.content, ...futureRounds.content];
+        const seen = new Set<number>();
+        const uniqueRounds = merged.filter((item) => {
+          if (seen.has(item.idx)) return false;
+          seen.add(item.idx);
+          return true;
+        });
+        if (uniqueRounds.length > 0) {
+          setRoundOptions(uniqueRounds);
+        } else {
+          try {
+            const competition = await getCompetition(roundData.compIdx);
+            const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
+            const dayResults = await Promise.all(
+              dayItems.map((item) =>
+                getRoundByDayCount(roundData.compIdx, item.dayCount).catch(() => ({
+                  past: [],
+                  now: [],
+                  future: [],
+                }))
+              )
+            );
+            const dayMerged = dayResults.flatMap((item) => [...item.past, ...item.now, ...item.future]);
+            const daySeen = new Set<number>();
+            const dayUnique = dayMerged.filter((item) => {
+              if (daySeen.has(item.idx)) return false;
+              daySeen.add(item.idx);
+              return true;
+            });
+            setRoundOptions(dayUnique);
+          } catch (fallbackError) {
+            console.error("라운드 목록 추가 조회 실패:", fallbackError);
+            setRoundOptions([]);
+          }
+        }
       } catch (fetchError) {
         console.error("라운드 기록 조회 실패:", fetchError);
         if (mounted) setError("기록 정보를 불러올 수 없습니다.");
@@ -328,6 +393,20 @@ export const RoundRecordEditPage = () => {
           selectedRecordIdx={selectedRecord?.idx}
           onContextMenu={(record, _rank, position) => {
             setContextMenu({ open: true, position, record });
+          }}
+        />
+      </section>
+
+      <section className="round-panel">
+        <RoundManagementPanel
+          round={round}
+          records={records}
+          rounds={roundOptions}
+          onRecordsRefresh={async () => {
+            await refreshRecords();
+          }}
+          onAdvanceUpdated={(advance) => {
+            setRound((prev) => (prev ? { ...prev, advance } : prev));
           }}
         />
       </section>

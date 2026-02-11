@@ -281,6 +281,8 @@ export const CompetitionManagePage = () => {
   };
 
   const handleRoundDelete = async (roundIdx: number) => {
+    const confirmed = window.confirm("정말로 이 라운드를 삭제할까요?");
+    if (!confirmed) return;
     setRoundSaving(true);
     setRoundError(null);
     setNotice(null);
