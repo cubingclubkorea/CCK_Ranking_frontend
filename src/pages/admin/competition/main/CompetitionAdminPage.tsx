@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getCompetitionFuture, getCompetitionNow, getCompetitionPast } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
+import { CompetitionAdminHeader } from "./components/CompetitionAdminHeader";
 
 type CompetitionRow = {
   status: "ongoing" | "upcoming" | "ended";
@@ -29,6 +30,16 @@ export const CompetitionAdminPage = () => {
   const [notice, setNotice] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const getErrorMessage = (err: unknown) => {
+    if (err instanceof Error) return err.message;
+    if (typeof err === "string") return err;
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return "알 수 없는 에러";
+    }
+  };
 
   useEffect(() => {
     const state = location.state as { notice?: string } | null;
@@ -69,8 +80,7 @@ export const CompetitionAdminPage = () => {
         setRows(nextRows);
       } catch (err) {
         if (!mounted) return;
-        const errorMessage = err instanceof Error ? err.message : "알 수 없는 에러";
-        setError(errorMessage);
+        setError(getErrorMessage(err));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -87,18 +97,7 @@ export const CompetitionAdminPage = () => {
 
   return (
     <div className="admin-page">
-      <div className="admin-header">
-        <div>
-          <h1 className="admin-title">대회 관리</h1>
-          <p className="admin-subtitle">등록된 대회 리스트를 한눈에 확인하세요.</p>
-        </div>
-        <div className="admin-actions">
-          <Link className="admin-primary-btn" to="/admin/competition/create">
-            + 대회 추가
-          </Link>
-          <div className="admin-count">총 {totalCount}건</div>
-        </div>
-      </div>
+      <CompetitionAdminHeader totalCount={totalCount} />
 
       {notice && <div className="dashboard-test-status dashboard-test-status--success">✅ {notice}</div>}
       {loading && <div className="dashboard-test-status">로딩 중...</div>}
@@ -119,7 +118,11 @@ export const CompetitionAdminPage = () => {
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={`${row.status}-${row.competition.idx}`}>
+              <tr
+                key={`${row.status}-${row.competition.idx}`}
+                className="admin-table-row--clickable"
+                onClick={() => navigate(`/admin/competition/${row.competition.idx}`)}
+              >
                 <td className="admin-id">#{row.competition.idx}</td>
                 <td className="admin-name">{row.competition.compName}</td>
                 <td>{formatRange(row.competition.compDateStart, row.competition.compDateEnd)}</td>
