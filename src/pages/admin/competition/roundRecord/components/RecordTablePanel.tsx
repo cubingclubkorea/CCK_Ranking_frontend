@@ -9,6 +9,7 @@ type RecordTablePanelProps = {
   formatTimeValue: (value?: number) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
   onSelect: (record: Record) => void;
+  onContextMenu?: (record: Record, rank: number, position: { x: number; y: number }) => void;
 };
 
 export const RecordTablePanel = ({
@@ -19,6 +20,7 @@ export const RecordTablePanel = ({
   formatTimeValue,
   getAttemptValue,
   onSelect,
+  onContextMenu,
 }: RecordTablePanelProps) => {
   return (
     <div className="record-table-panel">
@@ -29,6 +31,7 @@ export const RecordTablePanel = ({
         formatTimeValue={formatTimeValue}
         getAttemptValue={getAttemptValue}
         onSelect={(record) => onSelect(record)}
+        onContextMenu={onContextMenu}
         selectedRecordIdx={selectedRecordIdx}
       />
     </div>

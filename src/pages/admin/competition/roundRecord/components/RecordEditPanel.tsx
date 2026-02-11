@@ -1,4 +1,5 @@
 import type { Record } from "@/entities/record";
+import type { Attempt } from "@/entities/record/model/attempt";
 
 type RecordEditPanelProps = {
   nameQuery: string;
@@ -6,6 +7,7 @@ type RecordEditPanelProps = {
   searchResults: Record[];
   selectedRecord: Record | null;
   attemptInputs: string[];
+  extraAttempts: Attempt[];
   saving: boolean;
   formError: string | null;
   formStatus: string | null;
@@ -17,6 +19,7 @@ type RecordEditPanelProps = {
   onAttemptChange: (index: number, value: string) => void;
   onReset: () => void;
   onSave: () => void;
+  onOpenExtra: () => void;
 };
 
 export const RecordEditPanel = ({
@@ -25,6 +28,7 @@ export const RecordEditPanel = ({
   searchResults,
   selectedRecord,
   attemptInputs,
+  extraAttempts,
   saving,
   formError,
   formStatus,
@@ -36,6 +40,7 @@ export const RecordEditPanel = ({
   onAttemptChange,
   onReset,
   onSave,
+  onOpenExtra,
 }: RecordEditPanelProps) => {
   return (
     <div className="record-edit-panel">
@@ -131,7 +136,7 @@ export const RecordEditPanel = ({
             {[1, 2, 3, 4, 5].map((attemptTry, index) => (
               <div className="record-edit-field" key={attemptTry}>
                 <label className="record-edit-label" htmlFor={`attempt-${attemptTry}`}>
-                  Attempt {attemptTry}
+                  시도 {attemptTry}
                 </label>
                 <input
                   id={`attempt-${attemptTry}`}
@@ -146,6 +151,29 @@ export const RecordEditPanel = ({
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="record-edit-section">
+          <div className="record-edit-section-title record-edit-section-title-row">
+            <span>엑스트라</span>
+            <button type="button" className="record-edit-mini-btn" onClick={onOpenExtra}>
+              엑스트라 추가
+            </button>
+          </div>
+          {extraAttempts.length === 0 ? (
+            <div className="record-edit-empty">엑스트라가 없습니다.</div>
+          ) : (
+            <div className="record-extra-list">
+              {extraAttempts.map((attempt) => (
+                <div key={attempt.idx} className="record-extra-item">
+                  <div className="record-extra-title">
+                    Extra {attempt.extra} / Try {attempt.attemptTry}
+                  </div>
+                  <div className="record-extra-reason">{attempt.exReason || "-"}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {formError && <div className="record-edit-status record-edit-status--error">{formError}</div>}

@@ -7,6 +7,7 @@ type RecordTableProps = {
   formatTimeValue: (value?: number) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
   onSelect?: (record: Record, rank: number) => void;
+  onContextMenu?: (record: Record, rank: number, position: { x: number; y: number }) => void;
   selectedRecordIdx?: number;
 };
 
@@ -17,6 +18,7 @@ export const RecordTable = ({
   formatTimeValue,
   getAttemptValue,
   onSelect,
+  onContextMenu,
   selectedRecordIdx,
 }: RecordTableProps) => {
   if (records.length === 0) {
@@ -72,6 +74,11 @@ export const RecordTable = ({
                   .filter(Boolean)
                   .join(" ")}
                 onClick={() => onSelect?.(record, rank)}
+                onContextMenu={(event) => {
+                  if (!onContextMenu) return;
+                  event.preventDefault();
+                  onContextMenu(record, rank, { x: event.clientX, y: event.clientY });
+                }}
                 role={onSelect ? "button" : undefined}
                 tabIndex={onSelect ? 0 : undefined}
                 onKeyDown={(event) => {

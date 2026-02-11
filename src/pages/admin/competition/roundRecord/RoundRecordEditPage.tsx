@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
-import { updateRecord } from "@/features/record";
+import { addExtra, updateRecord } from "@/features/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
-import { RoundHeader } from "@/pages/round/components/RoundHeader";
+import { RoundRecordHeader } from "./components/RoundRecordHeader";
+import { ExtraAddModal } from "./components/ExtraAddModal";
+import { RecordContextMenu } from "./components/RecordContextMenu";
 import { RecordEditPanel } from "./components/RecordEditPanel";
 import { RecordTablePanel } from "./components/RecordTablePanel";
 import {
@@ -14,6 +16,13 @@ import {
   normalizeAttemptInput,
   parseTimeInput,
 } from "./utils/recordTime";
+
+type ExtraFormState = {
+  recordIdx: number | null;
+  extraNum: number;
+  extraTry: number;
+  extraReason: string;
+};
 
 const getAttemptValue = (attempts: Record["attempts"], attemptTry: number) => {
   const attempt = attempts?.find((item) => item.attemptTry === attemptTry);
@@ -38,6 +47,21 @@ export const RoundRecordEditPage = () => {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formStatus, setFormStatus] = useState<string | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    open: boolean;
+    position: { x: number; y: number } | null;
+    record: Record | null;
+  }>({ open: false, position: null, record: null });
+  const [extraModalOpen, setExtraModalOpen] = useState(false);
+  const [extraSearchQuery, setExtraSearchQuery] = useState("");
+  const [extraForm, setExtraForm] = useState<ExtraFormState>({
+    recordIdx: null,
+    extraNum: 1,
+    extraTry: 1,
+    extraReason: "",
+  });
+  const [extraSaving, setExtraSaving] = useState(false);
+  const [extraError, setExtraError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -102,6 +126,22 @@ export const RoundRecordEditPage = () => {
     }).slice(0, 8);
   }, [nameQuery, sortedRecords]);
 
+  const extraSearchResults = useMemo(() => {
+    const keyword = extraSearchQuery.trim().toLowerCase();
+    if (!keyword) return [];
+    return sortedRecords.filter((record) => {
+      return (
+        record.name.toLowerCase().includes(keyword) ||
+        record.cckId.toLowerCase().includes(keyword)
+      );
+    }).slice(0, 8);
+  }, [extraSearchQuery, sortedRecords]);
+
+  const extraAttempts = useMemo(() => {
+    if (!selectedRecord) return [];
+    return selectedRecord.attempts.filter((attempt) => typeof attempt.extra === "number");
+  }, [selectedRecord]);
+
   const applyRecordSelection = (record: Record) => {
     setSelectedRecord(record);
     setNameQuery(record.name);
@@ -111,6 +151,23 @@ export const RoundRecordEditPage = () => {
     setSearchOpen(false);
     setFormError(null);
     setFormStatus(null);
+  };
+
+  const openExtraModal = (record: Record) => {
+    setExtraModalOpen(true);
+    setExtraSearchQuery(record.name);
+    setExtraForm((prev) => ({
+      ...prev,
+      recordIdx: record.idx,
+    }));
+    setExtraError(null);
+  };
+
+  const refreshRecords = async () => {
+    if (!roundIdx) return [];
+    const latestRecords = await getRecordList(Number(roundIdx));
+    setRecords(latestRecords);
+    return latestRecords;
   };
 
   const handleSave = async () => {
@@ -141,8 +198,7 @@ export const RoundRecordEditPage = () => {
 
     try {
       await updateRecord({ idx: selectedRecord.idx, times: resolvedTimes });
-      const latestRecords = await getRecordList(Number(roundIdx));
-      setRecords(latestRecords);
+      const latestRecords = await refreshRecords();
       const updatedRecord = latestRecords.find((record) => record.idx === selectedRecord.idx) ?? null;
       if (updatedRecord) {
         applyRecordSelection(updatedRecord);
@@ -164,6 +220,41 @@ export const RoundRecordEditPage = () => {
     setFormStatus(null);
   };
 
+  const handleExtraSubmit = async () => {
+    if (!extraForm.recordIdx) {
+      setExtraError("선수를 선택하세요.");
+      return;
+    }
+    if (!extraForm.extraReason.trim()) {
+      setExtraError("엑스트라 사유를 입력하세요.");
+      return;
+    }
+
+    setExtraSaving(true);
+    setExtraError(null);
+
+    try {
+      await addExtra({
+        recordIdx: extraForm.recordIdx,
+        extraNum: extraForm.extraNum,
+        extraTry: extraForm.extraTry,
+        extraReason: extraForm.extraReason.trim(),
+      });
+      const latestRecords = await refreshRecords();
+      const updatedRecord = latestRecords.find((record) => record.idx === extraForm.recordIdx) ?? null;
+      if (updatedRecord) {
+        applyRecordSelection(updatedRecord);
+      }
+      setExtraModalOpen(false);
+      setExtraForm((prev) => ({ ...prev, extraReason: "" }));
+    } catch (saveError) {
+      console.error("엑스트라 추가 실패:", saveError);
+      setExtraError("엑스트라 추가에 실패했습니다.");
+    } finally {
+      setExtraSaving(false);
+    }
+  };
+
   if (loading) {
     return <div className="round-page">로딩중...</div>;
   }
@@ -181,15 +272,12 @@ export const RoundRecordEditPage = () => {
   return (
     <div className="main-page">
       <div className="comp-header">
-        <RoundHeader
+        <RoundRecordHeader
           title={round.roundName}
           eventName={round.cubeEventName}
           subtitle={round.compName}
           compIdx={Number(backTarget)}
           roundIdx={Number(round.idx)}
-          adminActionLabel="라운드로 돌아가기"
-          adminActionPath={`/competition/${backTarget}/round/${round.idx}`}
-          adminActionIcon="/icon/button/back.svg"
         />
       </div>
 
@@ -200,6 +288,7 @@ export const RoundRecordEditPage = () => {
           searchResults={searchResults}
           selectedRecord={selectedRecord}
           attemptInputs={attemptInputs}
+          extraAttempts={extraAttempts}
           saving={saving}
           formError={formError}
           formStatus={formStatus}
@@ -220,6 +309,13 @@ export const RoundRecordEditPage = () => {
           }}
           onReset={handleReset}
           onSave={handleSave}
+          onOpenExtra={() => {
+            if (selectedRecord) {
+              openExtraModal(selectedRecord);
+            } else {
+              setExtraModalOpen(true);
+            }
+          }}
         />
 
         <RecordTablePanel
@@ -230,8 +326,48 @@ export const RoundRecordEditPage = () => {
           getAttemptValue={getAttemptValue}
           onSelect={applyRecordSelection}
           selectedRecordIdx={selectedRecord?.idx}
+          onContextMenu={(record, _rank, position) => {
+            setContextMenu({ open: true, position, record });
+          }}
         />
       </section>
+
+      <RecordContextMenu
+        open={contextMenu.open}
+        position={contextMenu.position}
+        onClose={() => setContextMenu({ open: false, position: null, record: null })}
+        onEdit={() => {
+          if (contextMenu.record) {
+            applyRecordSelection(contextMenu.record);
+          }
+          setContextMenu({ open: false, position: null, record: null });
+        }}
+        onExtra={() => {
+          if (contextMenu.record) {
+            openExtraModal(contextMenu.record);
+          }
+          setContextMenu({ open: false, position: null, record: null });
+        }}
+      />
+
+      <ExtraAddModal
+        open={extraModalOpen}
+        records={records}
+        searchQuery={extraSearchQuery}
+        searchResults={extraSearchResults}
+        selectedRecord={records.find((record) => record.idx === extraForm.recordIdx) ?? null}
+        form={extraForm}
+        saving={extraSaving}
+        error={extraError}
+        onSearchChange={(value) => setExtraSearchQuery(value)}
+        onSelectRecord={(record) => {
+          setExtraForm((prev) => ({ ...prev, recordIdx: record.idx }));
+          setExtraSearchQuery(record.name);
+        }}
+        onFormChange={(next) => setExtraForm(next)}
+        onClose={() => setExtraModalOpen(false)}
+        onSubmit={handleExtraSubmit}
+      />
     </div>
   );
 };
