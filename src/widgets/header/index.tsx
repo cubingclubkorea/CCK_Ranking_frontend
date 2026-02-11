@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/features/auth";
-import { getAccessToken } from "@/features/auth/utils/tokenStorage";
+import { authChangeEvent, getAccessToken } from "@/features/auth/utils/tokenStorage";
 import { UserMenu } from "./UserMenu";
 
 const decodeBase64Url = (input: string): string => {
@@ -18,11 +19,10 @@ const decodeBase64Url = (input: string): string => {
 
 const getProfileFromToken = (token: string): { name: string; cckId: string } => {
   const parts = token.split(".");
-  if (parts.length < 2) {
-    return { name: "사용자", cckId: "" };
-  }
+  const payloadPart = parts.length >= 2 ? parts[1] : token;
+
   try {
-    const payload = JSON.parse(decodeBase64Url(parts[1]));
+    const payload = JSON.parse(decodeBase64Url(payloadPart));
     const name = payload?.name || payload?.nickname || payload?.preferred_username || "사용자";
     const cckId = payload?.cckId || payload?.memberId || payload?.id || payload?.sub || "";
     return { name, cckId: String(cckId) };
@@ -33,9 +33,19 @@ const getProfileFromToken = (token: string): { name: string; cckId: string } => 
 
 function Header({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const navigate = useNavigate();
-  const token = getAccessToken();
+  const [token, setToken] = useState(getAccessToken());
   const isLoggedIn = !!token;
   const profile = token ? getProfileFromToken(token) : null;
+
+  useEffect(() => {
+    const syncAuthState = () => setToken(getAccessToken());
+    window.addEventListener(authChangeEvent, syncAuthState);
+    window.addEventListener("storage", syncAuthState);
+    return () => {
+      window.removeEventListener(authChangeEvent, syncAuthState);
+      window.removeEventListener("storage", syncAuthState);
+    };
+  }, []);
 
   const handleLogout = async () => {
     try {

@@ -15,6 +15,7 @@ import {
   CompetitionAdminPage,
   CompetitionCreatePage,
   CompetitionManagePage,
+  RoundRecordEditPage,
   ConfirmPage,
   LogoutPage,
   NotFoundPage,
@@ -143,6 +144,14 @@ export const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <CompetitionManagePage />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "admin/competition/:compIdx/round/:roundIdx",
+        element: (
+          <AdminRoute>
+            <RoundRecordEditPage />
           </AdminRoute>
         ),
       },

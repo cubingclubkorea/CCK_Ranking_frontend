@@ -7,6 +7,7 @@ type RecordTableProps = {
   formatTimeValue: (value?: number) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
   onSelect?: (record: Record, rank: number) => void;
+  selectedRecordIdx?: number;
 };
 
 export const RecordTable = ({
@@ -16,6 +17,7 @@ export const RecordTable = ({
   formatTimeValue,
   getAttemptValue,
   onSelect,
+  selectedRecordIdx,
 }: RecordTableProps) => {
   if (records.length === 0) {
     return <div className="round-ranking-empty">{emptyMessage}</div>;
@@ -58,10 +60,17 @@ export const RecordTable = ({
             const rank = record.ranking ?? index + 1;
             const isAdvance = advanceCount ? rank <= advanceCount : false;
             const { bestValue, worstValue, negativeTimes } = getHighlightValues(record.attempts);
+            const isSelected = selectedRecordIdx === record.idx;
             return (
               <tr
                 key={record.idx}
-                className={isAdvance ? "round-table-row-advance record-table-row" : "record-table-row"}
+                className={[
+                  isAdvance ? "round-table-row-advance" : "",
+                  "record-table-row",
+                  isSelected ? "record-table-row-selected" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 onClick={() => onSelect?.(record, rank)}
                 role={onSelect ? "button" : undefined}
                 tabIndex={onSelect ? 0 : undefined}

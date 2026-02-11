@@ -8,13 +8,27 @@ type RoundHeaderProps = {
   subtitle?: string;
   compIdx?: number;
   roundIdx?: number;
+  adminActionLabel?: string;
+  adminActionPath?: string;
+  adminActionIcon?: string;
+  showAdminAction?: boolean;
 };
 
-export const RoundHeader = ({ title, eventName, subtitle, compIdx, roundIdx }: RoundHeaderProps) => {
+export const RoundHeader = ({
+  title,
+  eventName,
+  subtitle,
+  compIdx,
+  roundIdx,
+  adminActionLabel = "기록 편집",
+  adminActionPath,
+  adminActionIcon = "/icon/button/hammer.svg",
+  showAdminAction = true,
+}: RoundHeaderProps) => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(hasAdminRole());
-  const roundManagePath =
-    compIdx && roundIdx ? `/admin/competition/${compIdx}/round/${roundIdx}` : null;
+  const defaultAdminPath = compIdx && roundIdx ? `/admin/competition/${compIdx}/round/${roundIdx}` : null;
+  const roundManagePath = adminActionPath ?? defaultAdminPath;
 
   useEffect(() => {
     const syncAuthState = () => setIsAdmin(hasAdminRole());
@@ -59,7 +73,7 @@ export const RoundHeader = ({ title, eventName, subtitle, compIdx, roundIdx }: R
       </div>
       {compIdx ? (
         <div className="page-actions">
-          {isAdmin && (
+          {showAdminAction && isAdmin && (
             <button
               className="page-action-btn"
               type="button"
@@ -70,8 +84,8 @@ export const RoundHeader = ({ title, eventName, subtitle, compIdx, roundIdx }: R
               }}
               disabled={!roundManagePath}
             >
-              <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
-              라운드 관리
+              <img className="page-action-icon" src={adminActionIcon} alt="" aria-hidden="true" />
+              {adminActionLabel}
             </button>
           )}
           <button className="page-action-btn" type="button" onClick={() => navigate(`/competition/${compIdx}`)}>
