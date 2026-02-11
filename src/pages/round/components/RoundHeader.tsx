@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
 type RoundHeaderProps = {
   title: string;
@@ -10,8 +12,19 @@ type RoundHeaderProps = {
 
 export const RoundHeader = ({ title, eventName, subtitle, compIdx, roundIdx }: RoundHeaderProps) => {
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const roundManagePath =
     compIdx && roundIdx ? `/admin/competition/${compIdx}/round/${roundIdx}` : null;
+
+  useEffect(() => {
+    const syncAuthState = () => setIsAdmin(hasAdminRole());
+    window.addEventListener(authChangeEvent, syncAuthState);
+    window.addEventListener("storage", syncAuthState);
+    return () => {
+      window.removeEventListener(authChangeEvent, syncAuthState);
+      window.removeEventListener("storage", syncAuthState);
+    };
+  }, []);
 
   return (
     <>
@@ -46,19 +59,21 @@ export const RoundHeader = ({ title, eventName, subtitle, compIdx, roundIdx }: R
       </div>
       {compIdx ? (
         <div className="page-actions">
-          <button
-            className="page-action-btn"
-            type="button"
-            onClick={() => {
-              if (roundManagePath) {
-                navigate(roundManagePath);
-              }
-            }}
-            disabled={!roundManagePath}
-          >
-            <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
-            라운드 관리
-          </button>
+          {isAdmin && (
+            <button
+              className="page-action-btn"
+              type="button"
+              onClick={() => {
+                if (roundManagePath) {
+                  navigate(roundManagePath);
+                }
+              }}
+              disabled={!roundManagePath}
+            >
+              <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
+              라운드 관리
+            </button>
+          )}
           <button className="page-action-btn" type="button" onClick={() => navigate(`/competition/${compIdx}`)}>
             <img className="page-action-icon" src="/icon/button/back.svg" alt="" aria-hidden="true" />
             라운드 목록
