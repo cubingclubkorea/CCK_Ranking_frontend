@@ -5,4 +5,5 @@ export { apiClient } from './api/base';
 export { ssoClient } from './api/auth_base';
 export type { Page } from './model/page';
 export type { ErrorResponse } from './model/error';
+export { mapRegionName } from './model/region';
 export * from './utils/apiHandler';

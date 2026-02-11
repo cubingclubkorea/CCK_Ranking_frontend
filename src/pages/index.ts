@@ -14,8 +14,9 @@ export { ApiDashboardRecordCUDTestPage } from './admin/apiDashboard/record/ApiDa
 export { ApiDashboardScrambleTestPage } from './admin/apiDashboard/scramble/ApiDashboardScrambleTestPage';
 export { ConfirmPage } from './auth/ConfirmPage';
 export { LogoutPage } from './auth/LogoutPage';
-export { CompetitionAdminPage } from './admin/competition/CompetitionAdminPage.tsx';
-export { CompetitionCreatePage } from './admin/competition/CompetitionCreatePage';
+export { CompetitionAdminPage } from '@/pages/admin/competition/main/CompetitionAdminPage';
+export { CompetitionCreatePage } from './admin/competition/create/CompetitionCreatePage';
+export { CompetitionManagePage } from './admin/competition/manage/CompetitionManagePage';
 
 export { NotFoundPage } from './error/NotFoundPage.tsx';
 export { ForbiddenPage } from './error/ForbiddenPage';

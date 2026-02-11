@@ -14,6 +14,7 @@ import {
   ApiDashboardScrambleTestPage,
   CompetitionAdminPage,
   CompetitionCreatePage,
+  CompetitionManagePage,
   ConfirmPage,
   LogoutPage,
   NotFoundPage,
@@ -103,6 +104,10 @@ export const router = createBrowserRouter([
       {
         path: "admin/competition/create",
         element: <CompetitionCreatePage />,
+      },
+      {
+        path: "admin/competition/:compIdx",
+        element: <CompetitionManagePage />,
       },
       {
         path: "admin/event",
