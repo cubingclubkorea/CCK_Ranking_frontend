@@ -2,13 +2,14 @@ import type { RecordDTO } from '../dto/record.dto';
 import type { Record } from '../../model/record';
 import { BestType } from '../../model/bestType';
 import { AttemptMapper } from './attemptMapper';
+import { mapRegionName } from '@/shared';
 
 export const RecordMapper = (dto: RecordDTO): Record => ({
   idx: dto.idx,
   pdx: dto.pdx,
   name: dto.name ?? dto.account?.name ?? '',
   enName: dto.enName || dto.account?.enName,
-  state: dto.state,
+  state: mapRegionName(dto.state) ?? dto.state,
   cckId: dto.cckId,
   roundIdx: dto.roundIdx,
   roundName: dto.roundName,

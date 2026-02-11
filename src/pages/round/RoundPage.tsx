@@ -119,7 +119,7 @@ export const RoundPage = () => {
   const backTarget = compIdx ?? String(round.compIdx);
 
   return (
-    <div className="dashboard-test-page">
+    <div className="main-page">
       <div className="comp-header">
         <RoundHeader
           title={round.roundName}
