@@ -16,6 +16,7 @@ import {
   CompetitionCreatePage,
   CompetitionManagePage,
   RoundRecordEditPage,
+  EventAdminPage,
   ConfirmPage,
   LogoutPage,
   NotFoundPage,
@@ -159,7 +160,7 @@ export const router = createBrowserRouter([
         path: "admin/event",
         element: (
           <AdminRoute>
-            <ComingSoonPage />
+            <EventAdminPage />
           </AdminRoute>
         ),
       },

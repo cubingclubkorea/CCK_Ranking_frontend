@@ -51,13 +51,6 @@ const createEmptyRound = (): NewRoundForm => ({
   advance: undefined,
 });
 
-const formatDateTimeLabel = (value: string) => {
-  if (!value) return "미설정";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return `${parsed.getFullYear()}-${pad2(parsed.getMonth() + 1)}-${pad2(parsed.getDate())} ${pad2(parsed.getHours())}:${pad2(parsed.getMinutes())}`;
-};
-
 const buildRoundTitle = (cubeEvent: string, roundName: string, fallback: string) => {
   const eventName = cubeEvent.trim();
   const name = roundName.trim();

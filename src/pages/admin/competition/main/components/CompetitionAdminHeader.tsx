@@ -21,7 +21,8 @@ export const CompetitionAdminHeader = ({ totalCount }: CompetitionAdminHeaderPro
     </div>
     <div className="page-actions">
       <Link className="page-action-btn" to="/admin/competition/create">
-        + 대회 추가
+        <img className="page-action-icon" src="/icon/button/plus.svg" alt="" aria-hidden="true" />
+        대회 추가
       </Link>
     </div>
   </div>
