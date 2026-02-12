@@ -6,6 +6,7 @@ type RecordEditPanelProps = {
   searchOpen: boolean;
   searchResults: Record[];
   selectedRecord: Record | null;
+  attemptTries: number[];
   attemptInputs: string[];
   extraAttempts: Attempt[];
   saving: boolean;
@@ -27,6 +28,7 @@ export const RecordEditPanel = ({
   searchOpen,
   searchResults,
   selectedRecord,
+  attemptTries,
   attemptInputs,
   extraAttempts,
   saving,
@@ -131,9 +133,9 @@ export const RecordEditPanel = ({
 
         <div className="record-edit-section">
           <div className="record-edit-section-title">시도 기록</div>
-          <div className="record-edit-help">형식: 1:23.45 / 12345 / DNF / DNS</div>
+          <div className="record-edit-help">형식: 1:23.45 / 12345 / DNF / DNS / -1(DNF) / -2(DNS) / 빈칸(기록 비우기)</div>
           <div className="record-edit-attempts">
-            {[1, 2, 3, 4, 5].map((attemptTry, index) => (
+            {attemptTries.map((attemptTry, index) => (
               <div className="record-edit-field" key={attemptTry}>
                 <label className="record-edit-label" htmlFor={`attempt-${attemptTry}`}>
                   시도 {attemptTry}
@@ -142,7 +144,7 @@ export const RecordEditPanel = ({
                   id={`attempt-${attemptTry}`}
                   className="record-edit-input"
                   type="text"
-                  inputMode="numeric"
+                  inputMode="text"
                   value={attemptInputs[index]}
                   onChange={(event) => onAttemptChange(index, event.target.value)}
                   placeholder="-"

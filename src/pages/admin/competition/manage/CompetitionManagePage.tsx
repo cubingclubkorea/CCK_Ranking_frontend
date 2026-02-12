@@ -327,18 +327,10 @@ export const CompetitionManagePage = () => {
   return (
     <div className="admin-page">
       <CompetitionManageHeader
-        title="대회 편집"
-        subtitle={competition?.compName ?? null}
+        title={competition?.compName ?? "대회 편집"}
+        subtitle="대회 편집"
         iconSrc="/icon/button/hammer.svg"
         onViewCompetition={competition ? () => navigate(`/competition/${competition.idx}`) : undefined}
-        onSave={() => {
-          if (section === "competition") {
-            handleCompetitionSave();
-          } else {
-            handleRoundSave();
-          }
-        }}
-        onDelete={competition ? handleDeleteCompetition : undefined}
         saving={saving || roundSaving}
       />
 
@@ -395,10 +387,36 @@ export const CompetitionManagePage = () => {
             onRoundDelete={handleRoundDelete}
             saving={roundSaving || roundLoading}
             title="라운드 편집"
-            showSaveButton={false}
           />
         </>
       ) : null}
+
+      <div className="competition-manage-footer">
+        <button
+          type="button"
+          className="competition-manage-action-btn"
+          onClick={() => {
+            if (section === "competition") {
+              handleCompetitionSave();
+            } else {
+              handleRoundSave();
+            }
+          }}
+          disabled={saving || roundSaving || (section === "round" && rounds.length === 0)}
+        >
+          <img className="competition-manage-action-icon" src="/icon/button/save.svg" alt="" aria-hidden="true" />
+          저장
+        </button>
+        <button
+          type="button"
+          className="competition-manage-action-btn competition-manage-action-btn--danger"
+          onClick={handleDeleteCompetition}
+          disabled={saving || roundSaving}
+        >
+          <img className="competition-manage-action-icon" src="/icon/button/delete.svg" alt="" aria-hidden="true" />
+          대회 삭제
+        </button>
+      </div>
     </div>
   );
 };

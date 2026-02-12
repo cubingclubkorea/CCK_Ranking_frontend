@@ -7,5 +7,13 @@ const BASE_URL = '/record';
  * 기록 업데이트
  */
 export const updateRecord = async (dto: RecordUpdateDTO): Promise<void> => {
-  await apiClient.patch<void, RecordUpdateDTO>(BASE_URL, dto);
+  const recordIdx = dto.recordIdx ?? dto.idx;
+  if (!recordIdx) {
+    throw new Error('recordIdx 또는 idx가 필요합니다.');
+  }
+
+  await apiClient.patch<void, { idx: number; times: Array<number | null> }>(BASE_URL, {
+    idx: recordIdx,
+    times: dto.times,
+  });
 };

@@ -56,6 +56,9 @@ const formatDigitsToTime = (digits: string) => {
 export const normalizeAttemptInput = (raw: string) => {
   const trimmed = raw.trim();
   if (!trimmed) return "";
+  if (trimmed === "-" || trimmed === "-1" || trimmed === "-2") {
+    return trimmed;
+  }
   const upper = trimmed.toUpperCase();
   if (/^[A-Z]+$/.test(upper)) {
     if ("DNF".startsWith(upper) || "DNS".startsWith(upper)) {
@@ -74,6 +77,8 @@ export const parseTimeInput = (raw: string): number | undefined | null => {
   const upper = trimmed.toUpperCase();
   if (upper === "DNF") return -1;
   if (upper === "DNS") return -2;
+  if (trimmed === "-1") return -1;
+  if (trimmed === "-2") return -2;
   const minuteMatch = trimmed.match(/^(\d+):(\d{1,2}(?:\.\d+)?)$/);
   if (minuteMatch) {
     const minutes = Number(minuteMatch[1]);

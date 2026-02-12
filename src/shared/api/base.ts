@@ -48,7 +48,17 @@ export class ApiClient {
             }
             customMessage += ` [${errorData.code}]`;
           } else {
+            const rawData = error.response.data;
+            const dataText =
+              typeof rawData === 'string'
+                ? rawData
+                : rawData
+                  ? JSON.stringify(rawData)
+                  : '';
             customMessage = error.response.statusText || '알 수 없는 에러';
+            if (dataText) {
+              customMessage += `: ${dataText}`;
+            }
           }
           
           console.error('API Error:', {

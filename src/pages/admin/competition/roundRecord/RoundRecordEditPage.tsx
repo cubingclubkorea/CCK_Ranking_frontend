@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getRound, getRoundByDayCount, getRoundFuture, getRoundNow, getRoundPast } from "@/entities/round";
+import { getRound, getRoundByDayCount } from "@/entities/round";
 import { getCompetition } from "@/entities/competition";
 import { getRecordList } from "@/entities/record";
 import { addExtra, updateRecord } from "@/features/record";
@@ -56,6 +56,46 @@ const getAttemptTime = (record: Record, attemptTry: number) => {
   return attempt?.time;
 };
 
+const getBaseAttemptTries = (record: Record): number[] => {
+  const tries = Array.from(
+    new Set(
+      record.attempts
+        .filter((attempt) => typeof attempt.extra !== "number")
+        .map((attempt) => attempt.attemptTry)
+    )
+  ).sort((a, b) => a - b);
+
+  if (tries.length > 0) {
+    return tries;
+  }
+
+  return [1, 2, 3, 4, 5];
+};
+
+const normalizeTimeValue = (value: number) => {
+  if (value < 0) return value;
+  return Math.round(value * 100) / 100;
+};
+
+const getErrorMessage = (err: unknown) => {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "string") return err;
+  return "기록 반영에 실패했습니다.";
+};
+
+const isSameTimeValue = (actual: number | undefined, expected: number | null) => {
+  if (expected === null) {
+    return actual === undefined;
+  }
+  if (actual === undefined) {
+    return false;
+  }
+  if (actual < 0 || expected < 0) {
+    return actual === expected;
+  }
+  return Math.abs(actual - expected) < 0.005;
+};
+
 export const RoundRecordEditPage = () => {
   const { compIdx, roundIdx } = useParams();
   const [round, setRound] = useState<Round | null>(null);
@@ -66,6 +106,7 @@ export const RoundRecordEditPage = () => {
   const [nameQuery, setNameQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
+  const [attemptTries, setAttemptTries] = useState<number[]>([1, 2, 3, 4, 5]);
   const [attemptInputs, setAttemptInputs] = useState<string[]>(Array.from({ length: 5 }, () => ""));
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -103,53 +144,35 @@ export const RoundRecordEditPage = () => {
 
       try {
         const roundData = await getRound(Number(roundIdx));
-        const recordDataPromise = getRecordList(Number(roundIdx));
-        const pastPromise = getRoundPast(roundData.compIdx, { page: 0, size: 200 }).catch(() => ({ content: [] }));
-        const nowPromise = getRoundNow(roundData.compIdx, { page: 0, size: 200 }).catch(() => ({ content: [] }));
-        const futurePromise = getRoundFuture(roundData.compIdx, { page: 0, size: 200 }).catch(() => ({ content: [] }));
-        const [recordData, pastRounds, nowRounds, futureRounds] = await Promise.all([
-          recordDataPromise,
-          pastPromise,
-          nowPromise,
-          futurePromise,
+        const [recordData, competition] = await Promise.all([
+          getRecordList(Number(roundIdx)),
+          getCompetition(roundData.compIdx),
         ]);
         if (!mounted) return;
         setRound(roundData);
         setRecords(recordData);
-        const merged = [...pastRounds.content, ...nowRounds.content, ...futureRounds.content];
-        const seen = new Set<number>();
-        const uniqueRounds = merged.filter((item) => {
-          if (seen.has(item.idx)) return false;
-          seen.add(item.idx);
-          return true;
-        });
-        if (uniqueRounds.length > 0) {
-          setRoundOptions(uniqueRounds);
-        } else {
-          try {
-            const competition = await getCompetition(roundData.compIdx);
-            const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
-            const dayResults = await Promise.all(
-              dayItems.map((item) =>
-                getRoundByDayCount(roundData.compIdx, item.dayCount).catch(() => ({
-                  past: [],
-                  now: [],
-                  future: [],
-                }))
-              )
-            );
-            const dayMerged = dayResults.flatMap((item) => [...item.past, ...item.now, ...item.future]);
-            const daySeen = new Set<number>();
-            const dayUnique = dayMerged.filter((item) => {
-              if (daySeen.has(item.idx)) return false;
-              daySeen.add(item.idx);
-              return true;
-            });
-            setRoundOptions(dayUnique);
-          } catch (fallbackError) {
-            console.error("라운드 목록 추가 조회 실패:", fallbackError);
-            setRoundOptions([]);
-          }
+        try {
+          const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
+          const dayResults = await Promise.all(
+            dayItems.map((item) =>
+              getRoundByDayCount(roundData.compIdx, item.dayCount).catch(() => ({
+                past: [],
+                now: [],
+                future: [],
+              }))
+            )
+          );
+          const dayMerged = dayResults.flatMap((item) => [...item.past, ...item.now, ...item.future]);
+          const daySeen = new Set<number>();
+          const dayUnique = dayMerged.filter((item) => {
+            if (daySeen.has(item.idx)) return false;
+            daySeen.add(item.idx);
+            return true;
+          });
+          setRoundOptions(dayUnique);
+        } catch (roundListError) {
+          console.error("라운드 목록 추가 조회 실패:", roundListError);
+          setRoundOptions([]);
         }
       } catch (fetchError) {
         console.error("라운드 기록 조회 실패:", fetchError);
@@ -208,11 +231,11 @@ export const RoundRecordEditPage = () => {
   }, [selectedRecord]);
 
   const applyRecordSelection = (record: Record) => {
+    const baseAttemptTries = getBaseAttemptTries(record);
     setSelectedRecord(record);
     setNameQuery(record.name);
-    setAttemptInputs(
-      [1, 2, 3, 4, 5].map((attemptTry) => formatTimeInput(getAttemptTime(record, attemptTry)))
-    );
+    setAttemptTries(baseAttemptTries);
+    setAttemptInputs(baseAttemptTries.map((attemptTry) => formatTimeInput(getAttemptTime(record, attemptTry))));
     setSearchOpen(false);
     setFormError(null);
     setFormStatus(null);
@@ -241,19 +264,19 @@ export const RoundRecordEditPage = () => {
       return;
     }
 
-    const resolvedTimes: number[] = [];
-    for (let index = 0; index < attemptInputs.length; index += 1) {
+    const resolvedTimes: Array<number | null> = [];
+    for (let index = 0; index < attemptTries.length; index += 1) {
       const raw = attemptInputs[index];
       const parsed = parseTimeInput(raw);
+      const attemptTry = attemptTries[index];
       if (parsed === null) {
-        setFormError(`시도 ${index + 1} 입력값이 올바르지 않습니다.`);
+        setFormError(`시도 ${attemptTry} 입력값이 올바르지 않습니다.`);
         return;
       }
       if (parsed === undefined) {
-        const fallback = getAttemptTime(selectedRecord, index + 1);
-        resolvedTimes.push(fallback ?? -2);
+        resolvedTimes.push(null);
       } else {
-        resolvedTimes.push(parsed);
+        resolvedTimes.push(normalizeTimeValue(parsed));
       }
     }
 
@@ -262,16 +285,27 @@ export const RoundRecordEditPage = () => {
     setFormStatus(null);
 
     try {
-      await updateRecord({ idx: selectedRecord.idx, times: resolvedTimes });
+      const requestRecordIdx = selectedRecord.attempts[0]?.recordIdx ?? selectedRecord.idx;
+      await updateRecord({ recordIdx: requestRecordIdx, times: resolvedTimes });
       const latestRecords = await refreshRecords();
       const updatedRecord = latestRecords.find((record) => record.idx === selectedRecord.idx) ?? null;
+      const isApplied =
+        !!updatedRecord &&
+        attemptTries.every((attemptTry, index) =>
+          isSameTimeValue(getAttemptTime(updatedRecord, attemptTry), resolvedTimes[index])
+        );
+
+      if (!isApplied) {
+        throw new Error("요청은 성공했지만 기록이 실제로 변경되지 않았습니다. record idx를 다시 확인해주세요.");
+      }
+
       if (updatedRecord) {
         applyRecordSelection(updatedRecord);
       }
       setFormStatus("기록이 반영되었습니다.");
     } catch (saveError) {
       console.error("기록 업데이트 실패:", saveError);
-      setFormError("기록 반영에 실패했습니다.");
+      setFormError(getErrorMessage(saveError));
     } finally {
       setSaving(false);
     }
@@ -279,6 +313,7 @@ export const RoundRecordEditPage = () => {
 
   const handleReset = () => {
     setSelectedRecord(null);
+    setAttemptTries([1, 2, 3, 4, 5]);
     setNameQuery("");
     setAttemptInputs(Array.from({ length: 5 }, () => ""));
     setFormError(null);
@@ -352,6 +387,7 @@ export const RoundRecordEditPage = () => {
           searchOpen={searchOpen}
           searchResults={searchResults}
           selectedRecord={selectedRecord}
+          attemptTries={attemptTries}
           attemptInputs={attemptInputs}
           extraAttempts={extraAttempts}
           saving={saving}

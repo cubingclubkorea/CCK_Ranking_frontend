@@ -33,6 +33,12 @@ type RoundManagementSectionProps = {
 const updateOptionalNumber = (value: string) =>
   value === "" ? undefined : Number(value);
 
+const pad2 = (value: number) => `${value}`.padStart(2, "0");
+const toDateTimeInputNow = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}T${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+};
+
 export const RoundManagementSection = ({
   rounds,
   newRounds,
@@ -131,29 +137,56 @@ export const RoundManagementSection = ({
             <div className="dashboard-test-grid dashboard-test-grid-2">
               <div className="dashboard-test-field">
                 <label className="dashboard-test-label">시작</label>
-                <input
-                  type="datetime-local"
-                  value={round.eventStart}
-                  onChange={(e) => {
-                    const next = [...rounds];
-                    next[index] = { ...next[index], eventStart: e.target.value };
-                    onRoundsChange(next);
-                  }}
-                  className="dashboard-test-input"
-                />
+                <div className="dashboard-test-inline">
+                  <input
+                    type="datetime-local"
+                    value={round.eventStart}
+                    onChange={(e) => {
+                      const next = [...rounds];
+                      next[index] = { ...next[index], eventStart: e.target.value };
+                      onRoundsChange(next);
+                    }}
+                    className="dashboard-test-input"
+                  />
+                  <button
+                    type="button"
+                    className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                    onClick={() => {
+                      const next = [...rounds];
+                      next[index] = { ...next[index], eventStart: toDateTimeInputNow() };
+                      onRoundsChange(next);
+                    }}
+                  >
+                    현재 시간으로 입력
+                  </button>
+                </div>
               </div>
               <div className="dashboard-test-field">
                 <label className="dashboard-test-label">종료</label>
-                <input
-                  type="datetime-local"
-                  value={round.eventEnd}
-                  onChange={(e) => {
-                    const next = [...rounds];
-                    next[index] = { ...next[index], eventEnd: e.target.value };
-                    onRoundsChange(next);
-                  }}
-                  className="dashboard-test-input"
-                />
+                <div className="dashboard-test-inline">
+                  <input
+                    type="datetime-local"
+                    value={round.eventEnd}
+                    onChange={(e) => {
+                      const next = [...rounds];
+                      next[index] = { ...next[index], eventEnd: e.target.value };
+                      onRoundsChange(next);
+                    }}
+                    className="dashboard-test-input"
+                  />
+                  <button
+                    type="button"
+                    className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                    onClick={() => {
+                      const next = [...rounds];
+                      next[index] = { ...next[index], eventEnd: round.eventStart };
+                      onRoundsChange(next);
+                    }}
+                    disabled={!round.eventStart}
+                  >
+                    시작일 복사
+                  </button>
+                </div>
               </div>
             </div>
             <div className="dashboard-test-grid dashboard-test-grid-3">
@@ -286,29 +319,56 @@ export const RoundManagementSection = ({
             <div className="dashboard-test-grid dashboard-test-grid-2">
               <div className="dashboard-test-field">
                 <label className="dashboard-test-label">시작</label>
-                <input
-                  type="datetime-local"
-                  value={round.eventStart}
-                  onChange={(e) => {
-                    const next = [...newRounds];
-                    next[index] = { ...next[index], eventStart: e.target.value };
-                    onNewRoundsChange(next);
-                  }}
-                  className="dashboard-test-input"
-                />
+                <div className="dashboard-test-inline">
+                  <input
+                    type="datetime-local"
+                    value={round.eventStart}
+                    onChange={(e) => {
+                      const next = [...newRounds];
+                      next[index] = { ...next[index], eventStart: e.target.value };
+                      onNewRoundsChange(next);
+                    }}
+                    className="dashboard-test-input"
+                  />
+                  <button
+                    type="button"
+                    className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                    onClick={() => {
+                      const next = [...newRounds];
+                      next[index] = { ...next[index], eventStart: toDateTimeInputNow() };
+                      onNewRoundsChange(next);
+                    }}
+                  >
+                    현재 시간으로 입력
+                  </button>
+                </div>
               </div>
               <div className="dashboard-test-field">
                 <label className="dashboard-test-label">종료</label>
-                <input
-                  type="datetime-local"
-                  value={round.eventEnd}
-                  onChange={(e) => {
-                    const next = [...newRounds];
-                    next[index] = { ...next[index], eventEnd: e.target.value };
-                    onNewRoundsChange(next);
-                  }}
-                  className="dashboard-test-input"
-                />
+                <div className="dashboard-test-inline">
+                  <input
+                    type="datetime-local"
+                    value={round.eventEnd}
+                    onChange={(e) => {
+                      const next = [...newRounds];
+                      next[index] = { ...next[index], eventEnd: e.target.value };
+                      onNewRoundsChange(next);
+                    }}
+                    className="dashboard-test-input"
+                  />
+                  <button
+                    type="button"
+                    className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                    onClick={() => {
+                      const next = [...newRounds];
+                      next[index] = { ...next[index], eventEnd: round.eventStart };
+                      onNewRoundsChange(next);
+                    }}
+                    disabled={!round.eventStart}
+                  >
+                    시작일 복사
+                  </button>
+                </div>
               </div>
             </div>
             <div className="dashboard-test-grid dashboard-test-grid-3">

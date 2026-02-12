@@ -1956,6 +1956,51 @@ body {
   color: #ffffff;
 }
 
+.competition-manage-footer {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.competition-manage-action-btn {
+  margin-top: 8px;
+  background: #4d6bb2;
+  color: #fff;
+  border: 1px solid #4d6bb2;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s ease;
+}
+
+.competition-manage-action-btn:hover {
+  opacity: 0.9;
+  color: #fff;
+}
+
+.competition-manage-action-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.competition-manage-action-btn--danger {
+  background: #b24d4d;
+  border-color: #b24d4d;
+}
+
+.competition-manage-action-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  filter: brightness(0) invert(1);
+}
+
 .admin-primary-btn:active {
   transform: translateY(0);
   opacity: 0.9;

@@ -30,6 +30,8 @@ export const CompetitionFormFields = ({
   onChange,
   showCopyButtons = false,
 }: CompetitionFormFieldsProps) => {
+  void showCopyButtons;
+
   const update = (patch: Partial<CompetitionFormShape>) => {
     onChange({ ...form, ...patch });
   };
@@ -38,6 +40,16 @@ export const CompetitionFormFields = ({
     const next = [...(form.eventFeeList || [])];
     next[index] = { ...next[index], ...patch };
     update({ eventFeeList: next });
+  };
+
+  const pad2 = (value: number) => `${value}`.padStart(2, "0");
+  const toDateInputNow = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
+  };
+  const toDateTimeInputNow = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}T${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
   };
 
   return (
@@ -68,79 +80,79 @@ export const CompetitionFormFields = ({
           <div className="dashboard-test-grid dashboard-test-grid-2">
             <div className="dashboard-test-field">
               <label className="dashboard-test-label">대회 시작 날짜</label>
-              <input
-                type="date"
-                value={form.compDateStart}
-                onChange={(e) => update({ compDateStart: e.target.value })}
-                className="dashboard-test-input"
-              />
+              <div className="dashboard-test-inline">
+                <input
+                  type="date"
+                  value={form.compDateStart}
+                  onChange={(e) => update({ compDateStart: e.target.value })}
+                  className="dashboard-test-input"
+                />
+                <button
+                  type="button"
+                  className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                  onClick={() => update({ compDateStart: toDateInputNow() })}
+                >
+                  현재 시간으로 입력
+                </button>
+              </div>
             </div>
             <div className="dashboard-test-field">
               <label className="dashboard-test-label">대회 종료 날짜</label>
-              {showCopyButtons ? (
-                <div className="dashboard-test-inline">
-                  <input
-                    type="date"
-                    value={form.compDateEnd}
-                    onChange={(e) => update({ compDateEnd: e.target.value })}
-                    className="dashboard-test-input"
-                  />
-                  <button
-                    type="button"
-                    className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
-                    onClick={() => update({ compDateEnd: form.compDateStart })}
-                    disabled={!form.compDateStart}
-                  >
-                    시작일 복사
-                  </button>
-                </div>
-              ) : (
+              <div className="dashboard-test-inline">
                 <input
                   type="date"
                   value={form.compDateEnd}
                   onChange={(e) => update({ compDateEnd: e.target.value })}
                   className="dashboard-test-input"
                 />
-              )}
+                <button
+                  type="button"
+                  className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                  onClick={() => update({ compDateEnd: form.compDateStart })}
+                  disabled={!form.compDateStart}
+                >
+                  시작일 복사
+                </button>
+              </div>
             </div>
           </div>
           <div className="dashboard-test-grid dashboard-test-grid-2">
             <div className="dashboard-test-field">
               <label className="dashboard-test-label">참가 신청 시작</label>
-              <input
-                type="datetime-local"
-                value={form.joinDateStart}
-                onChange={(e) => update({ joinDateStart: e.target.value })}
-                className="dashboard-test-input"
-              />
+              <div className="dashboard-test-inline">
+                <input
+                  type="datetime-local"
+                  value={form.joinDateStart}
+                  onChange={(e) => update({ joinDateStart: e.target.value })}
+                  className="dashboard-test-input"
+                />
+                <button
+                  type="button"
+                  className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                  onClick={() => update({ joinDateStart: toDateTimeInputNow() })}
+                >
+                  현재 시간으로 입력
+                </button>
+              </div>
             </div>
             <div className="dashboard-test-field">
               <label className="dashboard-test-label">참가 신청 마감</label>
-              {showCopyButtons ? (
-                <div className="dashboard-test-inline">
-                  <input
-                    type="datetime-local"
-                    value={form.joinDateEnd}
-                    onChange={(e) => update({ joinDateEnd: e.target.value })}
-                    className="dashboard-test-input"
-                  />
-                  <button
-                    type="button"
-                    className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
-                    onClick={() => update({ joinDateEnd: form.joinDateStart })}
-                    disabled={!form.joinDateStart}
-                  >
-                    시작일 복사
-                  </button>
-                </div>
-              ) : (
+              <div className="dashboard-test-inline">
                 <input
                   type="datetime-local"
                   value={form.joinDateEnd}
                   onChange={(e) => update({ joinDateEnd: e.target.value })}
                   className="dashboard-test-input"
                 />
-              )}
+                <button
+                  type="button"
+                  className="dashboard-test-button dashboard-test-button--subtle dashboard-test-button--mini"
+                  onClick={() => update({ joinDateEnd: form.joinDateStart })}
+                  disabled={!form.joinDateStart}
+                >
+                  시작일 복사
+                </button>
+              </div>
             </div>
           </div>
           <div className="dashboard-test-grid dashboard-test-grid-2">
