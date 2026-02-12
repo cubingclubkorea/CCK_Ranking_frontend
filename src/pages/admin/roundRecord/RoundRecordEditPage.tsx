@@ -6,19 +6,19 @@ import { getRecordList } from "@/entities/record";
 import { addExtra, deleteRecord, updateRecord, updateRecordInfo } from "@/features/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
-import { RoundRecordHeader } from "./components/RoundRecordHeader";
-import { ExtraAddModal } from "./components/ExtraAddModal";
-import { RecordContextMenu } from "./components/RecordContextMenu";
-import { RecordEditPanel } from "./components/RecordEditPanel";
-import { RecordInfoEditModal } from "./components/RecordInfoEditModal";
-import { RecordTablePanel } from "./components/RecordTablePanel";
-import { RoundManagementPanel } from "./components/RoundManagementPanel";
+import { RoundRecordHeader } from "./components/RoundRecordHeader.tsx";
+import { ExtraAddModal } from "./components/ExtraAddModal.tsx";
+import { RecordContextMenu } from "./components/RecordContextMenu.tsx";
+import { RecordEditPanel } from "./components/RecordEditPanel.tsx";
+import { RecordInfoEditModal } from "./components/RecordInfoEditModal.tsx";
+import { RecordTablePanel } from "./components/RecordTablePanel.tsx";
+import { RoundManagementPanel } from "./components/RoundManagementPanel.tsx";
 import {
   formatTimeInput,
   formatTimeValue,
   normalizeAttemptInput,
   parseTimeInput,
-} from "./utils/recordTime";
+} from "./utils/recordTime.ts";
 
 type ExtraFormState = {
   recordIdx: number | null;

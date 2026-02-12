@@ -17,7 +17,7 @@ export { LogoutPage } from './auth/LogoutPage';
 export { CompetitionAdminPage } from '@/pages/admin/competition/main/CompetitionAdminPage';
 export { CompetitionCreatePage } from './admin/competition/create/CompetitionCreatePage';
 export { CompetitionManagePage } from './admin/competition/manage/CompetitionManagePage';
-export { RoundRecordEditPage } from './admin/competition/roundRecord/RoundRecordEditPage';
+export { RoundRecordEditPage } from '@/pages/admin/roundRecord/RoundRecordEditPage';
 
 export { NotFoundPage } from './error/NotFoundPage.tsx';
 export { ForbiddenPage } from './error/ForbiddenPage';

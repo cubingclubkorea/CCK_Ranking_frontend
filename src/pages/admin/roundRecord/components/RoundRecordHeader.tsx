@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
+import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage.ts";
 
 type RoundRecordHeaderProps = {
   title: string;

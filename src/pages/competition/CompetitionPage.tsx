@@ -108,6 +108,7 @@ export const CompetitionPage = () => {
   }
 
   const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
+  const selectedDay = dayItems.find((item) => item.dayCount === dayCount) ?? null;
 
   return (
     <div className="main-page">
@@ -135,7 +136,7 @@ export const CompetitionPage = () => {
               </button>
             ))}
           </div>
-          <RoundList schedule={roundSchedule} loading={roundLoading} />
+          <RoundList schedule={roundSchedule} loading={roundLoading} selectedDate={selectedDay?.date ?? null} />
         </div>
       </div>
     </div>

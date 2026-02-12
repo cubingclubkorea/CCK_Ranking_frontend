@@ -35,6 +35,25 @@ export const CompetitionCreatePage = () => {
   const addSeconds = (value: string) => (value ? `${value}:00` : "");
   const noop = () => {};
 
+  const parseDateInput = (value: string): Date | null => {
+    if (!value) return null;
+    const [year, month, day] = value.split("-").map(Number);
+    if (!year || !month || !day) return null;
+    return new Date(year, month - 1, day);
+  };
+
+  const parseDateTimeInput = (value: string): Date | null => {
+    if (!value) return null;
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const getDayStart = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+
+  const getDayEnd = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+
   const getErrorMessage = (err: unknown) => {
     if (err instanceof Error) return err.message;
     if (typeof err === "string") return err;
@@ -69,6 +88,55 @@ export const CompetitionCreatePage = () => {
   const handleSubmit = async () => {
     if (!form.compName || !form.compDateStart || !form.compDateEnd) {
       setError("대회명과 대회 기간을 입력해주세요.");
+      return;
+    }
+
+    const compStart = parseDateInput(form.compDateStart);
+    const compEnd = parseDateInput(form.compDateEnd);
+    if (!compStart || !compEnd) {
+      setError("대회 날짜 형식이 올바르지 않습니다.");
+      return;
+    }
+    if (compEnd < compStart) {
+      setError("대회 종료일은 시작일보다 빠를 수 없습니다.");
+      return;
+    }
+
+    if (form.joinDateStart && form.joinDateEnd) {
+      const joinStart = parseDateTimeInput(form.joinDateStart);
+      const joinEnd = parseDateTimeInput(form.joinDateEnd);
+      if (!joinStart || !joinEnd) {
+        setError("참가 신청 날짜 형식이 올바르지 않습니다.");
+        return;
+      }
+      if (joinEnd < joinStart) {
+        setError("참가 신청 마감일은 시작일보다 빠를 수 없습니다.");
+        return;
+      }
+    }
+
+    const compRangeStart = getDayStart(compStart);
+    const compRangeEnd = getDayEnd(compEnd);
+    const invalidOrderRounds = newRounds.filter((round) => {
+      if (!round.eventStart || !round.eventEnd) return true;
+      const eventStart = parseDateTimeInput(round.eventStart);
+      const eventEnd = parseDateTimeInput(round.eventEnd);
+      if (!eventStart || !eventEnd) return true;
+      return eventEnd < eventStart;
+    });
+    if (invalidOrderRounds.length > 0) {
+      setError("라운드 종료 시간은 시작 시간보다 빠를 수 없습니다.");
+      return;
+    }
+
+    const outOfRangeRounds = newRounds.filter((round) => {
+      const eventStart = parseDateTimeInput(round.eventStart);
+      const eventEnd = parseDateTimeInput(round.eventEnd);
+      if (!eventStart || !eventEnd) return true;
+      return eventStart < compRangeStart || eventEnd > compRangeEnd;
+    });
+    if (outOfRangeRounds.length > 0) {
+      setError("대회 기간 밖의 라운드가 있어 저장할 수 없습니다.");
       return;
     }
 

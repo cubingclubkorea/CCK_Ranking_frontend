@@ -22,7 +22,7 @@ export const ApiDashboardCompetitionTestPage = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
       setError(errorMessage);
-      console.error(`${name} 에러:`, err);
+      console.error(`${name} 오류:`, err);
     } finally {
       setLoading(false);
     }

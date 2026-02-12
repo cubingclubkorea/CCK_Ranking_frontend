@@ -59,6 +59,25 @@ const mapRoundToForm = (round: Round): RoundForm => ({
   advance: round.advance,
 });
 
+const parseDateInput = (value: string): Date | null => {
+  if (!value) return null;
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+};
+
+const parseDateTimeInput = (value: string): Date | null => {
+  if (!value) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const getDayStart = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+
+const getDayEnd = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+
 const getErrorMessage = (err: unknown) => {
   if (err instanceof Error) return err.message;
   if (typeof err === "string") return err;
@@ -83,6 +102,7 @@ export const CompetitionManagePage = () => {
   const [form, setForm] = useState<CompetitionFormShape | null>(null);
   const [rounds, setRounds] = useState<RoundForm[]>([]);
   const [newRounds, setNewRounds] = useState<NewRoundForm[]>([]);
+  const [deletedRoundIds, setDeletedRoundIds] = useState<number[]>([]);
   const [eventOptions, setEventOptions] = useState<CubeEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [roundLoading, setRoundLoading] = useState(false);
@@ -92,6 +112,16 @@ export const CompetitionManagePage = () => {
   const [roundError, setRoundError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [section, setSection] = useState<"competition" | "round">("competition");
+  const scrollToTop = () => {
+    const scrollContainer = document.querySelector<HTMLElement>(".content-area");
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
+      scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (!competitionId) return;
@@ -169,13 +199,14 @@ export const CompetitionManagePage = () => {
         getRoundByDayCount(competitionId, index)
       );
       const dayResults = await Promise.all(dayRequests);
-      const roundList = dayResults
-        .flatMap((day) => [...day.past, ...day.now, ...day.future])
-        .sort(
-        (a, b) => a.eventStart.getTime() - b.eventStart.getTime()
-      );
+      const mergedRounds = dayResults.flatMap((day) => [...day.past, ...day.now, ...day.future]);
+      const uniqueRounds = mergedRounds.filter((round, index, list) => {
+        return list.findIndex((item) => item.idx === round.idx) === index;
+      });
+      const roundList = uniqueRounds.sort((a, b) => a.eventStart.getTime() - b.eventStart.getTime());
       setRounds(roundList.map(mapRoundToForm));
       setNewRounds([]);
+      setDeletedRoundIds([]);
     } catch (err) {
       setRoundError(getErrorMessage(err));
       setRounds([]);
@@ -190,10 +221,35 @@ export const CompetitionManagePage = () => {
   }, [competition?.idx, section]);
 
   const handleCompetitionSave = async () => {
+    scrollToTop();
     if (!form || !competition) return;
     if (!form.compName || !form.compDateStart || !form.compDateEnd) {
       setError("대회명과 대회 기간을 입력해주세요.");
       return;
+    }
+
+    const compStart = parseDateInput(form.compDateStart);
+    const compEnd = parseDateInput(form.compDateEnd);
+    if (!compStart || !compEnd) {
+      setError("대회 날짜 형식이 올바르지 않습니다.");
+      return;
+    }
+    if (compEnd < compStart) {
+      setError("대회 종료일은 시작일보다 빠를 수 없습니다.");
+      return;
+    }
+
+    if (form.joinDateStart && form.joinDateEnd) {
+      const joinStart = parseDateTimeInput(form.joinDateStart);
+      const joinEnd = parseDateTimeInput(form.joinDateEnd);
+      if (!joinStart || !joinEnd) {
+        setError("참가 신청 날짜 형식이 올바르지 않습니다.");
+        return;
+      }
+      if (joinEnd < joinStart) {
+        setError("참가 신청 마감일은 시작일보다 빠를 수 없습니다.");
+        return;
+      }
     }
 
     const payload: CompetitionUpdateDTO = {
@@ -223,56 +279,108 @@ export const CompetitionManagePage = () => {
   };
 
   const handleRoundSave = async () => {
-    if (!rounds.length) return;
-    setRoundSaving(true);
-    setRoundError(null);
-    setNotice(null);
+    scrollToTop();
+    if (!rounds.length && !newRounds.length && !deletedRoundIds.length) return;
 
-    const payload: RoundUpdateDTO[] = rounds.map((round) => ({
-      idx: round.idx,
-      comp: competitionId,
-      cubeEvent: round.cubeEvent,
-      roundName: round.roundName,
-      eventStart: withSeconds(round.eventStart),
-      eventEnd: withSeconds(round.eventEnd),
-      groupList: parseGroupList(round.groupList),
-      cutoff: round.cutoff || undefined,
-      timeLimit: round.timeLimit || undefined,
-      advance: round.advance || undefined,
-    }));
+    const compStartDate =
+      parseDateInput(form?.compDateStart ?? "") ??
+      (competition ? getDayStart(competition.compDateStart) : null);
+    const compEndDate =
+      parseDateInput(form?.compDateEnd ?? "") ??
+      (competition ? getDayEnd(competition.compDateEnd) : null);
 
-    try {
-      await updateRound(payload);
-      setNotice("라운드 정보가 저장되었습니다.");
-    } catch (err) {
-      setRoundError(getErrorMessage(err));
-    } finally {
-      setRoundSaving(false);
+    if (!compStartDate || !compEndDate) {
+      setRoundError("대회 날짜 정보가 없어 라운드를 저장할 수 없습니다.");
+      return;
     }
-  };
 
-  const handleRoundCreate = async () => {
-    if (!newRounds.length) return;
+    const compRangeStart = getDayStart(compStartDate);
+    const compRangeEnd = getDayEnd(compEndDate);
+    const allRounds = [...rounds, ...newRounds];
+    const invalidOrderRounds = allRounds.filter((round) => {
+      if (!round.eventStart || !round.eventEnd) return true;
+      const eventStart = parseDateTimeInput(round.eventStart);
+      const eventEnd = parseDateTimeInput(round.eventEnd);
+      if (!eventStart || !eventEnd) return true;
+      return eventEnd < eventStart;
+    });
+
+    if (invalidOrderRounds.length > 0) {
+      const names = invalidOrderRounds
+        .slice(0, 3)
+        .map((round) => `${round.cubeEvent} ${round.roundName}`.trim() || "이름 없는 라운드");
+      const suffix = invalidOrderRounds.length > 3 ? " 외 추가 라운드" : "";
+      setRoundError(
+        `라운드 종료 시간은 시작 시간보다 빠를 수 없습니다: ${names.join(", ")}${suffix}`
+      );
+      return;
+    }
+
+    const invalidRounds = allRounds.filter((round) => {
+      const eventStart = parseDateTimeInput(round.eventStart);
+      const eventEnd = parseDateTimeInput(round.eventEnd);
+      if (!eventStart || !eventEnd) return true;
+      return eventStart < compRangeStart || eventEnd > compRangeEnd;
+    });
+
+    if (invalidRounds.length > 0) {
+      const names = invalidRounds
+        .slice(0, 3)
+        .map((round) => `${round.cubeEvent} ${round.roundName}`.trim() || "이름 없는 라운드");
+      const suffix = invalidRounds.length > 3 ? " 외 추가 라운드" : "";
+      setRoundError(
+        `대회 기간(${formatDateInput(compRangeStart)} ~ ${formatDateInput(compRangeEnd)}) 밖의 라운드가 있어 저장할 수 없습니다: ${names.join(", ")}${suffix}`
+      );
+      return;
+    }
+
     setRoundSaving(true);
     setRoundError(null);
     setNotice(null);
 
-    const payload: RoundCreateDTO[] = newRounds.map((round) => ({
-      comp: competitionId,
-      cubeEvent: round.cubeEvent,
-      roundName: round.roundName,
-      eventStart: withSeconds(round.eventStart),
-      eventEnd: withSeconds(round.eventEnd),
-      groupList: parseGroupList(round.groupList),
-      cutoff: round.cutoff || undefined,
-      timeLimit: round.timeLimit || undefined,
-      advance: round.advance || undefined,
-    }));
-
     try {
-      await createRound(payload);
-      setNotice("새 라운드가 추가되었습니다.");
+      if (rounds.length > 0) {
+        const updatePayload: RoundUpdateDTO[] = rounds.map((round) => ({
+          idx: round.idx,
+          comp: competitionId,
+          cubeEvent: round.cubeEvent,
+          roundName: round.roundName,
+          eventStart: withSeconds(round.eventStart),
+          eventEnd: withSeconds(round.eventEnd),
+          groupList: parseGroupList(round.groupList),
+          cutoff: round.cutoff || undefined,
+          timeLimit: round.timeLimit || undefined,
+          advance: round.advance || undefined,
+        }));
+        await updateRound(updatePayload);
+      }
+
+      if (newRounds.length > 0) {
+        const createPayload: RoundCreateDTO[] = newRounds.map((round) => ({
+          comp: competitionId,
+          cubeEvent: round.cubeEvent,
+          roundName: round.roundName,
+          eventStart: withSeconds(round.eventStart),
+          eventEnd: withSeconds(round.eventEnd),
+          groupList: parseGroupList(round.groupList),
+          cutoff: round.cutoff || undefined,
+          timeLimit: round.timeLimit || undefined,
+          advance: round.advance || undefined,
+        }));
+        await createRound(createPayload);
+      }
+
+      if (deletedRoundIds.length > 0) {
+        await Promise.all(deletedRoundIds.map((roundIdx) => deleteRound(roundIdx)));
+      }
+
       await fetchAllRounds();
+
+      const messages: string[] = [];
+      if (rounds.length > 0) messages.push("라운드 수정");
+      if (newRounds.length > 0) messages.push("라운드 추가");
+      if (deletedRoundIds.length > 0) messages.push("라운드 삭제");
+      setNotice(messages.length > 0 ? `${messages.join(", ")}가 저장되었습니다.` : "라운드 정보가 저장되었습니다.");
     } catch (err) {
       setRoundError(getErrorMessage(err));
     } finally {
@@ -283,18 +391,11 @@ export const CompetitionManagePage = () => {
   const handleRoundDelete = async (roundIdx: number) => {
     const confirmed = window.confirm("정말로 이 라운드를 삭제할까요?");
     if (!confirmed) return;
-    setRoundSaving(true);
     setRoundError(null);
     setNotice(null);
-    try {
-      await deleteRound(roundIdx);
-      setRounds((prev) => prev.filter((round) => round.idx !== roundIdx));
-      setNotice("라운드가 삭제되었습니다.");
-    } catch (err) {
-      setRoundError(getErrorMessage(err));
-    } finally {
-      setRoundSaving(false);
-    }
+    setDeletedRoundIds((prev) => (prev.includes(roundIdx) ? prev : [...prev, roundIdx]));
+    setRounds((prev) => prev.filter((round) => round.idx !== roundIdx));
+    setNotice("라운드가 목록에서 제거되었습니다. 저장하면 삭제가 반영됩니다.");
   };
 
   const handleDeleteCompetition = async () => {
@@ -362,9 +463,6 @@ export const CompetitionManagePage = () => {
 
       {section === "competition" && form ? (
         <>
-          <div className="dashboard-test-card-header">
-            <h2 className="dashboard-test-section-title">대회 정보 편집</h2>
-          </div>
           <CompetitionFormFields
             form={form}
             eventOptions={eventOptions}
@@ -383,7 +481,6 @@ export const CompetitionManagePage = () => {
             onRoundsChange={setRounds}
             onNewRoundsChange={setNewRounds}
             onRoundSave={handleRoundSave}
-            onRoundCreate={handleRoundCreate}
             onRoundDelete={handleRoundDelete}
             saving={roundSaving || roundLoading}
             title="라운드 편집"
@@ -403,7 +500,14 @@ export const CompetitionManagePage = () => {
                 handleRoundSave();
               }
             }}
-            disabled={saving || roundSaving || (section === "round" && rounds.length === 0)}
+            disabled={
+              saving ||
+              roundSaving ||
+              (section === "round" &&
+                rounds.length === 0 &&
+                newRounds.length === 0 &&
+                deletedRoundIds.length === 0)
+            }
           >
             <img className="competition-manage-action-icon" src="/icon/button/save.svg" alt="" aria-hidden="true" />
             저장

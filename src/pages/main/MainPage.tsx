@@ -18,8 +18,15 @@ export const MainPage = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const formatMeta = (date: Date, location?: string) => {
-    const base = formatDate(date);
+  const isSameDate = (left: Date, right: Date) =>
+    left.getFullYear() === right.getFullYear() &&
+    left.getMonth() === right.getMonth() &&
+    left.getDate() === right.getDate();
+
+  const formatMeta = (startDate: Date, endDate: Date, location?: string) => {
+    const base = isSameDate(startDate, endDate)
+      ? formatDate(startDate)
+      : `${formatDate(startDate)} ~ ${formatDate(endDate)}`;
     return location ? `${base} · ${location}` : base;
   };
 
@@ -47,7 +54,7 @@ export const MainPage = () => {
         setUpcoming(
           future.content.map(item => ({
             title: item.compName,
-            meta: formatMeta(item.compDateStart, item.location),
+            meta: formatMeta(item.compDateStart, item.compDateEnd, item.location),
             badge: getDDay(item.compDateStart),
             href: `/competition/${item.idx}`,
           }))
@@ -56,7 +63,7 @@ export const MainPage = () => {
         setOngoing(
           now.content.map(item => ({
             title: item.compName,
-            meta: formatMeta(item.compDateStart, item.location),
+            meta: formatMeta(item.compDateStart, item.compDateEnd, item.location),
             badge: "진행 중",
             variant: "ongoing",
             href: `/competition/${item.idx}`,
@@ -66,7 +73,7 @@ export const MainPage = () => {
         setEnded(
           past.content.map(item => ({
             title: item.compName,
-            meta: formatMeta(item.compDateStart, item.location),
+            meta: formatMeta(item.compDateStart, item.compDateEnd, item.location),
             badge: "종료",
             variant: "ended",
             href: `/competition/${item.idx}`,

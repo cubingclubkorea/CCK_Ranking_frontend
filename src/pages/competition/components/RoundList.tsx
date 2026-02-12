@@ -4,6 +4,7 @@ import type { Round, RoundDayCount } from "@/entities/round";
 type RoundListProps = {
   schedule: RoundDayCount | null;
   loading: boolean;
+  selectedDate: Date | null;
 };
 
 type RoundStatus = "past" | "now" | "future";
@@ -42,7 +43,30 @@ const toItems = (rounds: Round[], status: RoundStatus): RoundItem[] => {
   return rounds.map((round) => ({ round, status }));
 };
 
-export const RoundList = ({ schedule, loading }: RoundListProps) => {
+const isOverlappingDate = (start: Date, end: Date, selectedDate: Date) => {
+  const dayStart = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate(),
+    0,
+    0,
+    0,
+    0
+  );
+  const dayEnd = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate() + 1,
+    0,
+    0,
+    0,
+    0
+  );
+
+  return start < dayEnd && end > dayStart;
+};
+
+export const RoundList = ({ schedule, loading, selectedDate }: RoundListProps) => {
   if (loading) {
     return <div className="round-list-empty">로딩중...</div>;
   }
@@ -55,7 +79,11 @@ export const RoundList = ({ schedule, loading }: RoundListProps) => {
     ...toItems(schedule.past, "past"),
     ...toItems(schedule.now, "now"),
     ...toItems(schedule.future, "future"),
-  ].sort((a, b) => a.round.eventStart.getTime() - b.round.eventStart.getTime());
+  ]
+    .filter(({ round }) =>
+      selectedDate ? isOverlappingDate(round.eventStart, round.eventEnd, selectedDate) : true
+    )
+    .sort((a, b) => a.round.eventStart.getTime() - b.round.eventStart.getTime());
 
   if (items.length === 0) {
     return <div className="round-list-empty">해당 날짜에 라운드가 없습니다.</div>;

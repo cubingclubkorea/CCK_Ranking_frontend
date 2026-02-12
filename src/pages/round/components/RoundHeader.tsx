@@ -20,7 +20,7 @@ export const RoundHeader = ({
   subtitle,
   compIdx,
   roundIdx,
-  adminActionLabel = "기록 편집",
+  adminActionLabel = "라운드 관리",
   adminActionPath,
   adminActionIcon = "/icon/button/hammer.svg",
   showAdminAction = true,
