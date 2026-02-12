@@ -106,6 +106,7 @@ export const RoundRecordEditPage = () => {
   const [nameQuery, setNameQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchActiveIndex, setSearchActiveIndex] = useState(-1);
+  const [isNameComposing, setIsNameComposing] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const [attemptTries, setAttemptTries] = useState<number[]>([1, 2, 3, 4, 5]);
   const [attemptInputs, setAttemptInputs] = useState<string[]>(Array.from({ length: 5 }, () => ""));
@@ -548,7 +549,12 @@ export const RoundRecordEditPage = () => {
           onNameBlur={() => {
             window.setTimeout(() => setSearchOpen(false), 120);
           }}
+          onNameCompositionStart={() => setIsNameComposing(true)}
+          onNameCompositionEnd={() => setIsNameComposing(false)}
           onNameKeyDown={(event) => {
+            if (isNameComposing || event.nativeEvent.isComposing) {
+              return;
+            }
             if (searchResults.length === 0) return;
             if (event.key === "ArrowDown") {
               event.preventDefault();
@@ -579,6 +585,15 @@ export const RoundRecordEditPage = () => {
             setAttemptInputs(next);
           }}
           onAttemptKeyDown={(index, event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              if (index < attemptTries.length - 1) {
+                attemptInputRefs.current[index + 1]?.focus();
+              } else {
+                saveButtonRef.current?.focus();
+              }
+              return;
+            }
             if (event.key === "Tab" && !event.shiftKey && index === attemptTries.length - 1) {
               event.preventDefault();
               saveButtonRef.current?.focus();

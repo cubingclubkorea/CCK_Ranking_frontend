@@ -20,6 +20,8 @@ type RecordEditPanelProps = {
   onNameChange: (value: string) => void;
   onNameFocus: () => void;
   onNameBlur: () => void;
+  onNameCompositionStart: () => void;
+  onNameCompositionEnd: () => void;
   onNameKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
   onHoverSearchIndex: (index: number) => void;
   onSelectRecord: (record: Record) => void;
@@ -48,6 +50,8 @@ export const RecordEditPanel = ({
   onNameChange,
   onNameFocus,
   onNameBlur,
+  onNameCompositionStart,
+  onNameCompositionEnd,
   onNameKeyDown,
   onHoverSearchIndex,
   onSelectRecord,
@@ -79,6 +83,8 @@ export const RecordEditPanel = ({
               onChange={(event) => onNameChange(event.target.value)}
               onFocus={onNameFocus}
               onBlur={onNameBlur}
+              onCompositionStart={onNameCompositionStart}
+              onCompositionEnd={onNameCompositionEnd}
               onKeyDown={onNameKeyDown}
               autoFocus
             />
