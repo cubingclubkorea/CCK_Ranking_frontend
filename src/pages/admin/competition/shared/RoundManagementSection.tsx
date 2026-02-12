@@ -58,11 +58,6 @@ const formatDateTimeLabel = (value: string) => {
   return `${parsed.getFullYear()}-${pad2(parsed.getMonth() + 1)}-${pad2(parsed.getDate())} ${pad2(parsed.getHours())}:${pad2(parsed.getMinutes())}`;
 };
 
-const formatTimeRangeLabel = (start: string, end: string) => {
-  if (!start || !end) return "시간 미설정";
-  return `${formatDateTimeLabel(start)} ~ ${formatDateTimeLabel(end)}`;
-};
-
 const buildRoundTitle = (cubeEvent: string, roundName: string, fallback: string) => {
   const eventName = cubeEvent.trim();
   const name = roundName.trim();
@@ -205,9 +200,6 @@ export const RoundManagementSection = ({
                       </div>
                     </div>
                     <div className="round-editor-head-right">
-                      <span className="round-editor-time-pill">
-                        {formatTimeRangeLabel(item.round.eventStart, item.round.eventEnd)}
-                      </span>
                       <span className={`round-editor-chevron ${isOpen ? "open" : ""}`.trim()} aria-hidden="true">
                         ▾
                       </span>

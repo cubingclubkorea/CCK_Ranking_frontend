@@ -2019,18 +2019,8 @@ body {
 .round-editor-head-right {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
   flex-shrink: 0;
-}
-
-.round-editor-time-pill {
-  font-size: 16px;
-  font-weight: 700;
-  padding: 12px 18px;
-  border-radius: 12px;
-  background: #e7ebf7;
-  color: #4d6bb2;
-  white-space: nowrap;
 }
 
 .round-editor-chevron {
@@ -2115,10 +2105,6 @@ body {
     font-size: 16px;
   }
 
-  .round-editor-time-pill {
-    font-size: 13px;
-    padding: 8px 10px;
-  }
 }
 
 /* ===== Admin Competition ===== */
