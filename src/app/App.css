@@ -306,7 +306,7 @@ body {
   background: #ffffff;
   border: 1px solid #e5e5ec;
   border-radius: 12px;
-  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.08);
   padding: 8px;
   z-index: 1200;
 }
@@ -502,13 +502,13 @@ body {
   border: 1px solid #ececf2;
   border-radius: 16px;
   padding: 20px 20px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card-list:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
 }
 
 .card-list.ongoing {
@@ -688,19 +688,27 @@ body {
 .round-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .round-card {
-  display: grid;
-  grid-template-columns: 38px 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
+  gap: 20px;
   padding: 20px 20px;
   border-radius: 16px;
   border: 1px solid #ececf2;
   background: #ffffff;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+}
+
+.round-card-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
 }
 
 .round-card-link {
@@ -711,7 +719,7 @@ body {
 
 .round-card-link:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
 }
 
 .round-card-link:focus-visible {
@@ -720,8 +728,8 @@ body {
 }
 
 .round-card.now {
-  background: #dbe9e6;
-  border-color: #c5ddd7;
+  background: #e4f3ee;
+  border-color: #d7eee6;
 }
 
 .round-card.past {
@@ -749,6 +757,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .round-card-title {
@@ -842,7 +851,7 @@ body {
   border-radius: 16px;
   background: #ffffff;
   border: 1px solid #ececf2;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -987,7 +996,7 @@ body {
   background: #ffffff;
   border-radius: 16px;
   border: 2px solid #4d6bb2;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
   padding: 22px 24px 28px;
   display: flex;
   flex-direction: column;
@@ -1188,7 +1197,7 @@ body {
   background: #ffffff;
   border: 1px solid #e2e4ef;
   border-radius: 12px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
   z-index: 20;
   max-height: 220px;
   overflow-y: auto;
@@ -1480,7 +1489,7 @@ body {
   background: #ffffff;
   border: 1px solid #e2e4ef;
   border-radius: 12px;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.10);
   padding: 6px;
   min-width: 150px;
 }
@@ -1579,7 +1588,7 @@ body {
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
   transform: translateY(0);
   transition:
     transform 0.2s ease,
@@ -1590,7 +1599,7 @@ body {
 .dashboard-card:hover {
   transform: translateY(-4px);
   border-color: #d7d9e2;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
 .dashboard-card:focus-visible {
@@ -1625,7 +1634,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
   flex-wrap: wrap;
 }
 
@@ -1699,7 +1708,7 @@ body {
   border: 1px solid #ececf2;
   border-radius: 16px;
   padding: 18px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1940,7 +1949,7 @@ body {
 .round-editor-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .round-editor-card {
@@ -1948,18 +1957,18 @@ body {
   border-radius: 16px;
   background: #ffffff;
   overflow: hidden;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .round-editor-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
 }
 
 .round-editor-card.open {
   border-color: #d9deee;
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
 }
 
 .round-editor-card--new {
@@ -1970,11 +1979,11 @@ body {
   width: 100%;
   border: 0;
   background: transparent;
-  padding: 20px 20px;
+  padding: 14px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 14px;
   cursor: pointer;
   text-align: left;
 }
@@ -1982,13 +1991,13 @@ body {
 .round-editor-summary {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   min-width: 0;
 }
 
 .round-editor-icon {
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2010,7 +2019,7 @@ body {
 }
 
 .round-editor-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #1d1d1f;
   line-height: 1.2;
@@ -2036,10 +2045,10 @@ body {
 .round-editor-body {
   border-top: 1px solid #edf0f8;
   background: #f9fafe;
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .round-editor-actions {
@@ -2142,7 +2151,7 @@ body {
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(77, 107, 178, 0.25);
+  box-shadow: 0 2px 8px rgba(77, 107, 178, 0.14);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -2151,7 +2160,7 @@ body {
 
 .admin-primary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 22px rgba(77, 107, 178, 0.28);
+  box-shadow: 0 3px 10px rgba(77, 107, 178, 0.16);
   color: #ffffff;
 }
 
@@ -2256,7 +2265,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   color: #3a3f55;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
 }
 
 .admin-table-wrap {
@@ -2264,7 +2273,7 @@ body {
   border: 1px solid #ececf2;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
 }
 
 .admin-table {

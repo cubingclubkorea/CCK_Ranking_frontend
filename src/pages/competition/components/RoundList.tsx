@@ -97,28 +97,30 @@ export const RoundList = ({ schedule, loading, selectedDate }: RoundListProps) =
           key={round.idx}
           to={`/competition/${round.compIdx}/round/${round.idx}`}
         >
-          <div className="round-card-icon" aria-hidden="true">
-            <img
-              className="round-card-icon-img"
-              src={`/icon/events/${encodeURIComponent(round.cubeEventName)}.svg`}
-              alt=""
-              loading="lazy"
-              onError={(event) => {
-                const target = event.currentTarget;
-                if (target.dataset.fallback === "true") {
-                  target.style.display = "none";
-                  return;
-                }
-                target.dataset.fallback = "true";
-                target.src = "/icon/events/Question.svg";
-              }}
-            />
-          </div>
-          <div className="round-card-body">
-            <div className="round-card-title">
-              {round.cubeEventName} {round.roundName}
+          <div className="round-card-main">
+            <div className="round-card-icon" aria-hidden="true">
+              <img
+                className="round-card-icon-img"
+                src={`/icon/events/${encodeURIComponent(round.cubeEventName)}.svg`}
+                alt=""
+                loading="lazy"
+                onError={(event) => {
+                  const target = event.currentTarget;
+                  if (target.dataset.fallback === "true") {
+                    target.style.display = "none";
+                    return;
+                  }
+                  target.dataset.fallback = "true";
+                  target.src = "/icon/events/Question.svg";
+                }}
+              />
             </div>
-            <div className="round-card-meta">{getMetaText(round)}</div>
+            <div className="round-card-body">
+              <div className="round-card-title">
+                {round.cubeEventName} {round.roundName}
+              </div>
+              <div className="round-card-meta">{getMetaText(round)}</div>
+            </div>
           </div>
           <div className={`round-card-time ${status}`}>
             {formatTimeRange(round.eventStart, round.eventEnd)}
