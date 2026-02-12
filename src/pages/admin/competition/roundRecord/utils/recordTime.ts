@@ -1,4 +1,4 @@
-export const formatTimeValue = (value?: number) => {
+export const formatTimeValue = (value?: number | null) => {
   if (value === null || value === undefined) {
     return "-";
   }
@@ -17,7 +17,7 @@ export const formatTimeValue = (value?: number) => {
   return value.toFixed(2);
 };
 
-export const formatTimeInput = (value?: number) => {
+export const formatTimeInput = (value?: number | null) => {
   if (value === null || value === undefined) {
     return "";
   }
@@ -54,6 +54,9 @@ const formatDigitsToTime = (digits: string) => {
 };
 
 export const normalizeAttemptInput = (raw: string) => {
+  if (raw.includes("/")) {
+    return "DNF";
+  }
   const trimmed = raw.trim();
   if (!trimmed) return "";
   if (trimmed === "-" || trimmed === "-1" || trimmed === "-2") {

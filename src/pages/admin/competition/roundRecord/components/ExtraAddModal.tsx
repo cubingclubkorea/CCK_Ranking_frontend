@@ -1,23 +1,20 @@
 import type { Record } from "@/entities/record";
+import { createPortal } from "react-dom";
 
 type ExtraForm = {
   recordIdx: number | null;
   extraNum: number;
   extraTry: number;
-  extraReason: string;
+  extraReasonType: string;
+  extraReasonCustom: string;
 };
 
 type ExtraAddModalProps = {
   open: boolean;
-  records: Record[];
-  searchQuery: string;
-  searchResults: Record[];
   selectedRecord: Record | null;
   form: ExtraForm;
   saving: boolean;
   error: string | null;
-  onSearchChange: (value: string) => void;
-  onSelectRecord: (record: Record) => void;
   onFormChange: (next: ExtraForm) => void;
   onClose: () => void;
   onSubmit: () => void;
@@ -25,75 +22,33 @@ type ExtraAddModalProps = {
 
 export const ExtraAddModal = ({
   open,
-  records,
-  searchQuery,
-  searchResults,
   selectedRecord,
   form,
   saving,
   error,
-  onSearchChange,
-  onSelectRecord,
   onFormChange,
   onClose,
   onSubmit,
 }: ExtraAddModalProps) => {
   if (!open) return null;
 
-  return (
+  const modal = (
     <div className="record-modal-backdrop" onClick={onClose}>
       <div className="record-modal record-extra-modal" onClick={(event) => event.stopPropagation()}>
         <div className="record-modal-header">
           <div className="record-modal-title">엑스트라 추가</div>
           <button type="button" className="record-modal-close" onClick={onClose} aria-label="닫기">
-            ✕
+            <img src="/icon/modal/close.svg" alt="" aria-hidden="true" />
           </button>
         </div>
         <div className="record-modal-body">
-          <div className="record-edit-field record-edit-search">
-            <label className="record-edit-label" htmlFor="extra-search-input">
-              선수 검색
-            </label>
-            <div className="record-edit-input-wrap">
-              <input
-                id="extra-search-input"
-                className="record-edit-input"
-                type="search"
-                placeholder="이름 또는 CCK ID 입력"
-                value={searchQuery}
-                onChange={(event) => onSearchChange(event.target.value)}
-                autoFocus
-              />
-              <span className="record-edit-search-icon" aria-hidden="true">
-                <img src="/icon/input/search.svg" alt="" aria-hidden="true" />
-              </span>
-            </div>
-            {searchQuery.trim().length > 0 && searchResults.length > 0 && (
-              <div className="record-edit-suggestions record-edit-suggestions--modal" role="listbox">
-                {searchResults.map((record) => (
-                  <button
-                    key={record.idx}
-                    type="button"
-                    className="record-edit-suggestion"
-                    onMouseDown={() => onSelectRecord(record)}
-                  >
-                    <span className="record-edit-suggestion-name">
-                      {record.enName ? `${record.name} (${record.enName})` : record.name}
-                    </span>
-                    <span className="record-edit-suggestion-meta">{record.cckId}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
           <div className="record-edit-field">
             <label className="record-edit-label">선수</label>
             <input
               className="record-edit-input"
               type="text"
               value={selectedRecord ? selectedRecord.name : ""}
-              placeholder={records.length ? "선수를 선택하세요" : "선수 목록이 없습니다"}
+              placeholder="선수를 선택하세요"
               readOnly
             />
           </div>
@@ -105,44 +60,66 @@ export const ExtraAddModal = ({
               type="number"
               min={1}
               value={form.extraNum}
-              onChange={(event) =>
-                onFormChange({ ...form, extraNum: Number(event.target.value) })
-              }
+              readOnly
             />
           </div>
 
           <div className="record-edit-field">
             <label className="record-edit-label">시도 번호</label>
-            <input
+            <select
               className="record-edit-input"
-              type="number"
-              min={1}
               value={form.extraTry}
               onChange={(event) =>
                 onFormChange({ ...form, extraTry: Number(event.target.value) })
               }
-            />
+            >
+              {[1, 2, 3, 4, 5].map((tryNum) => (
+                <option key={tryNum} value={tryNum}>
+                  {tryNum}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="record-edit-field">
             <label className="record-edit-label">사유</label>
-            <input
+            <select
               className="record-edit-input"
-              type="text"
-              value={form.extraReason}
+              value={form.extraReasonType}
               onChange={(event) =>
-                onFormChange({ ...form, extraReason: event.target.value })
+                onFormChange({ ...form, extraReasonType: event.target.value })
               }
-              placeholder="엑스트라 사유"
-            />
+            >
+              <option value="">사유 선택</option>
+              <option value="0.07초 이내 타이머 정지">0.07초 이내 타이머 정지</option>
+              <option value="Recorder 오류">Recorder 오류</option>
+              <option value="스크램블 오류">스크램블 오류</option>
+              <option value="타이머 오류">타이머 오류</option>
+              <option value="관중 개입">관중 개입</option>
+              <option value="초심자 찬스">초심자 찬스</option>
+              <option value="환경적 요인">환경적 요인</option>
+              <option value="심판 실수">심판 실수</option>
+              <option value="기타">기타</option>
+            </select>
           </div>
+          {form.extraReasonType === "기타" && (
+            <div className="record-edit-field">
+              <label className="record-edit-label">기타 사유 입력</label>
+              <input
+                className="record-edit-input"
+                type="text"
+                value={form.extraReasonCustom}
+                onChange={(event) =>
+                  onFormChange({ ...form, extraReasonCustom: event.target.value })
+                }
+                placeholder="기타 사유를 입력하세요"
+              />
+            </div>
+          )}
 
           {error && <div className="record-edit-status record-edit-status--error">{error}</div>}
         </div>
         <div className="record-edit-actions record-extra-actions">
-          <button type="button" className="record-edit-btn record-edit-btn--ghost" onClick={onClose}>
-            닫기
-          </button>
           <button
             type="button"
             className="record-edit-btn record-edit-btn--primary"
@@ -155,4 +132,10 @@ export const ExtraAddModal = ({
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") {
+    return modal;
+  }
+
+  return createPortal(modal, document.body);
 };

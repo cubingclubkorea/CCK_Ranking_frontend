@@ -6,7 +6,7 @@ type RecordTablePanelProps = {
   emptyMessage: string;
   advanceCount?: number;
   selectedRecordIdx?: number;
-  formatTimeValue: (value?: number) => string;
+  formatTimeValue: (value?: number | null) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
   onSelect: (record: Record) => void;
   onContextMenu?: (record: Record, rank: number, position: { x: number; y: number }) => void;

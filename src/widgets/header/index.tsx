@@ -98,7 +98,7 @@ function Header({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => v
             name={profile?.name ?? "사용자"}
             cckId={profile?.cckId ?? ""}
             onProfile={() => navigate("/profile")}
-            onSettings={() => navigate("/profile")}
+            onSettings={() => navigate("/settings")}
             onLogout={handleLogout}
           />
         ) : (

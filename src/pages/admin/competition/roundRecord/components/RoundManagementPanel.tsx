@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { addPlayer, advancePlayer, deleteRecord } from "@/features/record";
@@ -13,7 +14,7 @@ type RoundManagementPanelProps = {
   onAdvanceUpdated: (advance: number) => void;
 };
 
-type ManageModalKey = "add" | "dns" | "auto" | null;
+type ManageModalKey = "add" | "dns" | "advance" | "auto" | null;
 
 type ActionModalProps = {
   title: string;
@@ -25,20 +26,26 @@ type ActionModalProps = {
 
 const ActionModal = ({ title, open, onClose, children, actions }: ActionModalProps) => {
   if (!open) return null;
-  return (
+  const modal = (
     <div className="record-modal-backdrop" onClick={onClose}>
       <div className="record-modal record-extra-modal" onClick={(event) => event.stopPropagation()}>
         <div className="record-modal-header">
           <div className="record-modal-title">{title}</div>
           <button type="button" className="record-modal-close" onClick={onClose} aria-label="닫기">
-            ✕
+            <img src="/icon/modal/close.svg" alt="" aria-hidden="true" />
           </button>
         </div>
-        <div className="record-modal-body">{children}</div>
+        <div className="record-modal-body round-manage-modal-body">{children}</div>
         <div className="record-edit-actions record-extra-actions">{actions}</div>
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") {
+    return modal;
+  }
+
+  return createPortal(modal, document.body);
 };
 
 export const RoundManagementPanel = ({
@@ -130,26 +137,6 @@ export const RoundManagementPanel = ({
     }
   };
 
-  const handleAdvanceUpdate = async () => {
-    if (advanceValue < 0) {
-      setError("진출 인원은 0 이상이어야 합니다.");
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    setStatus(null);
-    try {
-      await updateAdvance(round.idx, advanceValue);
-      onAdvanceUpdated(advanceValue);
-      setStatus("진출 인원을 변경했습니다.");
-    } catch (saveError) {
-      console.error("진출 인원 변경 실패:", saveError);
-      setError("진출 인원 변경에 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDeleteNoShow = async () => {
     if (noShowSelected.size === 0) {
       setError("삭제할 선수를 선택하세요.");
@@ -173,6 +160,26 @@ export const RoundManagementPanel = ({
     }
   };
 
+  const handleAdvanceUpdate = async () => {
+    if (advanceValue < 0) {
+      setError("진출 인원은 0 이상이어야 합니다.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setStatus(null);
+    try {
+      await updateAdvance(round.idx, advanceValue);
+      onAdvanceUpdated(advanceValue);
+      setStatus("진출 인원을 변경했습니다.");
+    } catch (saveError) {
+      console.error("진출 인원 변경 실패:", saveError);
+      setError("진출 인원 변경에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAdvancePlayers = async () => {
     if (!advanceTarget) {
       setError("진출 라운드 ID를 입력하세요.");
@@ -183,10 +190,10 @@ export const RoundManagementPanel = ({
     setStatus(null);
     try {
       await advancePlayer({ pastRoundIdx: round.idx, advanceRoundIdx: Number(advanceTarget) });
-      setStatus("라운드 진출을 완료했습니다.");
+      setStatus("라운드 자동 진출을 완료했습니다.");
     } catch (saveError) {
-      console.error("라운드 진출 실패:", saveError);
-      setError("라운드 진출에 실패했습니다.");
+      console.error("라운드 자동 진출 실패:", saveError);
+      setError("라운드 자동 진출에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -196,7 +203,6 @@ export const RoundManagementPanel = ({
     <div className="round-manage-panel">
       <div className="round-panel-title">
         <h2>라운드 관리</h2>
-        <span>기록 관련 작업을 실행합니다</span>
       </div>
 
       <div className="record-manage-actions">
@@ -210,6 +216,16 @@ export const RoundManagementPanel = ({
           type="button"
           className="record-edit-btn record-edit-btn--primary"
           onClick={() => {
+            setAdvanceValue(resolvedAdvance);
+            setOpenModal("advance");
+          }}
+        >
+          진출 인원 변경
+        </button>
+        <button
+          type="button"
+          className="record-edit-btn record-edit-btn--primary"
+          onClick={() => {
             if (!advanceTarget && availableRounds.length > 0) {
               setAdvanceTarget(availableRounds[0].idx);
             }
@@ -217,7 +233,7 @@ export const RoundManagementPanel = ({
             setOpenModal("auto");
           }}
         >
-          라운드 진출
+          라운드 자동 진출
         </button>
       </div>
 
@@ -230,9 +246,6 @@ export const RoundManagementPanel = ({
         onClose={() => setOpenModal(null)}
         actions={
           <>
-            <button type="button" className="record-edit-btn record-edit-btn--ghost" onClick={() => setOpenModal(null)}>
-              닫기
-            </button>
             <button
               type="button"
               className="record-edit-btn record-edit-btn--primary"
@@ -300,9 +313,6 @@ export const RoundManagementPanel = ({
         onClose={() => setOpenModal(null)}
         actions={
           <>
-            <button type="button" className="record-edit-btn record-edit-btn--ghost" onClick={() => setOpenModal(null)}>
-              닫기
-            </button>
             <button
               type="button"
               className="record-edit-btn record-edit-btn--primary"
@@ -347,27 +357,23 @@ export const RoundManagementPanel = ({
       </ActionModal>
 
       <ActionModal
-        title="라운드 진출"
-        open={openModal === "auto"}
+        title="진출 인원 변경"
+        open={openModal === "advance"}
         onClose={() => setOpenModal(null)}
         actions={
           <>
-            <button type="button" className="record-edit-btn record-edit-btn--ghost" onClick={() => setOpenModal(null)}>
-              닫기
-            </button>
             <button
               type="button"
               className="record-edit-btn record-edit-btn--primary"
-              onClick={handleAdvancePlayers}
+              onClick={handleAdvanceUpdate}
               disabled={loading}
             >
-              {loading ? "진행 중..." : "라운드 진출"}
+              {loading ? "변경 중..." : "저장"}
             </button>
           </>
         }
       >
         <div className="record-edit-section">
-          <div className="record-edit-section-title">진출 인원 변경</div>
           <div className="record-manage-fields">
             <div className="record-edit-field">
               <label className="record-edit-label">진출 인원</label>
@@ -380,18 +386,26 @@ export const RoundManagementPanel = ({
               />
             </div>
           </div>
-          <div className="record-edit-actions">
+        </div>
+      </ActionModal>
+
+      <ActionModal
+        title="라운드 자동 진출"
+        open={openModal === "auto"}
+        onClose={() => setOpenModal(null)}
+        actions={
+          <>
             <button
               type="button"
               className="record-edit-btn record-edit-btn--primary"
-              onClick={handleAdvanceUpdate}
+              onClick={handleAdvancePlayers}
               disabled={loading}
             >
-              {loading ? "변경 중..." : "진출 인원 변경"}
+              {loading ? "진행 중..." : "라운드 자동 진출"}
             </button>
-          </div>
-        </div>
-
+          </>
+        }
+      >
         <div className="record-edit-section">
           <div className="record-edit-section-title">진출 라운드 선택</div>
           {availableRounds.length === 0 ? (

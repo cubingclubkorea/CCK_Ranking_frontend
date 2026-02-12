@@ -4,7 +4,7 @@ type RecordTableProps = {
   records: Record[];
   emptyMessage: string;
   advanceCount?: number;
-  formatTimeValue: (value?: number) => string;
+  formatTimeValue: (value?: number | null) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
   onSelect?: (record: Record, rank: number) => void;
   onContextMenu?: (record: Record, rank: number, position: { x: number; y: number }) => void;
@@ -24,6 +24,17 @@ export const RecordTable = ({
   if (records.length === 0) {
     return <div className="round-ranking-empty">{emptyMessage}</div>;
   }
+
+  const hasCompleteMainAttempts = (record: Record) => {
+    return [1, 2, 3, 4, 5].every((attemptTry) =>
+      record.attempts.some(
+        (attempt) =>
+          attempt.attemptTry === attemptTry &&
+          attempt.time !== undefined &&
+          attempt.time !== null
+      )
+    );
+  };
 
   const getHighlightValues = (attempts: Record["attempts"]) => {
     const times = attempts
@@ -62,6 +73,7 @@ export const RecordTable = ({
             const rank = record.ranking ?? index + 1;
             const isAdvance = advanceCount ? rank <= advanceCount : false;
             const { bestValue, worstValue, negativeTimes } = getHighlightValues(record.attempts);
+            const hasAllAttempts = hasCompleteMainAttempts(record);
             const isSelected = selectedRecordIdx === record.idx;
             return (
               <tr
@@ -95,14 +107,14 @@ export const RecordTable = ({
                     {record.enName ? `${record.name} (${record.enName})` : record.name}
                   </div>
                 </td>
-                <td className="round-score">{formatTimeValue(record.average)}</td>
-                <td className="round-score">{formatTimeValue(record.single)}</td>
+                <td className="round-score">{hasAllAttempts ? formatTimeValue(record.average) : "-"}</td>
+                <td className="round-score">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</td>
                 {[1, 2, 3, 4, 5].map((attemptTry) => (
                   <td key={attemptTry} className="round-attempt-cell">
                     {(() => {
                       const attempt = record.attempts.find((item) => item.attemptTry === attemptTry);
                       const time = attempt?.time;
-                      if (time === undefined) {
+                      if (time === undefined || time === null) {
                         return "-";
                       }
                       let highlightClass = "";

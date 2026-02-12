@@ -1,15 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getRound, getRoundByDayCount } from "@/entities/round";
 import { getCompetition } from "@/entities/competition";
 import { getRecordList } from "@/entities/record";
-import { addExtra, updateRecord } from "@/features/record";
+import { addExtra, deleteRecord, updateRecord, updateRecordInfo } from "@/features/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { RoundRecordHeader } from "./components/RoundRecordHeader";
 import { ExtraAddModal } from "./components/ExtraAddModal";
 import { RecordContextMenu } from "./components/RecordContextMenu";
 import { RecordEditPanel } from "./components/RecordEditPanel";
+import { RecordInfoEditModal } from "./components/RecordInfoEditModal";
 import { RecordTablePanel } from "./components/RecordTablePanel";
 import { RoundManagementPanel } from "./components/RoundManagementPanel";
 import {
@@ -23,7 +24,14 @@ type ExtraFormState = {
   recordIdx: number | null;
   extraNum: number;
   extraTry: number;
-  extraReason: string;
+  extraReasonType: string;
+  extraReasonCustom: string;
+};
+
+type RecordInfoFormState = {
+  recordIdx: number | null;
+  pdx: number;
+  roundGroup: string;
 };
 
 type DayItem = {
@@ -56,20 +64,12 @@ const getAttemptTime = (record: Record, attemptTry: number) => {
   return attempt?.time;
 };
 
-const getBaseAttemptTries = (record: Record): number[] => {
-  const tries = Array.from(
-    new Set(
-      record.attempts
-        .filter((attempt) => typeof attempt.extra !== "number")
-        .map((attempt) => attempt.attemptTry)
-    )
-  ).sort((a, b) => a - b);
-
-  if (tries.length > 0) {
-    return tries;
-  }
-
-  return [1, 2, 3, 4, 5];
+const getNextExtraNum = (record: Record): number => {
+  const extras = record.attempts
+    .map((attempt) => attempt.extra)
+    .filter((extra): extra is number => typeof extra === "number");
+  if (extras.length === 0) return 1;
+  return Math.max(...extras) + 1;
 };
 
 const normalizeTimeValue = (value: number) => {
@@ -83,11 +83,11 @@ const getErrorMessage = (err: unknown) => {
   return "기록 반영에 실패했습니다.";
 };
 
-const isSameTimeValue = (actual: number | undefined, expected: number | null) => {
+const isSameTimeValue = (actual: number | null | undefined, expected: number | null) => {
   if (expected === null) {
-    return actual === undefined;
+    return actual === undefined || actual === null;
   }
-  if (actual === undefined) {
+  if (actual === undefined || actual === null) {
     return false;
   }
   if (actual < 0 || expected < 0) {
@@ -105,6 +105,7 @@ export const RoundRecordEditPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [nameQuery, setNameQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchActiveIndex, setSearchActiveIndex] = useState(-1);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const [attemptTries, setAttemptTries] = useState<number[]>([1, 2, 3, 4, 5]);
   const [attemptInputs, setAttemptInputs] = useState<string[]>(Array.from({ length: 5 }, () => ""));
@@ -117,15 +118,28 @@ export const RoundRecordEditPage = () => {
     record: Record | null;
   }>({ open: false, position: null, record: null });
   const [extraModalOpen, setExtraModalOpen] = useState(false);
-  const [extraSearchQuery, setExtraSearchQuery] = useState("");
   const [extraForm, setExtraForm] = useState<ExtraFormState>({
     recordIdx: null,
     extraNum: 1,
     extraTry: 1,
-    extraReason: "",
+    extraReasonType: "",
+    extraReasonCustom: "",
   });
   const [extraSaving, setExtraSaving] = useState(false);
   const [extraError, setExtraError] = useState<string | null>(null);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoRecord, setInfoRecord] = useState<Record | null>(null);
+  const [infoForm, setInfoForm] = useState<RecordInfoFormState>({
+    recordIdx: null,
+    pdx: 0,
+    roundGroup: "",
+  });
+  const [infoSaving, setInfoSaving] = useState(false);
+  const [infoDeleting, setInfoDeleting] = useState(false);
+  const [infoError, setInfoError] = useState<string | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const attemptInputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const saveButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -214,16 +228,16 @@ export const RoundRecordEditPage = () => {
     }).slice(0, 8);
   }, [nameQuery, sortedRecords]);
 
-  const extraSearchResults = useMemo(() => {
-    const keyword = extraSearchQuery.trim().toLowerCase();
-    if (!keyword) return [];
-    return sortedRecords.filter((record) => {
-      return (
-        record.name.toLowerCase().includes(keyword) ||
-        record.cckId.toLowerCase().includes(keyword)
-      );
-    }).slice(0, 8);
-  }, [extraSearchQuery, sortedRecords]);
+  useEffect(() => {
+    if (searchResults.length === 0) {
+      setSearchActiveIndex(-1);
+      return;
+    }
+    setSearchActiveIndex((prev) => {
+      if (prev < 0) return 0;
+      return Math.min(prev, searchResults.length - 1);
+    });
+  }, [searchResults]);
 
   const extraAttempts = useMemo(() => {
     if (!selectedRecord) return [];
@@ -231,7 +245,7 @@ export const RoundRecordEditPage = () => {
   }, [selectedRecord]);
 
   const applyRecordSelection = (record: Record) => {
-    const baseAttemptTries = getBaseAttemptTries(record);
+    const baseAttemptTries = [1, 2, 3, 4, 5];
     setSelectedRecord(record);
     setNameQuery(record.name);
     setAttemptTries(baseAttemptTries);
@@ -241,14 +255,44 @@ export const RoundRecordEditPage = () => {
     setFormStatus(null);
   };
 
+  const focusNameInput = () => {
+    window.setTimeout(() => {
+      nameInputRef.current?.focus();
+    }, 0);
+  };
+
+  const focusFirstAttemptInput = () => {
+    window.setTimeout(() => {
+      attemptInputRefs.current[0]?.focus();
+    }, 0);
+  };
+
+  const selectRecordAndMoveToAttempt = (record: Record) => {
+    applyRecordSelection(record);
+    focusFirstAttemptInput();
+  };
+
   const openExtraModal = (record: Record) => {
     setExtraModalOpen(true);
-    setExtraSearchQuery(record.name);
-    setExtraForm((prev) => ({
-      ...prev,
+    setExtraForm({
       recordIdx: record.idx,
-    }));
+      extraNum: getNextExtraNum(record),
+      extraTry: 1,
+      extraReasonType: "",
+      extraReasonCustom: "",
+    });
     setExtraError(null);
+  };
+
+  const openInfoModal = (record: Record) => {
+    setInfoRecord(record);
+    setInfoForm({
+      recordIdx: record.idx,
+      pdx: record.pdx,
+      roundGroup: record.roundGroup ?? "",
+    });
+    setInfoError(null);
+    setInfoModalOpen(true);
   };
 
   const refreshRecords = async () => {
@@ -296,13 +340,19 @@ export const RoundRecordEditPage = () => {
         );
 
       if (!isApplied) {
-        throw new Error("요청은 성공했지만 기록이 실제로 변경되지 않았습니다. record idx를 다시 확인해주세요.");
+        throw new Error("기록 반영에 실패했습니다");
       }
 
       if (updatedRecord) {
-        applyRecordSelection(updatedRecord);
+        setSelectedRecord(null);
+        setAttemptTries([1, 2, 3, 4, 5]);
+        setAttemptInputs(Array.from({ length: 5 }, () => ""));
+        setNameQuery("");
+        setSearchOpen(false);
+        setSearchActiveIndex(-1);
       }
       setFormStatus("기록이 반영되었습니다.");
+      focusNameInput();
     } catch (saveError) {
       console.error("기록 업데이트 실패:", saveError);
       setFormError(getErrorMessage(saveError));
@@ -318,6 +368,8 @@ export const RoundRecordEditPage = () => {
     setAttemptInputs(Array.from({ length: 5 }, () => ""));
     setFormError(null);
     setFormStatus(null);
+    setSearchActiveIndex(-1);
+    focusNameInput();
   };
 
   const handleExtraSubmit = async () => {
@@ -325,10 +377,18 @@ export const RoundRecordEditPage = () => {
       setExtraError("선수를 선택하세요.");
       return;
     }
-    if (!extraForm.extraReason.trim()) {
+    if (!extraForm.extraReasonType.trim()) {
       setExtraError("엑스트라 사유를 입력하세요.");
       return;
     }
+    if (extraForm.extraReasonType === "기타" && !extraForm.extraReasonCustom.trim()) {
+      setExtraError("기타 사유를 입력하세요.");
+      return;
+    }
+
+    const resolvedReason = extraForm.extraReasonType === "기타"
+      ? extraForm.extraReasonCustom.trim()
+      : extraForm.extraReasonType;
 
     setExtraSaving(true);
     setExtraError(null);
@@ -338,7 +398,7 @@ export const RoundRecordEditPage = () => {
         recordIdx: extraForm.recordIdx,
         extraNum: extraForm.extraNum,
         extraTry: extraForm.extraTry,
-        extraReason: extraForm.extraReason.trim(),
+        extraReason: resolvedReason,
       });
       const latestRecords = await refreshRecords();
       const updatedRecord = latestRecords.find((record) => record.idx === extraForm.recordIdx) ?? null;
@@ -346,12 +406,83 @@ export const RoundRecordEditPage = () => {
         applyRecordSelection(updatedRecord);
       }
       setExtraModalOpen(false);
-      setExtraForm((prev) => ({ ...prev, extraReason: "" }));
+      setExtraForm((prev) => ({ ...prev, extraReasonType: "", extraReasonCustom: "" }));
     } catch (saveError) {
       console.error("엑스트라 추가 실패:", saveError);
       setExtraError("엑스트라 추가에 실패했습니다.");
     } finally {
       setExtraSaving(false);
+    }
+  };
+
+  const handleInfoSubmit = async () => {
+    if (!infoForm.recordIdx) {
+      setInfoError("선수를 선택하세요.");
+      return;
+    }
+    if (infoForm.pdx <= 0 || Number.isNaN(infoForm.pdx)) {
+      setInfoError("PDX는 1 이상의 숫자여야 합니다.");
+      return;
+    }
+
+    setInfoSaving(true);
+    setInfoError(null);
+
+    try {
+      await updateRecordInfo({
+        recordIdx: infoForm.recordIdx,
+        pdx: infoForm.pdx,
+        roundGroup: infoForm.roundGroup.trim(),
+      });
+      const latestRecords = await refreshRecords();
+      const updatedRecord = latestRecords.find((record) => record.idx === infoForm.recordIdx) ?? null;
+      if (updatedRecord) {
+        setInfoRecord(updatedRecord);
+        if (selectedRecord?.idx === updatedRecord.idx) {
+          applyRecordSelection(updatedRecord);
+        }
+      }
+      setInfoModalOpen(false);
+    } catch (saveError) {
+      console.error("기록 정보 업데이트 실패:", saveError);
+      setInfoError(getErrorMessage(saveError));
+    } finally {
+      setInfoSaving(false);
+    }
+  };
+
+  const handleInfoDelete = async () => {
+    if (!infoForm.recordIdx) {
+      setInfoError("선수를 선택하세요.");
+      return;
+    }
+
+    const confirmed = window.confirm("이 선수를 삭제하시겠습니까?");
+    if (!confirmed) return;
+
+    setInfoDeleting(true);
+    setInfoError(null);
+
+    try {
+      await deleteRecord(infoForm.recordIdx);
+      const latestRecords = await refreshRecords();
+      if (selectedRecord?.idx === infoForm.recordIdx) {
+        setSelectedRecord(null);
+        setAttemptTries([1, 2, 3, 4, 5]);
+        setAttemptInputs(Array.from({ length: 5 }, () => ""));
+        setNameQuery("");
+      }
+      setInfoRecord(null);
+      setInfoModalOpen(false);
+      setFormStatus("선수가 삭제되었습니다.");
+      if (latestRecords.length === 0) {
+        setSearchOpen(false);
+      }
+    } catch (deleteError) {
+      console.error("선수 삭제 실패:", deleteError);
+      setInfoError(getErrorMessage(deleteError));
+    } finally {
+      setInfoDeleting(false);
     }
   };
 
@@ -393,20 +524,65 @@ export const RoundRecordEditPage = () => {
           saving={saving}
           formError={formError}
           formStatus={formStatus}
-          formatTimeValue={formatTimeValue}
+          activeSearchIndex={searchActiveIndex}
+          setNameInputRef={(node) => {
+            nameInputRef.current = node;
+          }}
+          setAttemptInputRef={(index, node) => {
+            attemptInputRefs.current[index] = node;
+          }}
+          setSaveButtonRef={(node) => {
+            saveButtonRef.current = node;
+          }}
           onNameChange={(value) => {
             setNameQuery(value);
             setSearchOpen(true);
+            setSearchActiveIndex(0);
           }}
-          onNameFocus={() => setSearchOpen(true)}
+          onNameFocus={() => {
+            setSearchOpen(true);
+            if (searchResults.length > 0 && searchActiveIndex < 0) {
+              setSearchActiveIndex(0);
+            }
+          }}
           onNameBlur={() => {
             window.setTimeout(() => setSearchOpen(false), 120);
           }}
-          onSelectRecord={applyRecordSelection}
+          onNameKeyDown={(event) => {
+            if (searchResults.length === 0) return;
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              setSearchOpen(true);
+              setSearchActiveIndex((prev) => (prev + 1 + searchResults.length) % searchResults.length);
+              return;
+            }
+            if (event.key === "ArrowUp") {
+              event.preventDefault();
+              setSearchOpen(true);
+              setSearchActiveIndex((prev) => (prev - 1 + searchResults.length) % searchResults.length);
+              return;
+            }
+            if (event.key === "Enter" && searchOpen) {
+              event.preventDefault();
+              const targetIndex = searchActiveIndex >= 0 ? searchActiveIndex : 0;
+              const target = searchResults[targetIndex];
+              if (target) {
+                selectRecordAndMoveToAttempt(target);
+              }
+            }
+          }}
+          onHoverSearchIndex={(index) => setSearchActiveIndex(index)}
+          onSelectRecord={selectRecordAndMoveToAttempt}
           onAttemptChange={(index, value) => {
             const next = [...attemptInputs];
             next[index] = normalizeAttemptInput(value);
             setAttemptInputs(next);
+          }}
+          onAttemptKeyDown={(index, event) => {
+            if (event.key === "Tab" && !event.shiftKey && index === attemptTries.length - 1) {
+              event.preventDefault();
+              saveButtonRef.current?.focus();
+            }
           }}
           onReset={handleReset}
           onSave={handleSave}
@@ -414,6 +590,14 @@ export const RoundRecordEditPage = () => {
             if (selectedRecord) {
               openExtraModal(selectedRecord);
             } else {
+              setExtraForm({
+                recordIdx: null,
+                extraNum: 1,
+                extraTry: 1,
+                extraReasonType: "",
+                extraReasonCustom: "",
+              });
+              setExtraError(null);
               setExtraModalOpen(true);
             }
           }}
@@ -425,7 +609,7 @@ export const RoundRecordEditPage = () => {
           advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
           getAttemptValue={getAttemptValue}
-          onSelect={applyRecordSelection}
+          onSelect={selectRecordAndMoveToAttempt}
           selectedRecordIdx={selectedRecord?.idx}
           onContextMenu={(record, _rank, position) => {
             setContextMenu({ open: true, position, record });
@@ -451,9 +635,15 @@ export const RoundRecordEditPage = () => {
         open={contextMenu.open}
         position={contextMenu.position}
         onClose={() => setContextMenu({ open: false, position: null, record: null })}
+        onEditInfo={() => {
+          if (contextMenu.record) {
+            openInfoModal(contextMenu.record);
+          }
+          setContextMenu({ open: false, position: null, record: null });
+        }}
         onEdit={() => {
           if (contextMenu.record) {
-            applyRecordSelection(contextMenu.record);
+            selectRecordAndMoveToAttempt(contextMenu.record);
           }
           setContextMenu({ open: false, position: null, record: null });
         }}
@@ -465,20 +655,25 @@ export const RoundRecordEditPage = () => {
         }}
       />
 
+      <RecordInfoEditModal
+        open={infoModalOpen}
+        record={infoRecord}
+        form={infoForm}
+        saving={infoSaving}
+        deleting={infoDeleting}
+        error={infoError}
+        onFormChange={setInfoForm}
+        onClose={() => setInfoModalOpen(false)}
+        onDelete={handleInfoDelete}
+        onSubmit={handleInfoSubmit}
+      />
+
       <ExtraAddModal
         open={extraModalOpen}
-        records={records}
-        searchQuery={extraSearchQuery}
-        searchResults={extraSearchResults}
         selectedRecord={records.find((record) => record.idx === extraForm.recordIdx) ?? null}
         form={extraForm}
         saving={extraSaving}
         error={extraError}
-        onSearchChange={(value) => setExtraSearchQuery(value)}
-        onSelectRecord={(record) => {
-          setExtraForm((prev) => ({ ...prev, recordIdx: record.idx }));
-          setExtraSearchQuery(record.name);
-        }}
         onFormChange={(next) => setExtraForm(next)}
         onClose={() => setExtraModalOpen(false)}
         onSubmit={handleExtraSubmit}

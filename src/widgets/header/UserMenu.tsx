@@ -51,7 +51,7 @@ export const UserMenu = ({ avatarSrc, name, cckId, onProfile, onSettings, onLogo
             role="menuitem"
             onClick={() => handleAction(onProfile)}
           >
-            마이페이지
+            나의 정보
           </button>
           <button
             type="button"

@@ -45,13 +45,13 @@ export const RoundManagementSection = ({
   eventOptions,
   onRoundsChange,
   onNewRoundsChange,
-  onRoundSave,
+  onRoundSave: _onRoundSave,
   onRoundCreate,
   onRoundDelete,
   saving,
   title = "라운드 편집",
   showExisting = true,
-  showSaveButton = true,
+  showSaveButton: _showSaveButton = true,
   showCreateButton = true,
 }: RoundManagementSectionProps) => (
   <div className="dashboard-test-section">
@@ -447,17 +447,5 @@ export const RoundManagementSection = ({
       </div>
     ) : null}
 
-    {showSaveButton ? (
-      <div className="dashboard-test-actions">
-        <button
-          type="button"
-          className="dashboard-test-button dashboard-test-button--primary"
-          onClick={onRoundSave}
-          disabled={saving || rounds.length === 0}
-        >
-          라운드 변경 저장
-        </button>
-      </div>
-    ) : null}
   </div>
 );

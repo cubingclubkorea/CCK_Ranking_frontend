@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from "react";
 import type { Record } from "@/entities/record";
 import type { Attempt } from "@/entities/record/model/attempt";
 
@@ -12,12 +13,18 @@ type RecordEditPanelProps = {
   saving: boolean;
   formError: string | null;
   formStatus: string | null;
-  formatTimeValue: (value?: number) => string;
+  activeSearchIndex: number;
+  setNameInputRef: (node: HTMLInputElement | null) => void;
+  setAttemptInputRef: (index: number, node: HTMLInputElement | null) => void;
+  setSaveButtonRef: (node: HTMLButtonElement | null) => void;
   onNameChange: (value: string) => void;
   onNameFocus: () => void;
   onNameBlur: () => void;
+  onNameKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
+  onHoverSearchIndex: (index: number) => void;
   onSelectRecord: (record: Record) => void;
   onAttemptChange: (index: number, value: string) => void;
+  onAttemptKeyDown: (index: number, event: KeyboardEvent<HTMLInputElement>) => void;
   onReset: () => void;
   onSave: () => void;
   onOpenExtra: () => void;
@@ -34,12 +41,18 @@ export const RecordEditPanel = ({
   saving,
   formError,
   formStatus,
-  formatTimeValue,
+  activeSearchIndex,
+  setNameInputRef,
+  setAttemptInputRef,
+  setSaveButtonRef,
   onNameChange,
   onNameFocus,
   onNameBlur,
+  onNameKeyDown,
+  onHoverSearchIndex,
   onSelectRecord,
   onAttemptChange,
+  onAttemptKeyDown,
   onReset,
   onSave,
   onOpenExtra,
@@ -62,9 +75,11 @@ export const RecordEditPanel = ({
               type="search"
               placeholder="이름 또는 CCK ID 입력"
               value={nameQuery}
+              ref={setNameInputRef}
               onChange={(event) => onNameChange(event.target.value)}
               onFocus={onNameFocus}
               onBlur={onNameBlur}
+              onKeyDown={onNameKeyDown}
               autoFocus
             />
             <span className="record-edit-search-icon" aria-hidden="true">
@@ -73,11 +88,13 @@ export const RecordEditPanel = ({
           </div>
           {searchOpen && searchResults.length > 0 && (
             <div className="record-edit-suggestions" role="listbox">
-              {searchResults.map((record) => (
+              {searchResults.map((record, index) => (
                 <button
                   key={record.idx}
                   type="button"
-                  className="record-edit-suggestion"
+                  className={`record-edit-suggestion ${activeSearchIndex === index ? "record-edit-suggestion--active" : ""}`}
+                  aria-selected={activeSearchIndex === index}
+                  onMouseEnter={() => onHoverSearchIndex(index)}
                   onMouseDown={() => onSelectRecord(record)}
                 >
                   <span className="record-edit-suggestion-name">
@@ -90,50 +107,9 @@ export const RecordEditPanel = ({
           )}
         </div>
 
-        <div className="record-edit-field">
-          <label className="record-edit-label">CCK ID</label>
-          <input
-            className="record-edit-input"
-            type="text"
-            value={selectedRecord?.cckId ?? ""}
-            placeholder="선수를 선택하세요"
-            readOnly
-          />
-        </div>
-        <div className="record-edit-field">
-          <label className="record-edit-label">그룹</label>
-          <input
-            className="record-edit-input"
-            type="text"
-            value={selectedRecord?.roundGroup ?? ""}
-            placeholder="-"
-            readOnly
-          />
-        </div>
-        <div className="record-edit-field">
-          <label className="record-edit-label">평균</label>
-          <input
-            className="record-edit-input"
-            type="text"
-            value={selectedRecord ? formatTimeValue(selectedRecord.average) : ""}
-            placeholder="-"
-            readOnly
-          />
-        </div>
-        <div className="record-edit-field">
-          <label className="record-edit-label">싱글</label>
-          <input
-            className="record-edit-input"
-            type="text"
-            value={selectedRecord ? formatTimeValue(selectedRecord.single) : ""}
-            placeholder="-"
-            readOnly
-          />
-        </div>
-
         <div className="record-edit-section">
           <div className="record-edit-section-title">시도 기록</div>
-          <div className="record-edit-help">형식: 1:23.45 / 12345 / DNF / DNS / -1(DNF) / -2(DNS) / 빈칸(기록 비우기)</div>
+          <div className="record-edit-help">형식 : 1:23.45 = 12345 ∙ DNF = / </div>
           <div className="record-edit-attempts">
             {attemptTries.map((attemptTry, index) => (
               <div className="record-edit-field" key={attemptTry}>
@@ -146,7 +122,9 @@ export const RecordEditPanel = ({
                   type="text"
                   inputMode="text"
                   value={attemptInputs[index]}
+                  ref={(node) => setAttemptInputRef(index, node)}
                   onChange={(event) => onAttemptChange(index, event.target.value)}
+                  onKeyDown={(event) => onAttemptKeyDown(index, event)}
                   placeholder="-"
                   disabled={!selectedRecord}
                 />
@@ -189,6 +167,7 @@ export const RecordEditPanel = ({
             className="record-edit-btn record-edit-btn--primary"
             type="button"
             onClick={onSave}
+            ref={setSaveButtonRef}
             disabled={!selectedRecord || saving}
           >
             {saving ? "반영 중..." : "반영"}

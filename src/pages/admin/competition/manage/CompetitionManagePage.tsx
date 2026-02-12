@@ -392,30 +392,34 @@ export const CompetitionManagePage = () => {
       ) : null}
 
       <div className="competition-manage-footer">
-        <button
-          type="button"
-          className="competition-manage-action-btn"
-          onClick={() => {
-            if (section === "competition") {
-              handleCompetitionSave();
-            } else {
-              handleRoundSave();
-            }
-          }}
-          disabled={saving || roundSaving || (section === "round" && rounds.length === 0)}
-        >
-          <img className="competition-manage-action-icon" src="/icon/button/save.svg" alt="" aria-hidden="true" />
-          저장
-        </button>
-        <button
-          type="button"
-          className="competition-manage-action-btn competition-manage-action-btn--danger"
-          onClick={handleDeleteCompetition}
-          disabled={saving || roundSaving}
-        >
-          <img className="competition-manage-action-icon" src="/icon/button/delete.svg" alt="" aria-hidden="true" />
-          대회 삭제
-        </button>
+        <div className="competition-manage-footer-left">
+          <button
+            type="button"
+            className="competition-manage-action-btn"
+            onClick={() => {
+              if (section === "competition") {
+                handleCompetitionSave();
+              } else {
+                handleRoundSave();
+              }
+            }}
+            disabled={saving || roundSaving || (section === "round" && rounds.length === 0)}
+          >
+            <img className="competition-manage-action-icon" src="/icon/button/save.svg" alt="" aria-hidden="true" />
+            저장
+          </button>
+        </div>
+        <div className="competition-manage-footer-right">
+          <button
+            type="button"
+            className="competition-manage-action-btn competition-manage-action-btn--danger"
+            onClick={handleDeleteCompetition}
+            disabled={saving || roundSaving}
+          >
+            <img className="competition-manage-action-icon" src="/icon/button/delete.svg" alt="" aria-hidden="true" />
+            대회 삭제
+          </button>
+        </div>
       </div>
     </div>
   );

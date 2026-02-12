@@ -1,6 +1,7 @@
 type RecordContextMenuProps = {
   open: boolean;
   position: { x: number; y: number } | null;
+  onEditInfo: () => void;
   onEdit: () => void;
   onExtra: () => void;
   onClose: () => void;
@@ -9,6 +10,7 @@ type RecordContextMenuProps = {
 export const RecordContextMenu = ({
   open,
   position,
+  onEditInfo,
   onEdit,
   onExtra,
   onClose,
@@ -22,6 +24,9 @@ export const RecordContextMenu = ({
         style={{ top: position.y, left: position.x }}
         onClick={(event) => event.stopPropagation()}
       >
+        <button type="button" className="record-context-item" onClick={onEditInfo}>
+          선수 편집
+        </button>
         <button type="button" className="record-context-item" onClick={onEdit}>
           기록 편집
         </button>
