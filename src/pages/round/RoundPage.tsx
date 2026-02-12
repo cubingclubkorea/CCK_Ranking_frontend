@@ -8,7 +8,7 @@ import { RoundHeader } from "./components/RoundHeader";
 import { RecordTable } from "./components/RecordTable";
 import { RecordDetailModal } from "./components/RecordDetailModal";
 
-const formatTimeValue = (value?: number) => {
+const formatTimeValue = (value?: number | null) => {
   if (value === null || value === undefined) {
     return "-";
   }

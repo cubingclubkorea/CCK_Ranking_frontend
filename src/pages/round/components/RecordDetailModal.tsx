@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 type RecordDetailModalProps = {
   selected: { record: Record; rank: number } | null;
   onClose: () => void;
-  formatTimeValue: (value?: number) => string;
+  formatTimeValue: (value?: number | null) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
 };
 
@@ -47,7 +47,7 @@ export const RecordDetailModal = ({
             #{selected.rank} {selected.record.name}
           </div>
           <button type="button" className="record-modal-close" onClick={onClose} aria-label="닫기">
-            ×
+            <img src="/icon/modal/close.svg" alt="" aria-hidden="true" />
           </button>
         </div>
         <div className="record-modal-body">
@@ -76,7 +76,7 @@ export const RecordDetailModal = ({
                 const attempt = selected.record.attempts.find((item) => item.attemptTry === attemptTry);
                 const time = attempt?.time;
                 let highlightClass = "";
-                if (time !== undefined) {
+                if (time !== undefined && time !== null) {
                   if (negativeTimes.length > 0 && time < 0) {
                     highlightClass = "attempt-worst";
                   } else if (time === bestValue) {

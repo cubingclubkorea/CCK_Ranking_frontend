@@ -37,7 +37,7 @@ export const ApiDashboardRecordCUDTestPage = () => {
 
   // Update Record Form State
   const [updateForm, setUpdateForm] = useState<RecordUpdateDTO>({
-    idx: 1,
+    recordIdx: 1,
     times: [12.34, 13.45, 14.56, 15.67, 16.78],
   });
 
@@ -260,11 +260,11 @@ export const ApiDashboardRecordCUDTestPage = () => {
         <h2 className="dashboard-test-section-title">✏️ 기록 업데이트 (Update Record)</h2>
         <div className="dashboard-test-grid">
           <div className="dashboard-test-field">
-            <label className="dashboard-test-label">idx (기록 ID)</label>
+            <label className="dashboard-test-label">recordIdx (기록 ID)</label>
             <input
               type="number"
-              value={updateForm.idx}
-              onChange={(e) => setUpdateForm({ ...updateForm, idx: Number(e.target.value) })}
+              value={updateForm.recordIdx ?? ''}
+              onChange={(e) => setUpdateForm({ ...updateForm, recordIdx: Number(e.target.value) })}
               placeholder="1"
               className="dashboard-test-input"
             />

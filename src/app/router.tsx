@@ -15,6 +15,7 @@ import {
   CompetitionAdminPage,
   CompetitionCreatePage,
   CompetitionManagePage,
+  RoundRecordEditPage,
   ConfirmPage,
   LogoutPage,
   NotFoundPage,
@@ -22,8 +23,9 @@ import {
   ComingSoonPage
 } from "@/pages";
 import { LOGIN_URL } from "@/shared/config";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Header, Sidebar } from "@/widgets";
+import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
 /**
  * 로그인 페이지 리다이렉트 컴포넌트
@@ -55,6 +57,26 @@ const
       </main>
     </div>
   );
+};
+
+const AdminRoute = ({ children }: { children: ReactNode }) => {
+  const [isAdmin, setIsAdmin] = useState(hasAdminRole());
+
+  useEffect(() => {
+    const syncAuthState = () => setIsAdmin(hasAdminRole());
+    window.addEventListener(authChangeEvent, syncAuthState);
+    window.addEventListener("storage", syncAuthState);
+    return () => {
+      window.removeEventListener(authChangeEvent, syncAuthState);
+      window.removeEventListener("storage", syncAuthState);
+    };
+  }, []);
+
+  if (!isAdmin) {
+    return <ForbiddenPage />;
+  }
+
+  return <>{children}</>;
 };
 
 /**
@@ -95,27 +117,59 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin/member",
-        element: <ForbiddenPage />,
+        element: (
+          <AdminRoute>
+            <ComingSoonPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/competition",
-        element: <CompetitionAdminPage />,
+        element: (
+          <AdminRoute>
+            <CompetitionAdminPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/competition/create",
-        element: <CompetitionCreatePage />,
+        element: (
+          <AdminRoute>
+            <CompetitionCreatePage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/competition/:compIdx",
-        element: <CompetitionManagePage />,
+        element: (
+          <AdminRoute>
+            <CompetitionManagePage />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "admin/competition/:compIdx/round/:roundIdx",
+        element: (
+          <AdminRoute>
+            <RoundRecordEditPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/event",
-        element: <ForbiddenPage />,
+        element: (
+          <AdminRoute>
+            <ComingSoonPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/oauth",
-        element: <ForbiddenPage />,
+        element: (
+          <AdminRoute>
+            <ComingSoonPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "confirm",
@@ -131,39 +185,75 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin/api-dashboard",
-        element: <ApiDashboardPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/competition",
-        element: <ApiDashboardCompetitionTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardCompetitionTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/competition/cud",
-        element: <ApiDashboardCompetitionCUDTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardCompetitionCUDTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/event",
-        element: <ApiDashboardCubeEventTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardCubeEventTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/round",
-        element: <ApiDashboardRoundTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardRoundTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/round/cud",
-        element: <ApiDashboardRoundCUDTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardRoundCUDTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/record",
-        element: <ApiDashboardRecordTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardRecordTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/record/cud",
-        element: <ApiDashboardRecordCUDTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardRecordCUDTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "admin/api-dashboard/scramble",
-        element: <ApiDashboardScrambleTestPage />,
+        element: (
+          <AdminRoute>
+            <ApiDashboardScrambleTestPage />
+          </AdminRoute>
+        ),
       },
       {
         path: "*",

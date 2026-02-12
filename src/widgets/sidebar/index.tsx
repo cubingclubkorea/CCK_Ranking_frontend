@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { MenuItem } from "./MenuItem";
-import { authChangeEvent, hasAccessToken } from "@/features/auth/utils/tokenStorage";
+import { authChangeEvent, hasAccessToken, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
 function Sidebar({ collapsed }: { collapsed: boolean }) {
   const [isLoggedIn, setIsLoggedIn] = useState(hasAccessToken());
+  const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const icons = {
     list: "/icon/sidebar/list.svg",
     record: "/icon/sidebar/record.svg",
@@ -15,10 +16,14 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
     card: "/icon/sidebar/card.svg",
     lock: "/icon/sidebar/lock.svg",
     form: "/icon/sidebar/form.svg",
+    dashboard: "/icon/sidebar/dashboard.svg",
   };
 
   useEffect(() => {
-    const syncAuthState = () => setIsLoggedIn(hasAccessToken());
+    const syncAuthState = () => {
+      setIsLoggedIn(hasAccessToken());
+      setIsAdmin(hasAdminRole());
+    };
     window.addEventListener(authChangeEvent, syncAuthState);
     window.addEventListener("storage", syncAuthState);
     return () => {
@@ -38,16 +43,20 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
         {isLoggedIn && <MenuItem text="기록 이전 신청" icon={icons.form} to="/transfer-record" />}
       </div>
 
-      <div className="sidebar-divider" />
+      {isAdmin && (
+        <>
+          <div className="sidebar-divider" />
 
-      {/* 관리자 메뉴 */}
-      <div className="admin-group">
-        <MenuItem text="회원 관리" icon={icons.personData} to="/admin/member" />
-        <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" />
-        <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" />
-        <MenuItem text="OAuth 관리" icon={icons.lock} to="/admin/oauth" />
-        <MenuItem text="API 대시보드" icon={icons.lock} to="/admin/api-dashboard" />
-      </div>
+          {/* 관리자 메뉴 */}
+          <div className="admin-group">
+            <MenuItem text="회원 관리" icon={icons.personData} to="/admin/member" />
+            <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" />
+            <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" />
+            <MenuItem text="OAuth 관리" icon={icons.lock} to="/admin/oauth" />
+            <MenuItem text="API 대시보드" icon={icons.dashboard} to="/admin/api-dashboard" />
+          </div>
+        </>
+      )}
     </aside>
   );
 }
