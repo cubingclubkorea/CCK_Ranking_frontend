@@ -13,6 +13,7 @@ import {
   type ExtraDTO,
 } from '@/features/record';
 import { createApiHandler } from '@/shared';
+import { OverlayToast } from '@/widgets';
 
 export const ApiDashboardRecordCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
@@ -102,6 +103,14 @@ export const ApiDashboardRecordCUDTestPage = () => {
     `추가 시도 삭제 성공!`
   );
 
+  const toast = error
+    ? { variant: 'error' as const, message: error, onClose: () => setError(null) }
+    : result
+      ? { variant: 'success' as const, message: result, onClose: () => setResult(null) }
+      : loading
+        ? { variant: 'info' as const, message: '로딩 중...', onClose: undefined }
+        : null;
+
   const addPlayerItem = () => {
     setPlayerList([
       ...playerList,
@@ -123,6 +132,12 @@ export const ApiDashboardRecordCUDTestPage = () => {
 
   return (
     <div className="dashboard-test-page">
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ''}
+        onClose={toast?.onClose}
+      />
       <h1 className="dashboard-test-title">Record CUD API 테스트</h1>
 
       <div className="dashboard-test-section">
@@ -459,19 +474,6 @@ export const ApiDashboardRecordCUDTestPage = () => {
         </button>
       </div>
 
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
-      {result && (
-        <div className="dashboard-test-status dashboard-test-status--success">
-          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
-          {result}
-        </div>
-      )}
     </div>
   );
 };

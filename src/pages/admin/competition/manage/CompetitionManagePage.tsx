@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { OverlayToast } from "@/widgets";
 import { getCompetition } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
 import { getRoundByDayCount } from "@/entities/round";
@@ -81,7 +82,7 @@ const getDayEnd = (date: Date) =>
 const getErrorMessage = (err: unknown) => {
   if (err instanceof Error) return err.message;
   if (typeof err === "string") return err;
-  if (!err) return "알 수 없는 에러";
+  if (!err) return "알 수 없는 오류가 발생했습니다.";
   if (typeof err === "object" && "message" in err) {
     const message = (err as { message?: unknown }).message;
     if (typeof message === "string") return message;
@@ -89,7 +90,7 @@ const getErrorMessage = (err: unknown) => {
   try {
     return JSON.stringify(err);
   } catch {
-    return "알 수 없는 에러";
+    return "알 수 없는 오류가 발생했습니다.";
   }
 };
 
@@ -380,7 +381,7 @@ export const CompetitionManagePage = () => {
       if (rounds.length > 0) messages.push("라운드 수정");
       if (newRounds.length > 0) messages.push("라운드 추가");
       if (deletedRoundIds.length > 0) messages.push("라운드 삭제");
-      setNotice(messages.length > 0 ? `${messages.join(", ")}가 저장되었습니다.` : "라운드 정보가 저장되었습니다.");
+      setNotice(messages.length > 0 ? `변경 사항이 저장되었습니다. (${messages.join(", ")})` : "라운드 정보가 저장되었습니다.");
     } catch (err) {
       setRoundError(getErrorMessage(err));
     } finally {
@@ -417,36 +418,35 @@ export const CompetitionManagePage = () => {
   if (!competitionId || Number.isNaN(competitionId)) {
     return (
       <div className="admin-page">
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          잘못된 대회 ID입니다.
-        </div>
+        <OverlayToast
+          open={true}
+          variant="error"
+          message="잘못된 대회 ID입니다."
+          onClose={() => navigate("/admin/competition")}
+        />
       </div>
     );
   }
 
+  const toast = section === "round" && roundError
+    ? { variant: "error" as const, message: roundError, onClose: () => setRoundError(null) }
+    : error
+      ? { variant: "error" as const, message: error, onClose: () => setError(null) }
+      : notice
+        ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
+        : loading
+          ? { variant: "info" as const, message: "로딩 중...", onClose: undefined }
+          : null;
+
 
   return (
     <div className="admin-page">
-      {notice && (
-        <div className="dashboard-test-status dashboard-test-status--success">
-          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
-          {notice}
-        </div>
-      )}
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
-      {section === "round" && roundError && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {roundError}
-        </div>
-      )}
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
 
       <CompetitionManageHeader
         title={competition?.compName ?? "대회 편집"}

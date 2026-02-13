@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { Record } from "@/entities/record";
 
 type RecordTableProps = {
@@ -21,6 +22,15 @@ export const RecordTable = ({
   onContextMenu,
   selectedRecordIdx,
 }: RecordTableProps) => {
+  const rowRefMap = useRef<Map<number, HTMLTableRowElement>>(new Map());
+
+  useEffect(() => {
+    if (!selectedRecordIdx) return;
+    const row = rowRefMap.current.get(selectedRecordIdx);
+    if (!row) return;
+    row.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [selectedRecordIdx]);
+
   if (records.length === 0) {
     return <div className="round-ranking-empty">{emptyMessage}</div>;
   }
@@ -78,6 +88,13 @@ export const RecordTable = ({
             return (
               <tr
                 key={record.idx}
+                ref={(node) => {
+                  if (node) {
+                    rowRefMap.current.set(record.idx, node);
+                    return;
+                  }
+                  rowRefMap.current.delete(record.idx);
+                }}
                 className={[
                   isAdvance ? "round-table-row-advance" : "",
                   "record-table-row",

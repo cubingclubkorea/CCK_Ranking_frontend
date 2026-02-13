@@ -55,7 +55,7 @@ export class ApiClient {
                 : rawData
                   ? JSON.stringify(rawData)
                   : '';
-            customMessage = error.response.statusText || '알 수 없는 에러';
+            customMessage = error.response.statusText || '알 수 없는 오류가 발생했습니다.';
             if (dataText) {
               customMessage += `: ${dataText}`;
             }

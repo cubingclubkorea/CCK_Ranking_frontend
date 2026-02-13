@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createCompetition, updateCompetition, deleteCompetition, type CompetitionCreateDTO, type CompetitionUpdateDTO } from "@/features/competition";
 import { createApiHandler } from "@/shared";
+import { OverlayToast } from "@/widgets";
 
 export const ApiDashboardCompetitionCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
@@ -46,8 +47,22 @@ export const ApiDashboardCompetitionCUDTestPage = () => {
 
   const handleDelete = () => handleApi(() => deleteCompetition(deleteIdx), `대회 ${deleteIdx} 삭제 성공!`);
 
+  const toast = error
+    ? { variant: "error" as const, message: error, onClose: () => setError(null) }
+    : result
+      ? { variant: "success" as const, message: result, onClose: () => setResult(null) }
+      : loading
+        ? { variant: "info" as const, message: "로딩 중...", onClose: undefined }
+        : null;
+
   return (
     <div className="dashboard-test-page">
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
       <h1 className="dashboard-test-title">Competition CUD API 테스트</h1>
 
       <div className="dashboard-test-section">
@@ -379,19 +394,6 @@ export const ApiDashboardCompetitionCUDTestPage = () => {
         </div>
       </div>
 
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
-      {result && (
-        <div className="dashboard-test-status dashboard-test-status--success">
-          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
-          {result}
-        </div>
-      )}
     </div>
   );
 };

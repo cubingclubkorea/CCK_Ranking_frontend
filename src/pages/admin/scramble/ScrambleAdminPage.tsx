@@ -4,6 +4,7 @@ import { getCompetition } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
 import type { ScrambleResponse } from "@/entities/scramble";
 import { updateScrambler } from "@/features/scramble";
+import { OverlayToast } from "@/widgets";
 
 type TaggedCard = {
   uid: string;
@@ -57,7 +58,7 @@ const parseTaggedCard = (rawValue: string): TaggedCard | null => {
 const getErrorMessage = (error: unknown) => {
   if (error instanceof Error) return error.message;
   if (typeof error === "string") return error;
-  return "알 수 없는 에러";
+  return "알 수 없는 오류가 발생했습니다.";
 };
 
 export const ScrambleAdminPage = () => {
@@ -196,28 +197,30 @@ export const ScrambleAdminPage = () => {
   if (pageError) {
     return (
       <div className="admin-page">
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {pageError}
-        </div>
+        <OverlayToast
+          open={true}
+          variant="error"
+          message={pageError}
+          onClose={() => navigate("/admin/competition")}
+        />
       </div>
     );
   }
 
+  const toast = error
+    ? { variant: "error" as const, message: error, onClose: () => setError(null) }
+    : notice
+      ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
+      : null;
+
   return (
     <div className="admin-page scramble-admin-page">
-      {notice && (
-        <div className="dashboard-test-status dashboard-test-status--success">
-          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
-          {notice}
-        </div>
-      )}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
 
       <div className="admin-header">
         <div className="page-title-area round-title-area">

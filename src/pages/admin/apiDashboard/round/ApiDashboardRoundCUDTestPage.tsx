@@ -7,6 +7,7 @@ import {
   type RoundCreateDTO,
   type RoundUpdateDTO,
 } from '@/features/round';
+import { OverlayToast } from '@/widgets';
 
 export const ApiDashboardRoundCUDTestPage = () => {
   const [result, setResult] = useState<string | null>(null);
@@ -60,7 +61,7 @@ export const ApiDashboardRoundCUDTestPage = () => {
       setResult('라운드 생성 성공!');
       console.log('생성 성공:', createList);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
       console.error('생성 에러:', err);
     } finally {
@@ -77,7 +78,7 @@ export const ApiDashboardRoundCUDTestPage = () => {
       setResult('라운드 수정 성공!');
       console.log('수정 성공:', updateList);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
       console.error('수정 에러:', err);
     } finally {
@@ -94,7 +95,7 @@ export const ApiDashboardRoundCUDTestPage = () => {
       setResult(`라운드 ${deleteIdx} 삭제 성공!`);
       console.log('삭제 성공:', deleteIdx);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
       console.error('삭제 에러:', err);
     } finally {
@@ -111,13 +112,21 @@ export const ApiDashboardRoundCUDTestPage = () => {
       setResult(`라운드 ${advanceRoundIdx}의 advance를 ${advanceCount}로 변경 성공!`);
       console.log('Advance 변경 성공:', { advanceRoundIdx, advanceCount });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
       console.error('Advance 변경 에러:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  const toast = error
+    ? { variant: 'error' as const, message: error, onClose: () => setError(null) }
+    : result
+      ? { variant: 'success' as const, message: result, onClose: () => setResult(null) }
+      : loading
+        ? { variant: 'info' as const, message: '로딩 중...', onClose: undefined }
+        : null;
 
   const addCreateItem = () => {
     setCreateList([
@@ -160,6 +169,12 @@ export const ApiDashboardRoundCUDTestPage = () => {
 
   return (
     <div className="dashboard-test-page">
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ''}
+        onClose={toast?.onClose}
+      />
       <h1 className="dashboard-test-title">Round CUD API 테스트</h1>
 
       <div className="dashboard-test-section">
@@ -550,19 +565,6 @@ export const ApiDashboardRoundCUDTestPage = () => {
         </button>
       </div>
 
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
-      {result && (
-        <div className="dashboard-test-status dashboard-test-status--success">
-          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
-          {result}
-        </div>
-      )}
     </div>
   );
 };

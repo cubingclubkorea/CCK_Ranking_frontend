@@ -13,7 +13,6 @@ type RecordInfoEditModalProps = {
   form: RecordInfoForm;
   saving: boolean;
   deleting: boolean;
-  error: string | null;
   onFormChange: (next: RecordInfoForm) => void;
   onClose: () => void;
   onDelete: () => void;
@@ -26,7 +25,6 @@ export const RecordInfoEditModal = ({
   form,
   saving,
   deleting,
-  error,
   onFormChange,
   onClose,
   onDelete,
@@ -75,8 +73,6 @@ export const RecordInfoEditModal = ({
               placeholder="예: A"
             />
           </div>
-
-          {error && <div className="record-edit-status record-edit-status--error">{error}</div>}
         </div>
         <div className="record-edit-actions record-extra-actions">
           <button

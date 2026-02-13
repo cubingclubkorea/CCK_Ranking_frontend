@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCompetitionFuture, getCompetitionNow, getCompetitionPast } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
+import { OverlayToast } from "@/widgets";
 import { CompetitionAdminHeader } from "./components/CompetitionAdminHeader";
 
 type CompetitionRow = {
@@ -37,7 +38,7 @@ export const CompetitionAdminPage = () => {
     try {
       return JSON.stringify(err);
     } catch {
-      return "알 수 없는 에러";
+      return "알 수 없는 오류가 발생했습니다.";
     }
   };
 
@@ -94,22 +95,22 @@ export const CompetitionAdminPage = () => {
   }, []);
 
   const totalCount = useMemo(() => rows.length, [rows.length]);
+  const toast = error
+    ? { variant: "error" as const, message: error, onClose: () => setError(null) }
+    : notice
+      ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
+      : loading
+        ? { variant: "info" as const, message: "로딩 중...", onClose: undefined }
+        : null;
 
   return (
     <div className="admin-page">
-      {notice && (
-        <div className="dashboard-test-status dashboard-test-status--success">
-          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
-          {notice}
-        </div>
-      )}
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
 
       <CompetitionAdminHeader totalCount={totalCount} />
 

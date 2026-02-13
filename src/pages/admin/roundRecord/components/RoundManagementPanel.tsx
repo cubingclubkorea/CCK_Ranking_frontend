@@ -5,6 +5,7 @@ import type { Record } from "@/entities/record";
 import { addPlayer, advancePlayer, deleteRecord } from "@/features/record";
 import { updateAdvance } from "@/features/round";
 import type { PlayerAddDTO } from "@/features/record";
+import { OverlayToast } from "@/widgets";
 
 type RoundManagementPanelProps = {
   round: Round;
@@ -71,6 +72,11 @@ export const RoundManagementPanel = ({
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const toast = error
+    ? { variant: "error" as const, message: error, onClose: () => setError(null) }
+    : status
+      ? { variant: "success" as const, message: status, onClose: () => setStatus(null) }
+      : null;
 
   const noShowCandidates = useMemo(() => {
     return records.filter((record) => {
@@ -201,6 +207,12 @@ export const RoundManagementPanel = ({
 
   return (
     <div className="round-manage-panel">
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
       <div className="round-panel-title">
         <h2>라운드 관리</h2>
       </div>
@@ -236,9 +248,6 @@ export const RoundManagementPanel = ({
           라운드 자동 진출
         </button>
       </div>
-
-      {error && <div className="record-edit-status record-edit-status--error">{error}</div>}
-      {status && <div className="record-edit-status record-edit-status--success">{status}</div>}
 
       <ActionModal
         title="선수 추가"

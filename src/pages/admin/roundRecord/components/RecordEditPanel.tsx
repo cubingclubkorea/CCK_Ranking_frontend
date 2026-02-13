@@ -11,8 +11,6 @@ type RecordEditPanelProps = {
   attemptInputs: string[];
   extraAttempts: Attempt[];
   saving: boolean;
-  formError: string | null;
-  formStatus: string | null;
   activeSearchIndex: number;
   setNameInputRef: (node: HTMLInputElement | null) => void;
   setAttemptInputRef: (index: number, node: HTMLInputElement | null) => void;
@@ -30,6 +28,7 @@ type RecordEditPanelProps = {
   onReset: () => void;
   onSave: () => void;
   onOpenExtra: () => void;
+  onDeleteExtra: (attempt: Attempt) => void;
 };
 
 export const RecordEditPanel = ({
@@ -41,8 +40,6 @@ export const RecordEditPanel = ({
   attemptInputs,
   extraAttempts,
   saving,
-  formError,
-  formStatus,
   activeSearchIndex,
   setNameInputRef,
   setAttemptInputRef,
@@ -60,6 +57,7 @@ export const RecordEditPanel = ({
   onReset,
   onSave,
   onOpenExtra,
+  onDeleteExtra,
 }: RecordEditPanelProps) => {
   return (
     <div className="record-edit-panel">
@@ -152,8 +150,17 @@ export const RecordEditPanel = ({
             <div className="record-extra-list">
               {extraAttempts.map((attempt) => (
                 <div key={attempt.idx} className="record-extra-item">
-                  <div className="record-extra-title">
-                    Extra {attempt.extra} / Try {attempt.attemptTry}
+                  <div className="record-extra-item-head">
+                    <div className="record-extra-title">
+                      Extra {attempt.extra} / Try {attempt.attemptTry}
+                    </div>
+                    <button
+                      type="button"
+                      className="record-edit-mini-btn record-edit-mini-btn--danger"
+                      onClick={() => onDeleteExtra(attempt)}
+                    >
+                      취소
+                    </button>
                   </div>
                   <div className="record-extra-reason">{attempt.exReason || "-"}</div>
                 </div>
@@ -161,9 +168,6 @@ export const RecordEditPanel = ({
             </div>
           )}
         </div>
-
-        {formError && <div className="record-edit-status record-edit-status--error">{formError}</div>}
-        {formStatus && <div className="record-edit-status record-edit-status--success">{formStatus}</div>}
 
         <div className="record-edit-actions">
           <button className="record-edit-btn record-edit-btn--ghost" type="button" onClick={onReset}>

@@ -14,7 +14,6 @@ type ExtraAddModalProps = {
   selectedRecord: Record | null;
   form: ExtraForm;
   saving: boolean;
-  error: string | null;
   onFormChange: (next: ExtraForm) => void;
   onClose: () => void;
   onSubmit: () => void;
@@ -25,7 +24,6 @@ export const ExtraAddModal = ({
   selectedRecord,
   form,
   saving,
-  error,
   onFormChange,
   onClose,
   onSubmit,
@@ -116,8 +114,6 @@ export const ExtraAddModal = ({
               />
             </div>
           )}
-
-          {error && <div className="record-edit-status record-edit-status--error">{error}</div>}
         </div>
         <div className="record-edit-actions record-extra-actions">
           <button

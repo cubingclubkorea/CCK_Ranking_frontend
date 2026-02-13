@@ -5,6 +5,7 @@ import {
   getRoundFuture,
   getRound,
 } from '@/entities/round';
+import { OverlayToast } from '@/widgets';
 
 export const ApiDashboardRoundTestPage = () => {
   const [result, setResult] = useState<any>(null);
@@ -21,7 +22,7 @@ export const ApiDashboardRoundTestPage = () => {
       setResult(data);
       console.log(`${name} 결과:`, data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
       console.error(`${name} 에러:`, err);
     } finally {
@@ -29,8 +30,20 @@ export const ApiDashboardRoundTestPage = () => {
     }
   };
 
+  const toast = error
+    ? { variant: 'error' as const, message: error, onClose: () => setError(null) }
+    : loading
+      ? { variant: 'info' as const, message: '로딩 중...', onClose: undefined }
+      : null;
+
   return (
     <div className="dashboard-test-page">
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ''}
+        onClose={toast?.onClose}
+      />
       <h1 className="dashboard-test-title">Round API 테스트</h1>
 
       <div className="dashboard-test-section">
@@ -105,15 +118,6 @@ export const ApiDashboardRoundTestPage = () => {
           </button>
         </div>
       </div>
-
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
 
       {result && (
         <div className="dashboard-test-section dashboard-test-result">

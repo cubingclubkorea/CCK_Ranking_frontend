@@ -5,6 +5,7 @@ import {
   getCompetitionFuture,
   getCompetition,
 } from '@/entities/competition';
+import { OverlayToast } from '@/widgets';
 
 export const ApiDashboardCompetitionTestPage = () => {
   const [result, setResult] = useState<any>(null);
@@ -20,7 +21,7 @@ export const ApiDashboardCompetitionTestPage = () => {
       setResult(data);
       console.log(`${name} 결과:`, data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
       console.error(`${name} 오류:`, err);
     } finally {
@@ -28,8 +29,20 @@ export const ApiDashboardCompetitionTestPage = () => {
     }
   };
 
+  const toast = error
+    ? { variant: 'error' as const, message: error, onClose: () => setError(null) }
+    : loading
+      ? { variant: 'info' as const, message: '로딩 중...', onClose: undefined }
+      : null;
+
   return (
     <div className="dashboard-test-page">
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ''}
+        onClose={toast?.onClose}
+      />
       <h1 className="dashboard-test-title">Competition API 테스트</h1>
 
       <div className="dashboard-test-section">
@@ -93,14 +106,6 @@ export const ApiDashboardCompetitionTestPage = () => {
           </button>
         </div>
       </div>
-
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
 
       {result && (
         <div className="dashboard-test-section dashboard-test-result">

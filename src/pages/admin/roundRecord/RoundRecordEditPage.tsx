@@ -3,9 +3,10 @@ import { useParams } from "react-router-dom";
 import { getRound, getRoundByDayCount } from "@/entities/round";
 import { getCompetition } from "@/entities/competition";
 import { getRecordList } from "@/entities/record";
-import { addExtra, deleteRecord, updateRecord, updateRecordInfo } from "@/features/record";
+import { addExtra, deleteExtra, deleteRecord, updateRecord, updateRecordInfo } from "@/features/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
+import { OverlayToast } from "@/widgets";
 import { RoundRecordHeader } from "./components/RoundRecordHeader.tsx";
 import { ExtraAddModal } from "./components/ExtraAddModal.tsx";
 import { RecordContextMenu } from "./components/RecordContextMenu.tsx";
@@ -128,6 +129,7 @@ export const RoundRecordEditPage = () => {
   });
   const [extraSaving, setExtraSaving] = useState(false);
   const [extraError, setExtraError] = useState<string | null>(null);
+  const [extraDeleting, setExtraDeleting] = useState(false);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [infoRecord, setInfoRecord] = useState<Record | null>(null);
   const [infoForm, setInfoForm] = useState<RecordInfoFormState>({
@@ -138,9 +140,38 @@ export const RoundRecordEditPage = () => {
   const [infoSaving, setInfoSaving] = useState(false);
   const [infoDeleting, setInfoDeleting] = useState(false);
   const [infoError, setInfoError] = useState<string | null>(null);
+  const roundEditLayoutRef = useRef<HTMLElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const attemptInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const saveButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    const layout = roundEditLayoutRef.current;
+    if (!layout) return;
+
+    const editPanel = layout.querySelector<HTMLElement>(".record-edit-panel");
+    if (!editPanel) return;
+
+    const syncHeight = () => {
+      const height = Math.ceil(editPanel.getBoundingClientRect().height);
+      layout.style.setProperty("--record-edit-panel-height", `${height}px`);
+    };
+
+    syncHeight();
+
+    const resizeObserver = new ResizeObserver(() => {
+      syncHeight();
+    });
+    resizeObserver.observe(editPanel);
+
+    window.addEventListener("resize", syncHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", syncHeight);
+      layout.style.removeProperty("--record-edit-panel-height");
+    };
+  }, [loading, round]);
 
   useEffect(() => {
     let mounted = true;
@@ -408,11 +439,36 @@ export const RoundRecordEditPage = () => {
       }
       setExtraModalOpen(false);
       setExtraForm((prev) => ({ ...prev, extraReasonType: "", extraReasonCustom: "" }));
+      setFormStatus("엑스트라를 추가했습니다.");
     } catch (saveError) {
       console.error("엑스트라 추가 실패:", saveError);
       setExtraError("엑스트라 추가에 실패했습니다.");
     } finally {
       setExtraSaving(false);
+    }
+  };
+
+  const handleExtraDelete = async (recordIdx: number, extraNum: number) => {
+    const confirmed = window.confirm(`Extra ${extraNum}를 취소하시겠습니까?`);
+    if (!confirmed) return;
+
+    setExtraDeleting(true);
+    setFormError(null);
+    setFormStatus(null);
+
+    try {
+      await deleteExtra(recordIdx, extraNum);
+      const latestRecords = await refreshRecords();
+      const updatedRecord = latestRecords.find((record) => record.idx === recordIdx) ?? null;
+      if (updatedRecord) {
+        applyRecordSelection(updatedRecord);
+      }
+      setFormStatus(`Extra ${extraNum}가 취소되었습니다.`);
+    } catch (deleteError) {
+      console.error("엑스트라 취소 실패:", deleteError);
+      setFormError("엑스트라 취소에 실패했습니다.");
+    } finally {
+      setExtraDeleting(false);
     }
   };
 
@@ -444,6 +500,7 @@ export const RoundRecordEditPage = () => {
         }
       }
       setInfoModalOpen(false);
+      setFormStatus("선수 정보를 반영했습니다.");
     } catch (saveError) {
       console.error("기록 정보 업데이트 실패:", saveError);
       setInfoError(getErrorMessage(saveError));
@@ -500,9 +557,24 @@ export const RoundRecordEditPage = () => {
   }
 
   const backTarget = compIdx ?? String(round.compIdx);
+  const toast = formError
+    ? { variant: "error" as const, message: formError, onClose: () => setFormError(null) }
+    : extraError
+      ? { variant: "error" as const, message: extraError, onClose: () => setExtraError(null) }
+      : infoError
+        ? { variant: "error" as const, message: infoError, onClose: () => setInfoError(null) }
+        : formStatus
+          ? { variant: "success" as const, message: formStatus, onClose: () => setFormStatus(null) }
+          : null;
 
   return (
-    <div className="main-page">
+    <div className="admin-page">
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
       <div className="comp-header">
         <RoundRecordHeader
           title={round.roundName}
@@ -513,7 +585,7 @@ export const RoundRecordEditPage = () => {
         />
       </div>
 
-      <section className="round-panel round-edit-layout">
+      <section ref={roundEditLayoutRef} className="round-panel round-edit-layout">
         <RecordEditPanel
           nameQuery={nameQuery}
           searchOpen={searchOpen}
@@ -522,9 +594,7 @@ export const RoundRecordEditPage = () => {
           attemptTries={attemptTries}
           attemptInputs={attemptInputs}
           extraAttempts={extraAttempts}
-          saving={saving}
-          formError={formError}
-          formStatus={formStatus}
+          saving={saving || extraDeleting}
           activeSearchIndex={searchActiveIndex}
           setNameInputRef={(node) => {
             nameInputRef.current = node;
@@ -616,6 +686,13 @@ export const RoundRecordEditPage = () => {
               setExtraModalOpen(true);
             }
           }}
+          onDeleteExtra={(attempt) => {
+            if (typeof attempt.extra !== "number") {
+              setFormError("취소할 엑스트라 번호가 없습니다.");
+              return;
+            }
+            handleExtraDelete(attempt.recordIdx, attempt.extra);
+          }}
         />
 
         <RecordTablePanel
@@ -676,7 +753,6 @@ export const RoundRecordEditPage = () => {
         form={infoForm}
         saving={infoSaving}
         deleting={infoDeleting}
-        error={infoError}
         onFormChange={setInfoForm}
         onClose={() => setInfoModalOpen(false)}
         onDelete={handleInfoDelete}
@@ -688,7 +764,6 @@ export const RoundRecordEditPage = () => {
         selectedRecord={records.find((record) => record.idx === extraForm.recordIdx) ?? null}
         form={extraForm}
         saving={extraSaving}
-        error={extraError}
         onFormChange={(next) => setExtraForm(next)}
         onClose={() => setExtraModalOpen(false)}
         onSubmit={handleExtraSubmit}

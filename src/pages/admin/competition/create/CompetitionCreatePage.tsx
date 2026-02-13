@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createCompetition, type CompetitionCreateDTO } from "@/features/competition";
 import { getCubeEventList } from "@/entities/cubeEvent";
 import type { CubeEvent } from "@/entities/cubeEvent";
+import { OverlayToast } from "@/widgets";
 import { CompetitionFormFields, type CompetitionFormShape } from "../shared/CompetitionFormFields";
 import { CompetitionCreateHeader } from "./components/CompetitionCreateHeader";
 import {
@@ -60,7 +61,7 @@ export const CompetitionCreatePage = () => {
     try {
       return JSON.stringify(err);
     } catch {
-      return "알 수 없는 에러";
+      return "알 수 없는 오류가 발생했습니다.";
     }
   };
 
@@ -181,15 +182,20 @@ export const CompetitionCreatePage = () => {
     }
   };
 
+  const toast = error
+    ? { variant: "error" as const, message: error, onClose: () => setError(null) }
+    : loading
+      ? { variant: "info" as const, message: "로딩 중...", onClose: undefined }
+      : null;
+
   return (
     <div className="admin-page">
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
 
       <CompetitionCreateHeader />
 

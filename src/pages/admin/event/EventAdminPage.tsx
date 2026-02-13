@@ -4,6 +4,7 @@ import { getCubeEventList } from "@/entities/cubeEvent";
 import type { CubeEvent, ColorType } from "@/entities/cubeEvent/model/cubeEvent";
 import { ColorType as ColorTypeValue } from "@/entities/cubeEvent/model/cubeEvent";
 import { createCubeEvent } from "@/features/cubeEvent";
+import { OverlayToast } from "@/widgets";
 
 const colorTypeOptions: ColorType[] = [
   ColorTypeValue.cube,
@@ -47,7 +48,7 @@ const getErrorMessage = (err: unknown) => {
   try {
     return JSON.stringify(err);
   } catch {
-    return "알 수 없는 에러";
+    return "알 수 없는 오류가 발생했습니다.";
   }
 };
 
@@ -111,21 +112,31 @@ export const EventAdminPage = () => {
     }
   };
 
+  const toast = error
+    ? { variant: "error" as const, message: error, onClose: () => setError(null) }
+    : notice
+      ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
+      : loading
+        ? { variant: "info" as const, message: "로딩 중...", onClose: undefined }
+        : null;
+  const modalToast = createError
+    ? { variant: "error" as const, message: createError, onClose: () => setCreateError(null) }
+    : null;
+
   return (
     <div className="admin-page">
-      {notice && (
-        <div className="dashboard-test-status dashboard-test-status--success">
-          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
-          {notice}
-        </div>
-      )}
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-          {error}
-        </div>
-      )}
+      <OverlayToast
+        open={!!toast}
+        variant={toast?.variant}
+        message={toast?.message ?? ""}
+        onClose={toast?.onClose}
+      />
+      <OverlayToast
+        open={!!modalToast}
+        variant={modalToast?.variant}
+        message={modalToast?.message ?? ""}
+        onClose={modalToast?.onClose}
+      />
 
       <div className="admin-header">
         <div className="page-title-area round-title-area">
@@ -204,12 +215,6 @@ export const EventAdminPage = () => {
                 </button>
               </div>
               <div className="record-modal-body">
-                {createError && (
-                  <div className="dashboard-test-status dashboard-test-status--error">
-                    <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
-                    {createError}
-                  </div>
-                )}
                 <div className="dashboard-test-grid">
                   <div className="dashboard-test-field">
                     <label className="dashboard-test-label">종목명</label>
