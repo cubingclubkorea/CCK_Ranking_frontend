@@ -257,7 +257,7 @@ export const ScrambleAdminPage = () => {
             <div className="scramble-admin-top-body">
               {!hasScrambler ? (
                 <div
-                  className="scramble-admin-tag-wait"
+                  className="scramble-admin-tag-wait scramble-admin-tag-wait--active"
                   onClick={() => {
                     scramblerInputRef.current?.focus();
                   }}
@@ -327,12 +327,12 @@ export const ScrambleAdminPage = () => {
           </section>
 
           <section className="scramble-admin-card scramble-admin-top-card scramble-admin-player-card">
-            <h2 className="scramble-admin-title">선수 스캔</h2>
+            <h2 className="scramble-admin-title">선수</h2>
 
             <div className="scramble-admin-player-split">
               {hasScrambler ? (
                 <div
-                  className="scramble-admin-tag-wait scramble-admin-tag-wait--player"
+                  className="scramble-admin-tag-wait scramble-admin-tag-wait--player scramble-admin-tag-wait--active"
                   onClick={() => {
                     playerInputRef.current?.focus();
                   }}
@@ -375,7 +375,7 @@ export const ScrambleAdminPage = () => {
                   />
                 </div>
               ) : (
-                <div className="scramble-admin-empty scramble-admin-empty--split">스크 태그 후 선수 태그가 가능합니다.</div>
+                <div className="scramble-admin-empty scramble-admin-empty--split">스크램블러를 먼저 등록해주세요</div>
               )}
 
               <div className="scramble-admin-player scramble-admin-player--compact">
@@ -388,7 +388,15 @@ export const ScrambleAdminPage = () => {
                   <strong>{result?.cckId ?? playerCard?.cckId ?? "-"}</strong>
                 </div>
                 <div className="scramble-admin-player-row">
-                  <span>순번</span>
+                  <span>라운드</span>
+                  <strong>{result ? `${result.eventName} ${result.roundName}` : "-"}</strong>
+                </div>
+                <div className="scramble-admin-player-row">
+                  <span>그룹</span>
+                  <strong>{result?.roundGroup ?? "-"}</strong>
+                </div>
+                <div className="scramble-admin-player-row">
+                  <span>회차</span>
                   <strong>{result?.seq ?? "-"}</strong>
                 </div>
               </div>
@@ -397,11 +405,7 @@ export const ScrambleAdminPage = () => {
         </div>
 
         <section className="scramble-admin-card scramble-admin-bottom-card">
-          <h2 className="scramble-admin-title">스크 정보</h2>
-          <div className="scramble-admin-subtitle">
-            {result ? `${result.eventName} ${result.roundName}` : "-"}
-            {result?.roundGroup ? ` · 그룹 ${result.roundGroup}` : ""}
-          </div>
+          <h2 className="scramble-admin-title">스크램블</h2>
 
           {result?.svg ? (
             <div className="scramble-admin-svg" dangerouslySetInnerHTML={{ __html: result.svg }} />

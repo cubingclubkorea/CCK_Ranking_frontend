@@ -60,6 +60,7 @@ export const EventAdminPage = () => {
   const [notice, setNotice] = useState<string | null>(null);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<CubeEvent | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchEvents = async () => {
@@ -161,12 +162,16 @@ export const EventAdminPage = () => {
             <tr>
               <th>종목명</th>
               <th>평균 계산 방식</th>
-              <th>색상 타입</th>
+              <th>큐브 구분</th>
             </tr>
           </thead>
           <tbody>
             {events.map((event) => (
-              <tr key={`${event.eventName}-${event.avgCalc}`}>
+              <tr
+                key={`${event.eventName}-${event.avgCalc}`}
+                className="admin-table-row--clickable"
+                onClick={() => setSelectedEvent(event)}
+              >
                 <td className="admin-name">{event.eventName}</td>
                 <td>{event.avgCalc}</td>
                 <td>{colorTypeLabelMap[event.colorType]}</td>
@@ -269,6 +274,58 @@ export const EventAdminPage = () => {
                   >
                     종목 추가
                   </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {selectedEvent &&
+        createPortal(
+          <div className="record-modal-backdrop" onClick={() => setSelectedEvent(null)}>
+            <div className="record-modal" onClick={(event) => event.stopPropagation()}>
+              <div className="record-modal-header">
+                <div className="record-modal-title">종목 상세</div>
+                <button
+                  type="button"
+                  className="record-modal-close"
+                  onClick={() => setSelectedEvent(null)}
+                  aria-label="닫기"
+                >
+                  <img src="/icon/modal/close.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+              <div className="record-modal-body">
+                <div className="event-detail-icon-wrap" aria-hidden="true">
+                  <img
+                    className="event-detail-icon"
+                    src={`/icon/events/${encodeURIComponent(selectedEvent.eventName || "Question")}.svg`}
+                    alt=""
+                    loading="lazy"
+                    onError={(event) => {
+                      const target = event.currentTarget;
+                      if (target.dataset.fallback === "true") {
+                        target.style.display = "none";
+                        return;
+                      }
+                      target.dataset.fallback = "true";
+                      target.src = "/icon/events/Question.svg";
+                    }}
+                  />
+                </div>
+
+                <div className="record-modal-row">
+                  <span className="record-modal-label">종목명</span>
+                  <span className="record-modal-value">{selectedEvent.eventName}</span>
+                </div>
+                <div className="record-modal-row">
+                  <span className="record-modal-label">평균 계산 방식</span>
+                  <span className="record-modal-value">{selectedEvent.avgCalc}</span>
+                </div>
+                <div className="record-modal-row">
+                  <span className="record-modal-label">큐브 구분</span>
+                  <span className="record-modal-value">{colorTypeLabelMap[selectedEvent.colorType]}</span>
                 </div>
               </div>
             </div>
