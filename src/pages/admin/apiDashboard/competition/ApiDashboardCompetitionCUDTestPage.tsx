@@ -41,9 +41,15 @@ export const ApiDashboardCompetitionCUDTestPage = () => {
   // Delete State
   const [deleteIdx, setDeleteIdx] = useState<number>(1);
 
-  const handleCreate = () => handleApi(() => createCompetition(createForm), "대회 생성 성공!");
+  const handleCreate = () =>
+    handleApi(async () => {
+      await createCompetition(createForm);
+    }, "대회 생성 성공!");
 
-  const handleUpdate = () => handleApi(() => updateCompetition(updateForm), "대회 수정 성공!");
+  const handleUpdate = () =>
+    handleApi(async () => {
+      await updateCompetition(updateForm);
+    }, "대회 수정 성공!");
 
   const handleDelete = () => handleApi(() => deleteCompetition(deleteIdx), `대회 ${deleteIdx} 삭제 성공!`);
 

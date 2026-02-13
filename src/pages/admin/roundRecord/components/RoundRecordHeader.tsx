@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage.ts";
 
 type RoundRecordHeaderProps = {
   title: string;
@@ -18,17 +16,6 @@ export const RoundRecordHeader = ({
   roundIdx,
 }: RoundRecordHeaderProps) => {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(hasAdminRole());
-
-  useEffect(() => {
-    const syncAuthState = () => setIsAdmin(hasAdminRole());
-    window.addEventListener(authChangeEvent, syncAuthState);
-    window.addEventListener("storage", syncAuthState);
-    return () => {
-      window.removeEventListener(authChangeEvent, syncAuthState);
-      window.removeEventListener("storage", syncAuthState);
-    };
-  }, []);
 
   return (
     <>
@@ -49,10 +36,6 @@ export const RoundRecordHeader = ({
         </div>
       </div>
       <div className="page-actions">
-        <button className="page-action-btn" type="button" onClick={() => navigate(`/admin/competition/${compIdx}`)}>
-          <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
-          대회 편집
-        </button>
         <button
           className="page-action-btn"
           type="button"

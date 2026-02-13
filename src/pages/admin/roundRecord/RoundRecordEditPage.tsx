@@ -260,6 +260,14 @@ export const RoundRecordEditPage = () => {
     }).slice(0, 8);
   }, [nameQuery, sortedRecords]);
 
+  const getNextSearchIndex = (prev: number, direction: 1 | -1) => {
+    if (searchResults.length === 0) return -1;
+    if (prev < 0) {
+      return direction > 0 ? 0 : searchResults.length - 1;
+    }
+    return (prev + direction + searchResults.length) % searchResults.length;
+  };
+
   useEffect(() => {
     if (searchResults.length === 0) {
       setSearchActiveIndex(-1);
@@ -625,20 +633,22 @@ export const RoundRecordEditPage = () => {
             if (isNameComposing || event.nativeEvent.isComposing) {
               return;
             }
-            if (searchResults.length === 0) return;
             if (event.key === "ArrowDown") {
+              if (searchResults.length === 0) return;
               event.preventDefault();
               setSearchOpen(true);
-              setSearchActiveIndex((prev) => (prev + 1 + searchResults.length) % searchResults.length);
+              setSearchActiveIndex((prev) => getNextSearchIndex(prev, 1));
               return;
             }
             if (event.key === "ArrowUp") {
+              if (searchResults.length === 0) return;
               event.preventDefault();
               setSearchOpen(true);
-              setSearchActiveIndex((prev) => (prev - 1 + searchResults.length) % searchResults.length);
+              setSearchActiveIndex((prev) => getNextSearchIndex(prev, -1));
               return;
             }
             if (event.key === "Enter" && searchOpen) {
+              if (searchResults.length === 0) return;
               event.preventDefault();
               const targetIndex = searchActiveIndex >= 0 ? searchActiveIndex : 0;
               const target = searchResults[targetIndex];

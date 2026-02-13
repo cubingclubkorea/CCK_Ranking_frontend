@@ -27,18 +27,18 @@ import { CompetitionManageHeader } from "./components/CompetitionManageHeader";
 
 const pad2 = (value: number) => `${value}`.padStart(2, "0");
 
-const isValidDate = (value?: Date | null) =>
+const isValidDate = (value?: Date | null): value is Date =>
   value instanceof Date && !Number.isNaN(value.getTime());
 
-const formatDateInput = (date?: Date | null) =>
-  isValidDate(date)
-    ? `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`
-    : "";
+const formatDateInput = (date?: Date | null) => {
+  if (!isValidDate(date)) return "";
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+};
 
-const formatDateTimeInput = (date?: Date | null) =>
-  isValidDate(date)
-    ? `${formatDateInput(date)}T${pad2(date.getHours())}:${pad2(date.getMinutes())}`
-    : "";
+const formatDateTimeInput = (date?: Date | null) => {
+  if (!isValidDate(date)) return "";
+  return `${formatDateInput(date)}T${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+};
 
 const withSeconds = (value: string) => (value ? `${value}:00` : "");
 

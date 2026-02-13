@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import type { Record } from "@/entities/record";
 import type { Attempt } from "@/entities/record/model/attempt";
 
@@ -59,6 +59,17 @@ export const RecordEditPanel = ({
   onOpenExtra,
   onDeleteExtra,
 }: RecordEditPanelProps) => {
+  const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const activeSuggestionId =
+    searchOpen && activeSearchIndex >= 0 && activeSearchIndex < searchResults.length
+      ? `record-search-option-${searchResults[activeSearchIndex].idx}`
+      : undefined;
+
+  useEffect(() => {
+    if (!searchOpen || activeSearchIndex < 0) return;
+    suggestionRefs.current[activeSearchIndex]?.scrollIntoView({ block: "nearest" });
+  }, [activeSearchIndex, searchOpen]);
+
   return (
     <div className="record-edit-panel">
       <div className="round-panel-title">
@@ -84,6 +95,11 @@ export const RecordEditPanel = ({
               onCompositionStart={onNameCompositionStart}
               onCompositionEnd={onNameCompositionEnd}
               onKeyDown={onNameKeyDown}
+              role="combobox"
+              aria-expanded={searchOpen}
+              aria-controls="record-search-suggestions"
+              aria-activedescendant={activeSuggestionId}
+              aria-autocomplete="list"
               autoFocus
             />
             <span className="record-edit-search-icon" aria-hidden="true">
@@ -91,13 +107,17 @@ export const RecordEditPanel = ({
             </span>
           </div>
           {searchOpen && searchResults.length > 0 && (
-            <div className="record-edit-suggestions" role="listbox">
+            <div id="record-search-suggestions" className="record-edit-suggestions" role="listbox">
               {searchResults.map((record, index) => (
                 <button
                   key={record.idx}
+                  id={`record-search-option-${record.idx}`}
                   type="button"
                   className={`record-edit-suggestion ${activeSearchIndex === index ? "record-edit-suggestion--active" : ""}`}
                   aria-selected={activeSearchIndex === index}
+                  ref={(node) => {
+                    suggestionRefs.current[index] = node;
+                  }}
                   onMouseEnter={() => onHoverSearchIndex(index)}
                   onMouseDown={() => onSelectRecord(record)}
                 >
