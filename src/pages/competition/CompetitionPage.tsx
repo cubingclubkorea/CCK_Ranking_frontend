@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getCompetition } from "@/entities/competition";
 import { getRoundByDayCount } from "@/entities/round";
 import type { Competition } from "@/entities/competition";
-import type { RoundDayCount } from "@/entities/round";
+import type { Round, RoundDayCount } from "@/entities/round";
 import { CompetitionHeader } from "./components/CompetitionHeader";
 import { RoundList } from "./components/RoundList";
 
@@ -32,6 +32,66 @@ const getDayRange = (start: Date, end: Date): DayItem[] => {
   }
 
   return items;
+};
+
+const resolveRoundStatus = (round: Round): "past" | "now" | "future" => {
+  const now = Date.now();
+  const start = round.eventStart.getTime();
+  const end = round.eventEnd.getTime();
+
+  if (end <= now) return "past";
+  if (start <= now && end > now) return "now";
+  return "future";
+};
+
+const mergeRoundSchedules = (schedules: RoundDayCount[]): RoundDayCount => {
+  const uniqueRoundMap = new Map<number, Round>();
+
+  for (const schedule of schedules) {
+    for (const round of [...schedule.past, ...schedule.now, ...schedule.future]) {
+      uniqueRoundMap.set(round.idx, round);
+    }
+  }
+
+  const merged = Array.from(uniqueRoundMap.values()).sort(
+    (a, b) => a.eventStart.getTime() - b.eventStart.getTime()
+  );
+
+  const past: Round[] = [];
+  const now: Round[] = [];
+  const future: Round[] = [];
+
+  for (const round of merged) {
+    const status = resolveRoundStatus(round);
+    if (status === "past") past.push(round);
+    if (status === "now") now.push(round);
+    if (status === "future") future.push(round);
+  }
+
+  return { past, now, future };
+};
+
+const isOverlappingDate = (start: Date, end: Date, selectedDate: Date) => {
+  const dayStart = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate(),
+    0,
+    0,
+    0,
+    0
+  );
+  const dayEnd = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate() + 1,
+    0,
+    0,
+    0,
+    0
+  );
+
+  return start < dayEnd && end > dayStart;
 };
 
 export const CompetitionPage = () => {
@@ -73,13 +133,16 @@ export const CompetitionPage = () => {
     let mounted = true;
 
     const fetchRounds = async () => {
-      if (!compIdx) return;
+      if (!compIdx || !competition) return;
       setRoundLoading(true);
 
       try {
-        const data = await getRoundByDayCount(Number(compIdx), dayCount);
+        const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
+        const daySchedules = await Promise.all(
+          dayItems.map((item) => getRoundByDayCount(Number(compIdx), item.dayCount))
+        );
         if (!mounted) return;
-        setRoundSchedule(data);
+        setRoundSchedule(mergeRoundSchedules(daySchedules));
       } catch (error) {
         console.error("대회 라운드 조회 실패:", error);
         if (mounted) setRoundSchedule(null);
@@ -93,11 +156,35 @@ export const CompetitionPage = () => {
     return () => {
       mounted = false;
     };
-  }, [compIdx, dayCount]);
+  }, [compIdx, competition]);
 
   useEffect(() => {
     setDayCount(0);
   }, [competition?.idx]);
+
+  const dayItems = useMemo(() => {
+    if (!competition) return [];
+    return getDayRange(competition.compDateStart, competition.compDateEnd);
+  }, [competition]);
+
+  const visibleDayItems = useMemo(() => {
+    if (!roundSchedule) return dayItems;
+
+    const allRounds = [...roundSchedule.past, ...roundSchedule.now, ...roundSchedule.future];
+    if (allRounds.length === 0) return dayItems;
+
+    return dayItems.filter((item) =>
+      allRounds.some((round) => isOverlappingDate(round.eventStart, round.eventEnd, item.date))
+    );
+  }, [dayItems, roundSchedule]);
+
+  useEffect(() => {
+    if (visibleDayItems.length === 0) return;
+    const exists = visibleDayItems.some((item) => item.dayCount === dayCount);
+    if (!exists) {
+      setDayCount(visibleDayItems[0].dayCount);
+    }
+  }, [visibleDayItems, dayCount]);
 
   if (loading) {
     return <div>로딩중...</div>;
@@ -107,8 +194,7 @@ export const CompetitionPage = () => {
     return <div>대회 정보를 불러올 수 없습니다.</div>;
   }
 
-  const dayItems = getDayRange(competition.compDateStart, competition.compDateEnd);
-  const selectedDay = dayItems.find((item) => item.dayCount === dayCount) ?? null;
+  const selectedDay = visibleDayItems.find((item) => item.dayCount === dayCount) ?? null;
 
   return (
     <div className="main-page">
@@ -123,7 +209,7 @@ export const CompetitionPage = () => {
       <div className="comp-content">
         <div className="round-schedule">
           <div className="round-day-tabs">
-            {dayItems.map((item) => (
+            {visibleDayItems.map((item) => (
               <button
                 className={`round-day-tab ${item.dayCount === dayCount ? "active" : ""}`.trim()}
                 key={`${competition.idx}-${item.dayCount}`}
