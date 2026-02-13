@@ -2399,9 +2399,42 @@ body {
 
 .scramble-admin-layout {
   width: 100%;
-  display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+}
+
+.scramble-admin-top-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.scramble-admin-top-card {
+  min-height: 238px;
+  padding: 14px;
+}
+
+.scramble-admin-bottom-card {
+  min-height: 420px;
+}
+
+.scramble-admin-player-card {
+  gap: 10px;
+}
+
+.scramble-admin-top-body {
+  min-height: 170px;
+  height: 170px;
+}
+
+.scramble-admin-registered-wrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .scramble-admin-card {
@@ -2436,7 +2469,7 @@ body {
   border: 1px dashed #cfd8ec;
   border-radius: 12px;
   background: #f8faff;
-  min-height: 220px;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2444,6 +2477,10 @@ body {
   gap: 14px;
   position: relative;
   cursor: pointer;
+}
+
+.scramble-admin-tag-wait--player {
+  min-height: 100%;
 }
 
 .scramble-admin-tag-wait:focus-visible {
@@ -2528,6 +2565,20 @@ body {
   gap: 10px;
 }
 
+.scramble-admin-player--compact {
+  min-height: 100%;
+  padding: 16px;
+  gap: 12px;
+}
+
+.scramble-admin-player-split {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+  gap: 12px;
+  min-height: 170px;
+  height: 170px;
+}
+
 .scramble-admin-profile-row,
 .scramble-admin-player-row {
   display: flex;
@@ -2555,6 +2606,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.scramble-admin-subtitle {
+  margin-top: -8px;
+  font-size: 14px;
+  color: #7b859c;
 }
 
 .scramble-admin-result-head {
@@ -2604,6 +2661,10 @@ body {
   background: #ffffff;
 }
 
+.scramble-admin-empty--split {
+  min-height: 100%;
+}
+
 .scramble-admin-text {
   margin: 0;
   border-radius: 10px;
@@ -2619,8 +2680,23 @@ body {
 }
 
 @media (max-width: 1080px) {
-  .scramble-admin-layout {
-    grid-template-columns: 1fr;
+  .scramble-admin-top-grid {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .scramble-admin-top-card {
+    min-height: auto;
+  }
+
+  .scramble-admin-top-body,
+  .scramble-admin-player-split {
+    min-height: auto;
+    height: auto;
+  }
+
+  .scramble-admin-player-split {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

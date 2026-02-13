@@ -250,161 +250,166 @@ export const ScrambleAdminPage = () => {
       </div>
 
       <section className="scramble-admin-layout">
-        <aside className="scramble-admin-card scramble-admin-card--left">
-          <h2 className="scramble-admin-title">스크램블러</h2>
+        <div className="scramble-admin-top-grid">
+          <section className="scramble-admin-card scramble-admin-top-card">
+            <h2 className="scramble-admin-title">스크램블러</h2>
 
-          {!hasScrambler ? (
-            <div
-              className="scramble-admin-tag-wait"
-              onClick={() => {
-                scramblerInputRef.current?.focus();
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  scramblerInputRef.current?.focus();
-                }
-              }}
-            >
-              <img className="scramble-admin-tag-wait-icon" src="/icon/sidebar/card.svg" alt="" aria-hidden="true" />
-              <span className="scramble-admin-tag-wait-text">스크램블러 카드 태그 대기중</span>
-              <input
-                ref={scramblerInputRef}
-                className="scramble-admin-hidden-input"
-                type="text"
-                value={scramblerInput}
-                onChange={(event) => setScramblerInput(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleScramblerTag();
-                  }
-                }}
-                onBlur={() => {
-                  requestAnimationFrame(() => {
-                    if (!hasScrambler) {
+            <div className="scramble-admin-top-body">
+              {!hasScrambler ? (
+                <div
+                  className="scramble-admin-tag-wait"
+                  onClick={() => {
+                    scramblerInputRef.current?.focus();
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
                       scramblerInputRef.current?.focus();
                     }
-                  });
-                }}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck={false}
-              />
+                  }}
+                >
+                  <img className="scramble-admin-tag-wait-icon" src="/icon/sidebar/card.svg" alt="" aria-hidden="true" />
+                  <span className="scramble-admin-tag-wait-text">스크램블러 카드를 태그하세요</span>
+                  <input
+                    ref={scramblerInputRef}
+                    className="scramble-admin-hidden-input"
+                    type="text"
+                    value={scramblerInput}
+                    onChange={(event) => setScramblerInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        handleScramblerTag();
+                      }
+                    }}
+                    onBlur={() => {
+                      requestAnimationFrame(() => {
+                        if (!hasScrambler) {
+                          scramblerInputRef.current?.focus();
+                        }
+                      });
+                    }}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                  />
+                </div>
+              ) : (
+                <div className="scramble-admin-registered-wrap">
+                  <div className="scramble-admin-profile">
+                    <div className="scramble-admin-profile-row">
+                      <span>이름</span>
+                      <strong>{scramblerCard?.name ?? "-"}</strong>
+                    </div>
+                    <div className="scramble-admin-profile-row">
+                      <span>CCK ID</span>
+                      <strong>{scramblerCard?.cckId ?? "-"}</strong>
+                    </div>
+                    <div className="scramble-admin-profile-row">
+                      <span>UID</span>
+                      <strong>{scramblerCard?.uid ?? "-"}</strong>
+                    </div>
+                  </div>
+
+                  <button
+                    className="scramble-admin-btn scramble-admin-btn--subtle"
+                    type="button"
+                    onClick={handleResetScrambler}
+                  >
+                    스크램블러 변경
+                  </button>
+                </div>
+              )}
             </div>
-          ) : (
-            <>
-              <div className="scramble-admin-profile">
-                <div className="scramble-admin-profile-row">
-                  <span>이름</span>
-                  <strong>{scramblerCard?.name ?? "-"}</strong>
-                </div>
-                <div className="scramble-admin-profile-row">
-                  <span>CCK ID</span>
-                  <strong>{scramblerCard?.cckId ?? "-"}</strong>
-                </div>
-                <div className="scramble-admin-profile-row">
-                  <span>UID</span>
-                  <strong>{scramblerCard?.uid ?? "-"}</strong>
-                </div>
-              </div>
+          </section>
 
-              <button
-                className="scramble-admin-btn scramble-admin-btn--subtle"
-                type="button"
-                onClick={handleResetScrambler}
-              >
-                스크램블러 변경
-              </button>
-            </>
-          )}
-        </aside>
+          <section className="scramble-admin-card scramble-admin-top-card scramble-admin-player-card">
+            <h2 className="scramble-admin-title">선수 스캔</h2>
 
-        <section className="scramble-admin-card scramble-admin-card--right">
-          <h2 className="scramble-admin-title">선수 스캔</h2>
-
-          {hasScrambler ? (
-            <div
-              className="scramble-admin-tag-wait"
-              onClick={() => {
-                playerInputRef.current?.focus();
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  playerInputRef.current?.focus();
-                }
-              }}
-            >
-              <img className="scramble-admin-tag-wait-icon" src="/icon/sidebar/card.svg" alt="" aria-hidden="true" />
-              <span className="scramble-admin-tag-wait-text">선수 카드 태그 대기중</span>
-              <input
-                ref={playerInputRef}
-                className="scramble-admin-hidden-input"
-                type="text"
-                value={playerInput}
-                onChange={(event) => setPlayerInput(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    if (!loading) {
-                      void handlePlayerTag();
-                    }
-                  }
-                }}
-                onBlur={() => {
-                  requestAnimationFrame(() => {
-                    if (hasScrambler) {
+            <div className="scramble-admin-player-split">
+              {hasScrambler ? (
+                <div
+                  className="scramble-admin-tag-wait scramble-admin-tag-wait--player"
+                  onClick={() => {
+                    playerInputRef.current?.focus();
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
                       playerInputRef.current?.focus();
                     }
-                  });
-                }}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck={false}
-              />
-            </div>
-          ) : (
-            <div className="scramble-admin-empty">스크램블러 등록 전에는 선수 스캔을 할 수 없습니다.</div>
-          )}
+                  }}
+                >
+                  <img className="scramble-admin-tag-wait-icon" src="/icon/sidebar/card.svg" alt="" aria-hidden="true" />
+                  <span className="scramble-admin-tag-wait-text">선수 카드를 태그하세요</span>
+                  <input
+                    ref={playerInputRef}
+                    className="scramble-admin-hidden-input"
+                    type="text"
+                    value={playerInput}
+                    onChange={(event) => setPlayerInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        if (!loading) {
+                          void handlePlayerTag();
+                        }
+                      }
+                    }}
+                    onBlur={() => {
+                      requestAnimationFrame(() => {
+                        if (hasScrambler) {
+                          playerInputRef.current?.focus();
+                        }
+                      });
+                    }}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                  />
+                </div>
+              ) : (
+                <div className="scramble-admin-empty scramble-admin-empty--split">스크 태그 후 선수 태그가 가능합니다.</div>
+              )}
 
-          <div className="scramble-admin-player">
-            <div className="scramble-admin-player-row">
-              <span>선수명</span>
-              <strong>{result?.name ?? playerCard?.name ?? "-"}</strong>
-            </div>
-            <div className="scramble-admin-player-row">
-              <span>CCK ID</span>
-              <strong>{result?.cckId ?? playerCard?.cckId ?? "-"}</strong>
-            </div>
-            <div className="scramble-admin-player-row">
-              <span>순번</span>
-              <strong>{result?.seq ?? "-"}</strong>
-            </div>
-          </div>
-
-          <div className="scramble-admin-result">
-            <div className="scramble-admin-result-head">
-              <div>
-                <strong>{result ? `${result.eventName} ${result.roundName}` : "스크램블 정보"}</strong>
-                <span>{result?.roundGroup ? `그룹 ${result.roundGroup}` : ""}</span>
+              <div className="scramble-admin-player scramble-admin-player--compact">
+                <div className="scramble-admin-player-row">
+                  <span>선수명</span>
+                  <strong>{result?.name ?? playerCard?.name ?? "-"}</strong>
+                </div>
+                <div className="scramble-admin-player-row">
+                  <span>CCK ID</span>
+                  <strong>{result?.cckId ?? playerCard?.cckId ?? "-"}</strong>
+                </div>
+                <div className="scramble-admin-player-row">
+                  <span>순번</span>
+                  <strong>{result?.seq ?? "-"}</strong>
+                </div>
               </div>
             </div>
+          </section>
+        </div>
 
-            {result?.svg ? (
-              <div className="scramble-admin-svg" dangerouslySetInnerHTML={{ __html: result.svg }} />
-            ) : (
-              <div className="scramble-admin-empty">스크램블 이미지가 없습니다.</div>
-            )}
-
-            <pre className="scramble-admin-text">{result?.scramble ?? "-"}</pre>
+        <section className="scramble-admin-card scramble-admin-bottom-card">
+          <h2 className="scramble-admin-title">스크 정보</h2>
+          <div className="scramble-admin-subtitle">
+            {result ? `${result.eventName} ${result.roundName}` : "-"}
+            {result?.roundGroup ? ` · 그룹 ${result.roundGroup}` : ""}
           </div>
+
+          {result?.svg ? (
+            <div className="scramble-admin-svg" dangerouslySetInnerHTML={{ __html: result.svg }} />
+          ) : (
+            <div className="scramble-admin-empty">스크램블 이미지가 없습니다.</div>
+          )}
+
+          <pre className="scramble-admin-text">{result?.scramble ?? "-"}</pre>
         </section>
       </section>
     </div>
