@@ -460,8 +460,18 @@ export const ApiDashboardRecordCUDTestPage = () => {
       </div>
 
       {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
-      {result && <div className="dashboard-test-status dashboard-test-status--success">✅ {result}</div>}
+      {error && (
+        <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+          {error}
+        </div>
+      )}
+      {result && (
+        <div className="dashboard-test-status dashboard-test-status--success">
+          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
+          {result}
+        </div>
+      )}
     </div>
   );
 };

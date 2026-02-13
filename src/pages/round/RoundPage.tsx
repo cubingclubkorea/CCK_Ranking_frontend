@@ -125,6 +125,8 @@ export const RoundPage = () => {
           title={round.roundName}
           eventName={round.cubeEventName}
           subtitle={round.compName}
+          eventStart={round.eventStart}
+          eventEnd={round.eventEnd}
           compIdx={Number(backTarget)}
           roundIdx={Number(round.idx)}
         />

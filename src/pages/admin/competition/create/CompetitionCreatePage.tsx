@@ -183,10 +183,15 @@ export const CompetitionCreatePage = () => {
 
   return (
     <div className="admin-page">
-      <CompetitionCreateHeader />
-
-      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
+      {error && (
+        <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+          {error}
+        </div>
+      )}
       {loading && <div className="dashboard-test-status">로딩 중...</div>}
+
+      <CompetitionCreateHeader />
 
       <div className="round-day-tabs">
         <button

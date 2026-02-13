@@ -418,6 +418,7 @@ export const CompetitionManagePage = () => {
     return (
       <div className="admin-page">
         <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
           잘못된 대회 ID입니다.
         </div>
       </div>
@@ -427,6 +428,26 @@ export const CompetitionManagePage = () => {
 
   return (
     <div className="admin-page">
+      {notice && (
+        <div className="dashboard-test-status dashboard-test-status--success">
+          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
+          {notice}
+        </div>
+      )}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      {error && (
+        <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+          {error}
+        </div>
+      )}
+      {section === "round" && roundError && (
+        <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+          {roundError}
+        </div>
+      )}
+
       <CompetitionManageHeader
         title={competition?.compName ?? "대회 편집"}
         subtitle="대회 편집"
@@ -434,15 +455,6 @@ export const CompetitionManagePage = () => {
         onViewCompetition={competition ? () => navigate(`/competition/${competition.idx}`) : undefined}
         saving={saving || roundSaving}
       />
-
-      {notice && <div className="dashboard-test-status dashboard-test-status--success">✅ {notice}</div>}
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
-      {section === "round" && roundError && (
-        <div className="dashboard-test-status dashboard-test-status--error">
-          라운드 에러: {roundError}
-        </div>
-      )}
 
       <div className="round-day-tabs">
         <button

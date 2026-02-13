@@ -6,6 +6,8 @@ type RoundHeaderProps = {
   title: string;
   eventName?: string;
   subtitle?: string;
+  eventStart?: Date;
+  eventEnd?: Date;
   compIdx?: number;
   roundIdx?: number;
   adminActionLabel?: string;
@@ -14,10 +16,49 @@ type RoundHeaderProps = {
   showAdminAction?: boolean;
 };
 
+const isValidDate = (value?: Date): value is Date => value instanceof Date && !Number.isNaN(value.getTime());
+
+const formatDatePart = (date: Date) => {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const formatTimePart = (date: Date) => {
+  const hour = `${date.getHours()}`.padStart(2, "0");
+  const minute = `${date.getMinutes()}`.padStart(2, "0");
+  return `${hour}:${minute}`;
+};
+
+const formatRoundDateTime = (eventStart?: Date, eventEnd?: Date) => {
+  if (!isValidDate(eventStart)) {
+    return null;
+  }
+  const start = eventStart;
+  if (!isValidDate(eventEnd)) {
+    return `${formatDatePart(start)} ${formatTimePart(start)}`;
+  }
+  const end = eventEnd;
+
+  const sameDay =
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate();
+
+  if (sameDay) {
+    return `${formatDatePart(start)} ${formatTimePart(start)}~${formatTimePart(end)}`;
+  }
+
+  return `${formatDatePart(start)} ${formatTimePart(start)} ~ ${formatDatePart(end)} ${formatTimePart(end)}`;
+};
+
 export const RoundHeader = ({
   title,
   eventName,
   subtitle,
+  eventStart,
+  eventEnd,
   compIdx,
   roundIdx,
   adminActionLabel = "라운드 관리",
@@ -29,6 +70,7 @@ export const RoundHeader = ({
   const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const defaultAdminPath = compIdx && roundIdx ? `/admin/competition/${compIdx}/round/${roundIdx}` : null;
   const roundManagePath = adminActionPath ?? defaultAdminPath;
+  const roundDateTime = formatRoundDateTime(eventStart, eventEnd);
 
   useEffect(() => {
     const syncAuthState = () => setIsAdmin(hasAdminRole());
@@ -67,6 +109,12 @@ export const RoundHeader = ({
           {subtitle ? (
             <div className="page-title-meta">
               <span>{subtitle}</span>
+              {roundDateTime ? (
+                <>
+                  <span className="page-title-meta-divider">·</span>
+                  <span>{roundDateTime}</span>
+                </>
+              ) : null}
             </div>
           ) : null}
         </div>

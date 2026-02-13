@@ -112,6 +112,20 @@ export const EventAdminPage = () => {
 
   return (
     <div className="admin-page">
+      {notice && (
+        <div className="dashboard-test-status dashboard-test-status--success">
+          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
+          {notice}
+        </div>
+      )}
+      {loading && <div className="dashboard-test-status">로딩 중...</div>}
+      {error && (
+        <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+          {error}
+        </div>
+      )}
+
       <div className="admin-header">
         <div className="page-title-area round-title-area">
           <div className="page-title-icon" aria-hidden="true">
@@ -140,10 +154,6 @@ export const EventAdminPage = () => {
           </button>
         </div>
       </div>
-
-      {notice && <div className="dashboard-test-status dashboard-test-status--success">✅ {notice}</div>}
-      {loading && <div className="dashboard-test-status">로딩 중...</div>}
-      {error && <div className="dashboard-test-status dashboard-test-status--error">에러: {error}</div>}
 
       <div className="admin-table-wrap">
         <table className="admin-table">
@@ -190,7 +200,10 @@ export const EventAdminPage = () => {
               </div>
               <div className="record-modal-body">
                 {createError && (
-                  <div className="dashboard-test-status dashboard-test-status--error">에러: {createError}</div>
+                  <div className="dashboard-test-status dashboard-test-status--error">
+                    <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+                    {createError}
+                  </div>
                 )}
                 <div className="dashboard-test-grid">
                   <div className="dashboard-test-field">

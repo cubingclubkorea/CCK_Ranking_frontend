@@ -1,0 +1,412 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getCompetition } from "@/entities/competition";
+import type { Competition } from "@/entities/competition";
+import type { ScrambleResponse } from "@/entities/scramble";
+import { updateScrambler } from "@/features/scramble";
+
+type TaggedCard = {
+  uid: string;
+  name?: string;
+  cckId?: string;
+};
+
+const normalizeTag = (value: string) => value.replace(/\r?\n/g, "").trim();
+const hasKoreanChar = (value: string) => /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(value);
+
+const parseTaggedCard = (rawValue: string): TaggedCard | null => {
+  const value = normalizeTag(rawValue);
+  if (!value) return null;
+
+  try {
+    const parsed = JSON.parse(value) as Record<string, unknown>;
+    const uid =
+      parsed.uid ?? parsed.tagUid ?? parsed.playerUid ?? parsed.scramblerUid ?? parsed.rfid ?? parsed.cardUid;
+    if (typeof uid === "string" && uid.trim()) {
+      const name = typeof parsed.name === "string" ? parsed.name : undefined;
+      const cckId =
+        typeof parsed.cckId === "string"
+          ? parsed.cckId
+          : typeof parsed.cckID === "string"
+            ? parsed.cckID
+            : typeof parsed.cck_id === "string"
+              ? parsed.cck_id
+              : undefined;
+      return { uid: uid.trim(), name, cckId };
+    }
+  } catch {
+    // RFID 리더가 JSON이 아닌 문자열을 보낼 수 있어 문자열 파싱도 지원한다.
+  }
+
+  const tokens = value
+    .split(/[|,;\t]/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  if (tokens.length >= 3) {
+    return { uid: tokens[0], name: tokens[1], cckId: tokens[2] };
+  }
+
+  if (tokens.length === 2) {
+    return { uid: tokens[0], name: tokens[1] };
+  }
+
+  return { uid: value };
+};
+
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  return "알 수 없는 에러";
+};
+
+export const ScrambleAdminPage = () => {
+  const { compIdx } = useParams();
+  const navigate = useNavigate();
+  const competitionId = useMemo(() => Number(compIdx), [compIdx]);
+
+  const [competition, setCompetition] = useState<Competition | null>(null);
+  const [pageError, setPageError] = useState<string | null>(null);
+
+  const [scramblerInput, setScramblerInput] = useState("");
+  const [playerInput, setPlayerInput] = useState("");
+
+  const [scramblerCard, setScramblerCard] = useState<TaggedCard | null>(null);
+  const [playerCard, setPlayerCard] = useState<TaggedCard | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<ScrambleResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const hasScrambler = Boolean(scramblerCard?.uid);
+  const scramblerInputRef = useRef<HTMLInputElement | null>(null);
+  const playerInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!Number.isFinite(competitionId) || competitionId <= 0) {
+      setPageError("대회 정보가 올바르지 않습니다.");
+      return;
+    }
+
+    let mounted = true;
+
+    const fetchCompetition = async () => {
+      try {
+        const data = await getCompetition(competitionId);
+        if (!mounted) return;
+        setCompetition(data);
+      } catch (fetchError) {
+        if (!mounted) return;
+        setPageError(getErrorMessage(fetchError));
+      }
+    };
+
+    fetchCompetition();
+
+    return () => {
+      mounted = false;
+    };
+  }, [competitionId]);
+
+  useEffect(() => {
+    if (hasScrambler) {
+      playerInputRef.current?.focus();
+      return;
+    }
+    scramblerInputRef.current?.focus();
+  }, [hasScrambler]);
+
+  const handleScramblerTag = () => {
+    const rawScramblerInput = scramblerInput;
+    if (hasKoreanChar(rawScramblerInput)) {
+      setNotice(null);
+      setError("한글 입력이 감지되었습니다. 입력기를 영어로 변경한 뒤 다시 태그하세요.");
+      setScramblerInput("");
+      return;
+    }
+
+    const parsed = parseTaggedCard(rawScramblerInput);
+    if (!parsed) {
+      setNotice(null);
+      setError("스크램블러 카드를 인식하지 못했습니다.");
+      return;
+    }
+
+    setScramblerCard(parsed);
+    setScramblerInput("");
+    setNotice("스크램블러가 등록되었습니다.");
+    setError(null);
+  };
+
+  const handleResetScrambler = () => {
+    setScramblerCard(null);
+    setResult(null);
+    setPlayerCard(null);
+    setPlayerInput("");
+    setNotice(null);
+    setError(null);
+  };
+
+  const handlePlayerTag = async () => {
+    if (!scramblerCard?.uid) {
+      setNotice(null);
+      setError("먼저 스크램블러 카드를 태그하세요.");
+      return;
+    }
+
+    const rawPlayerInput = playerInput;
+    if (hasKoreanChar(rawPlayerInput)) {
+      setNotice(null);
+      setError("한글 입력이 감지되었습니다. 입력기를 영어로 변경한 뒤 다시 태그하세요.");
+      setPlayerInput("");
+      return;
+    }
+
+    const parsedPlayer = parseTaggedCard(rawPlayerInput);
+    setPlayerInput("");
+    if (!parsedPlayer) {
+      setNotice(null);
+      setError("선수 카드를 인식하지 못했습니다.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await updateScrambler({
+        compIdx: competitionId,
+        playerUid: parsedPlayer.uid,
+        scramblerUid: scramblerCard.uid,
+      });
+
+      setPlayerCard(parsedPlayer);
+      setResult(data);
+    } catch (requestError) {
+      setNotice(null);
+      setError(getErrorMessage(requestError));
+    } finally {
+      setLoading(false);
+      requestAnimationFrame(() => {
+        playerInputRef.current?.focus();
+      });
+    }
+  };
+
+  if (pageError) {
+    return (
+      <div className="admin-page">
+        <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+          {pageError}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="admin-page scramble-admin-page">
+      {notice && (
+        <div className="dashboard-test-status dashboard-test-status--success">
+          <img className="status-icon" src="/icon/info/check.svg" alt="" aria-hidden="true" />
+          {notice}
+        </div>
+      )}
+      {error && (
+        <div className="dashboard-test-status dashboard-test-status--error">
+          <img className="status-icon" src="/icon/info/error.svg" alt="" aria-hidden="true" />
+          {error}
+        </div>
+      )}
+
+      <div className="admin-header">
+        <div className="page-title-area round-title-area">
+          <div className="page-title-icon" aria-hidden="true">
+            <img src="/icon/button/cube.svg" alt="" loading="lazy" />
+          </div>
+          <div className="round-title-text">
+            <h1 className="page-title">{competition?.compName ?? "대회 로딩중..."}</h1>
+            <div className="page-title-meta">
+              <span>스크램블 모드</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="page-actions">
+          <button className="page-action-btn" type="button" onClick={() => navigate("/admin/competition")}>
+            <img className="page-action-icon" src="/icon/button/back.svg" alt="" aria-hidden="true" />
+            목록으로
+          </button>
+          <button
+            className="page-action-btn"
+            type="button"
+            onClick={() => navigate(`/competition/${competitionId}`)}
+            disabled={!competitionId}
+          >
+            <img className="page-action-icon" src="/icon/button/home.svg" alt="" aria-hidden="true" />
+            대회 페이지 보기
+          </button>
+        </div>
+      </div>
+
+      <section className="scramble-admin-layout">
+        <aside className="scramble-admin-card scramble-admin-card--left">
+          <h2 className="scramble-admin-title">스크램블러</h2>
+
+          {!hasScrambler ? (
+            <div
+              className="scramble-admin-tag-wait"
+              onClick={() => {
+                scramblerInputRef.current?.focus();
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  scramblerInputRef.current?.focus();
+                }
+              }}
+            >
+              <img className="scramble-admin-tag-wait-icon" src="/icon/sidebar/card.svg" alt="" aria-hidden="true" />
+              <span className="scramble-admin-tag-wait-text">스크램블러 카드 태그 대기중</span>
+              <input
+                ref={scramblerInputRef}
+                className="scramble-admin-hidden-input"
+                type="text"
+                value={scramblerInput}
+                onChange={(event) => setScramblerInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleScramblerTag();
+                  }
+                }}
+                onBlur={() => {
+                  requestAnimationFrame(() => {
+                    if (!hasScrambler) {
+                      scramblerInputRef.current?.focus();
+                    }
+                  });
+                }}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="scramble-admin-profile">
+                <div className="scramble-admin-profile-row">
+                  <span>이름</span>
+                  <strong>{scramblerCard?.name ?? "-"}</strong>
+                </div>
+                <div className="scramble-admin-profile-row">
+                  <span>CCK ID</span>
+                  <strong>{scramblerCard?.cckId ?? "-"}</strong>
+                </div>
+                <div className="scramble-admin-profile-row">
+                  <span>UID</span>
+                  <strong>{scramblerCard?.uid ?? "-"}</strong>
+                </div>
+              </div>
+
+              <button
+                className="scramble-admin-btn scramble-admin-btn--subtle"
+                type="button"
+                onClick={handleResetScrambler}
+              >
+                스크램블러 변경
+              </button>
+            </>
+          )}
+        </aside>
+
+        <section className="scramble-admin-card scramble-admin-card--right">
+          <h2 className="scramble-admin-title">선수 스캔</h2>
+
+          {hasScrambler ? (
+            <div
+              className="scramble-admin-tag-wait"
+              onClick={() => {
+                playerInputRef.current?.focus();
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  playerInputRef.current?.focus();
+                }
+              }}
+            >
+              <img className="scramble-admin-tag-wait-icon" src="/icon/sidebar/card.svg" alt="" aria-hidden="true" />
+              <span className="scramble-admin-tag-wait-text">선수 카드 태그 대기중</span>
+              <input
+                ref={playerInputRef}
+                className="scramble-admin-hidden-input"
+                type="text"
+                value={playerInput}
+                onChange={(event) => setPlayerInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    if (!loading) {
+                      void handlePlayerTag();
+                    }
+                  }
+                }}
+                onBlur={() => {
+                  requestAnimationFrame(() => {
+                    if (hasScrambler) {
+                      playerInputRef.current?.focus();
+                    }
+                  });
+                }}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+            </div>
+          ) : (
+            <div className="scramble-admin-empty">스크램블러 등록 전에는 선수 스캔을 할 수 없습니다.</div>
+          )}
+
+          <div className="scramble-admin-player">
+            <div className="scramble-admin-player-row">
+              <span>선수명</span>
+              <strong>{result?.name ?? playerCard?.name ?? "-"}</strong>
+            </div>
+            <div className="scramble-admin-player-row">
+              <span>CCK ID</span>
+              <strong>{result?.cckId ?? playerCard?.cckId ?? "-"}</strong>
+            </div>
+            <div className="scramble-admin-player-row">
+              <span>순번</span>
+              <strong>{result?.seq ?? "-"}</strong>
+            </div>
+          </div>
+
+          <div className="scramble-admin-result">
+            <div className="scramble-admin-result-head">
+              <div>
+                <strong>{result ? `${result.eventName} ${result.roundName}` : "스크램블 정보"}</strong>
+                <span>{result?.roundGroup ? `그룹 ${result.roundGroup}` : ""}</span>
+              </div>
+            </div>
+
+            {result?.svg ? (
+              <div className="scramble-admin-svg" dangerouslySetInnerHTML={{ __html: result.svg }} />
+            ) : (
+              <div className="scramble-admin-empty">스크램블 이미지가 없습니다.</div>
+            )}
+
+            <pre className="scramble-admin-text">{result?.scramble ?? "-"}</pre>
+          </div>
+        </section>
+      </section>
+    </div>
+  );
+};

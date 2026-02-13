@@ -47,15 +47,17 @@ export const CompetitionHeader = ({ title, dateStart, location, compIdx }: Compe
       {compIdx ? (
         <div className="page-actions">
           {isAdmin && (
-            <button className="page-action-btn" type="button" onClick={() => navigate(`/admin/competition/${compIdx}`)}>
-              <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
-              대회 관리
-            </button>
+            <>
+              <button className="page-action-btn" type="button" onClick={() => navigate(`/admin/competition/${compIdx}/scramble`)}>
+                <img className="page-action-icon" src="/icon/button/cube.svg" alt="" aria-hidden="true" />
+                스크램블
+              </button>
+              <button className="page-action-btn" type="button" onClick={() => navigate(`/admin/competition/${compIdx}`)}>
+                <img className="page-action-icon" src="/icon/button/hammer.svg" alt="" aria-hidden="true" />
+                대회 관리
+              </button>
+            </>
           )}
-          <button className="page-action-btn" type="button" onClick={() => navigate("/")}>
-            <img className="page-action-icon" src="/icon/button/home.svg" alt="" aria-hidden="true" />
-            랭킹 홈
-          </button>
           <button
             className="page-action-btn"
             type="button"
@@ -65,6 +67,10 @@ export const CompetitionHeader = ({ title, dateStart, location, compIdx }: Compe
           >
             <img className="page-action-icon page-action-icon--logo" src="/logo/cck-logo.png" alt="" aria-hidden="true" />
             대회 정보
+          </button>
+          <button className="page-action-btn" type="button" onClick={() => navigate("/")}>
+            <img className="page-action-icon" src="/icon/button/home.svg" alt="" aria-hidden="true" />
+            랭킹 홈
           </button>
         </div>
       ) : null}
