@@ -29,6 +29,17 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Header, Sidebar } from "@/widgets";
 import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
+type ThemeMode = "light" | "dark";
+const THEME_STORAGE_KEY = "cck-ranking-theme";
+
+const getInitialTheme = (): ThemeMode => {
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === "light" || savedTheme === "dark") {
+    return savedTheme;
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
 /**
  * 로그인 페이지 리다이렉트 컴포넌트
  */
@@ -44,12 +55,21 @@ const
     // eslint-disable-next-line react-refresh/only-export-components
     AppLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   return (
     <div className="app-layout">
       <Header
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(prev => !prev)}
+        theme={theme}
+        onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
       />
       <Sidebar collapsed={sidebarCollapsed} />
       <main className={`content-area ${sidebarCollapsed ? "collapsed" : ""}`}>

@@ -31,11 +31,22 @@ const getProfileFromToken = (token: string): { name: string; cckId: string } => 
   }
 };
 
-function Header({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+function Header({
+  collapsed,
+  onToggle,
+  theme,
+  onToggleTheme,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+  theme: "light" | "dark";
+  onToggleTheme: () => void;
+}) {
   const navigate = useNavigate();
   const [token, setToken] = useState(getAccessToken());
   const isLoggedIn = !!token;
   const profile = token ? getProfileFromToken(token) : null;
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const syncAuthState = () => setToken(getAccessToken());
@@ -60,7 +71,7 @@ function Header({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => v
       {/* 로고 & 사이드바 토글 */}
       <div className="header-left">
         <img
-          src="/logo/cck-ranking-black.png"
+          src={isDark ? "/logo/cck-ranking-white.png" : "/logo/cck-ranking-black.png"}
           alt="logo"
           className="logo"
           onClick={() => navigate("/")}
@@ -92,6 +103,20 @@ function Header({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => v
 
       {/* 로그인/회원 버튼 */}
       <div className="header-right">
+        <button
+          type="button"
+          className={`theme-toggle ${isDark ? "theme-toggle--dark" : ""}`}
+          onClick={onToggleTheme}
+          aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
+          title={isDark ? "라이트 모드" : "다크 모드"}
+        >
+          <img
+            className="theme-toggle-icon-img"
+            src={isDark ? "/icon/header/theme-light.svg" : "/icon/header/theme-dark.svg"}
+            alt=""
+            aria-hidden="true"
+          />
+        </button>
         {isLoggedIn ? (
           <UserMenu
             avatarSrc="/icon/sidebar/person.svg"
