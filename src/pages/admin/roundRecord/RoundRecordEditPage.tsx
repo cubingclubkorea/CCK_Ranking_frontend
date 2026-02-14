@@ -647,7 +647,7 @@ export const RoundRecordEditPage = () => {
               setSearchActiveIndex((prev) => getNextSearchIndex(prev, -1));
               return;
             }
-            if (event.key === "Enter" && searchOpen) {
+            if (event.key === "Enter") {
               if (searchResults.length === 0) return;
               event.preventDefault();
               const targetIndex = searchActiveIndex >= 0 ? searchActiveIndex : 0;

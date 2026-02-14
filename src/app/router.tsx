@@ -126,7 +126,7 @@ const
         mobileOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
       />
-      <main className={`content-area ${!isMobileLayout && sidebarCollapsed ? "collapsed" : ""}`}>
+      <main className={`content-area ${!isMobileLayout && sidebarCollapsed ? "collapsed" : ""} ${isMobileLayout && mobileMenuOpen ? "mobile-menu-open" : ""}`}>
         <div className="content-inner">
           <Outlet />
         </div>

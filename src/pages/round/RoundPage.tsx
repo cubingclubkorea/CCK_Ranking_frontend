@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
@@ -39,10 +39,14 @@ export const RoundPage = () => {
   const [round, setRound] = useState<Round | null>(null);
   const [records, setRecords] = useState<Record[]>([]);
   const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchActiveIndex, setSearchActiveIndex] = useState(-1);
+  const [isSearchComposing, setIsSearchComposing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<{ record: Record; rank: number } | null>(null);
   const [compactRecordView, setCompactRecordView] = useState(() => window.matchMedia(COMPACT_RECORD_QUERY).matches);
+  const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -115,6 +119,46 @@ export const RoundPage = () => {
     });
   }, [search, sortedRecords]);
 
+  const searchResults = useMemo(() => {
+    const keyword = search.trim().toLowerCase();
+    if (!keyword) return [];
+    return sortedRecords.filter((record) => {
+      return (
+        record.name.toLowerCase().includes(keyword) ||
+        record.cckId.toLowerCase().includes(keyword)
+      );
+    }).slice(0, 8);
+  }, [search, sortedRecords]);
+
+  useEffect(() => {
+    if (searchResults.length === 0) {
+      setSearchActiveIndex(-1);
+      return;
+    }
+    setSearchActiveIndex((prev) => {
+      if (prev < 0) return 0;
+      return Math.min(prev, searchResults.length - 1);
+    });
+  }, [searchResults]);
+
+  useEffect(() => {
+    if (!searchOpen || searchActiveIndex < 0) return;
+    suggestionRefs.current[searchActiveIndex]?.scrollIntoView({ block: "nearest" });
+  }, [searchActiveIndex, searchOpen]);
+
+  const getNextSearchIndex = (prev: number, direction: 1 | -1) => {
+    if (searchResults.length === 0) return -1;
+    if (prev < 0) {
+      return direction > 0 ? 0 : searchResults.length - 1;
+    }
+    return (prev + direction + searchResults.length) % searchResults.length;
+  };
+
+  const applySearchSelection = (record: Record) => {
+    setSearch(record.name);
+    setSearchOpen(false);
+  };
+
   if (loading) {
     return <div className="round-page">로딩중...</div>;
   }
@@ -145,17 +189,89 @@ export const RoundPage = () => {
 
       <section className="round-panel">
         <div className="round-panel-top">
-          <label className="round-search">
-            <span className="round-search-icon" aria-hidden="true">
-              <img src="/icon/input/search.svg" alt="" aria-hidden="true" />
-            </span>
-            <input
-              type="search"
-              placeholder="이름 또는 CCK ID로 검색"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </label>
+          <div className="round-search-wrap">
+            <label className="round-search">
+              <span className="round-search-icon" aria-hidden="true">
+                <img src="/icon/input/search.svg" alt="" aria-hidden="true" />
+              </span>
+              <input
+                type="search"
+                placeholder="이름 또는 CCK ID로 검색"
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setSearchOpen(true);
+                }}
+                onFocus={() => {
+                  if (search.trim()) {
+                    setSearchOpen(true);
+                  }
+                }}
+                onBlur={() => {
+                  window.setTimeout(() => setSearchOpen(false), 120);
+                }}
+                onCompositionStart={() => setIsSearchComposing(true)}
+                onCompositionEnd={() => setIsSearchComposing(false)}
+                onKeyDown={(event) => {
+                  if (isSearchComposing || event.nativeEvent.isComposing) {
+                    return;
+                  }
+                  if (event.key === "ArrowDown") {
+                    if (searchResults.length === 0) return;
+                    event.preventDefault();
+                    setSearchOpen(true);
+                    setSearchActiveIndex((prev) => getNextSearchIndex(prev, 1));
+                    return;
+                  }
+                  if (event.key === "ArrowUp") {
+                    if (searchResults.length === 0) return;
+                    event.preventDefault();
+                    setSearchOpen(true);
+                    setSearchActiveIndex((prev) => getNextSearchIndex(prev, -1));
+                    return;
+                  }
+                  if (event.key === "Enter") {
+                    if (searchResults.length === 0) return;
+                    event.preventDefault();
+                    const target = searchResults[searchActiveIndex >= 0 ? searchActiveIndex : 0];
+                    if (target) {
+                      applySearchSelection(target);
+                    }
+                    return;
+                  }
+                  if (event.key === "Escape") {
+                    setSearchOpen(false);
+                  }
+                }}
+                role="combobox"
+                aria-expanded={searchOpen}
+                aria-controls="round-search-suggestions"
+                aria-autocomplete="list"
+              />
+            </label>
+            {searchOpen && searchResults.length > 0 && (
+              <div id="round-search-suggestions" className="round-search-suggestions" role="listbox">
+                {searchResults.map((record, index) => (
+                  <button
+                    key={record.idx}
+                    type="button"
+                    className={`round-search-suggestion ${searchActiveIndex === index ? "round-search-suggestion--active" : ""}`}
+                    aria-selected={searchActiveIndex === index}
+                    ref={(node) => {
+                      suggestionRefs.current[index] = node;
+                    }}
+                    onMouseEnter={() => setSearchActiveIndex(index)}
+                    onMouseDown={() => applySearchSelection(record)}
+                  >
+                    <span className="round-search-suggestion-name">
+                      {record.enName ? `${record.name} (${record.enName})` : record.name}
+                    </span>
+                    <span className="round-search-suggestion-meta">{record.cckId}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <RecordTable
