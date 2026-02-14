@@ -835,6 +835,42 @@ body {
     display: none;
   }
 
+  .page-title {
+    font-size: 40px;
+  }
+
+  .page-title-meta {
+    font-size: 16px;
+  }
+
+  .main-section-title {
+    font-size: 21px;
+  }
+
+  .card-list .card-list-title,
+  .round-card-title {
+    font-size: 19px;
+  }
+
+  .round-panel-title h2 {
+    font-size: 21px;
+  }
+
+  .round-panel-title span {
+    font-size: 14px;
+  }
+
+  .dashboard-title,
+  .admin-title,
+  .error-title {
+    font-size: 26px;
+  }
+
+  .card-list-pill,
+  .round-card-time {
+    display: none;
+  }
+
   .content-area,
   .content-area.collapsed {
     top: 64px;

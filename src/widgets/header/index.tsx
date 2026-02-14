@@ -107,9 +107,20 @@ function Header({
               aria-hidden="true"
             />
           </button>
-          <button onClick={() => navigate(isLoggedIn ? "/profile" : "/login")} className="login-btn login-btn--compact">
-            {isLoggedIn ? "내 정보" : "로그인"}
-          </button>
+          {isLoggedIn ? (
+            <UserMenu
+              avatarSrc="/icon/sidebar/person.svg"
+              name={profile?.name ?? "사용자"}
+              cckId={profile?.cckId ?? ""}
+              onProfile={() => navigate("/profile")}
+              onSettings={() => navigate("/settings")}
+              onLogout={handleLogout}
+            />
+          ) : (
+            <button onClick={() => navigate("/login")} className="login-btn login-btn--compact">
+              로그인
+            </button>
+          )}
         </div>
       </div>
     );
