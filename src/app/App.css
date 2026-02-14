@@ -54,11 +54,11 @@ body {
 }
 
 .content-area {
-    position: fixed;
-    top: 70px;
-    left: 260px;
-    right: 0;
-    bottom: 0;
+  position: fixed;
+  top: 70px;
+  left: 250px;
+  right: 0;
+  bottom: 0;
     overflow-y: scroll;
     overflow-x: hidden;
     scrollbar-gutter: stable both-edges;
@@ -689,9 +689,17 @@ body {
 /* ===== Responsive ===== */
 
 @media (max-width: 980px) {
-    .content-area {
-        left: 220px;
-    }
+  .sidebar {
+    width: 220px;
+  }
+
+  .sidebar.collapsed {
+    width: 72px;
+  }
+
+  .content-area {
+    left: 220px;
+  }
 
     .content-area.collapsed {
         left: 72px;
@@ -824,6 +832,12 @@ body {
 }
 
 .round-card-meta {
+    font-size: 14px;
+    color: #8a8a8f;
+}
+
+.round-card-meta-mobile-time {
+    display: none;
     font-size: 14px;
     color: #8a8a8f;
 }
@@ -3646,7 +3660,19 @@ body {
     inset: 0;
   }
 
-  .card-list-pill,
+  .card-list-pill {
+    display: none;
+  }
+
+  .round-card-meta {
+    display: none;
+  }
+
+  .round-card-meta-mobile-time {
+    display: block;
+    font-size: 15px;
+  }
+
   .round-card-time {
     display: none;
   }

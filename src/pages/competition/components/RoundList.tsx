@@ -120,6 +120,7 @@ export const RoundList = ({ schedule, loading, selectedDate }: RoundListProps) =
                 {round.cubeEventName} {round.roundName}
               </div>
               <div className="round-card-meta">{getMetaText(round)}</div>
+              <div className="round-card-meta-mobile-time">{formatTimeRange(round.eventStart, round.eventEnd)}</div>
             </div>
           </div>
           <div className={`round-card-time ${status}`}>
