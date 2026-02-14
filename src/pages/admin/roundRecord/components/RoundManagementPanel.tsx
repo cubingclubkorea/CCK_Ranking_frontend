@@ -49,6 +49,19 @@ const ActionModal = ({ title, open, onClose, children, actions }: ActionModalPro
   return createPortal(modal, document.body);
 };
 
+const hasCompleteMainAttempts = (record: Record) => {
+  return [1, 2, 3, 4, 5].every((attemptTry) =>
+    record.attempts.some(
+      (attempt) =>
+        attempt.attemptTry === attemptTry &&
+        attempt.time !== undefined &&
+        attempt.time !== null
+    )
+  );
+};
+
+const hasComputedAverage = (record: Record) => typeof record.average === "number";
+
 export const RoundManagementPanel = ({
   round,
   records,
@@ -98,7 +111,8 @@ export const RoundManagementPanel = ({
   }, [records, round.advance]);
 
   const advanceCandidates = useMemo(() => {
-    const sorted = [...records].sort((a, b) => {
+    const eligible = records.filter((record) => hasCompleteMainAttempts(record) && hasComputedAverage(record));
+    const sorted = [...eligible].sort((a, b) => {
       const rankA = a.ranking ?? Number.MAX_SAFE_INTEGER;
       const rankB = b.ranking ?? Number.MAX_SAFE_INTEGER;
       if (rankA !== rankB) return rankA - rankB;
@@ -458,7 +472,7 @@ export const RoundManagementPanel = ({
         </div>
 
         <div className="record-edit-section">
-          <div className="record-edit-section-title">진출 대상 ({advanceValue}명)</div>
+          <div className="record-edit-section-title">진출 대상 ({advanceCandidates.length}명)</div>
           {advanceCandidates.length === 0 ? (
             <div className="record-no-show-empty">진출 대상이 없습니다.</div>
           ) : (

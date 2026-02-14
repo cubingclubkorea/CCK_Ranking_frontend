@@ -48,6 +48,8 @@ export const RecordTable = ({
     );
   };
 
+  const hasComputedAverage = (record: Record) => typeof record.average === "number";
+
   const getHighlightValues = (attempts: Record["attempts"]) => {
     const times = attempts
       .map((attempt) => attempt.time)
@@ -87,13 +89,17 @@ export const RecordTable = ({
         <tbody>
           {records.map((record, index) => {
             const rank = record.ranking ?? index + 1;
-            const isAdvance = advanceCount ? rank <= advanceCount : false;
+            const hasAllAttempts = hasCompleteMainAttempts(record);
+            const isRanked = hasAllAttempts && hasComputedAverage(record);
+            const isAdvanceEligible = hasAllAttempts && isRanked;
+            const isAdvance = advanceCount ? rank <= advanceCount && isAdvanceEligible : false;
             const prevRecord = index > 0 ? records[index - 1] : null;
             const prevRank = prevRecord ? (prevRecord.ranking ?? index) : null;
-            const prevIsAdvance = !!(advanceCount && prevRank !== null && prevRank <= advanceCount);
+            const prevHasAllAttempts = prevRecord ? hasCompleteMainAttempts(prevRecord) : false;
+            const prevIsAdvanceEligible = prevRecord ? prevHasAllAttempts && hasComputedAverage(prevRecord) : false;
+            const prevIsAdvance = !!(advanceCount && prevRank !== null && prevRank <= advanceCount && prevIsAdvanceEligible);
             const isCutlineStart = !isAdvance && prevIsAdvance;
             const { bestValue, worstValue, negativeTimes } = getHighlightValues(record.attempts);
-            const hasAllAttempts = hasCompleteMainAttempts(record);
             const isSelected = selectedRecordIdx === record.idx;
             return (
               <tr
@@ -129,7 +135,7 @@ export const RecordTable = ({
                   }
                 }}
               >
-                <td className="round-rank-cell">{rank}</td>
+                <td className="round-rank-cell">{isRanked ? rank : "-"}</td>
                 <td className="round-name-cell">
                   <div className="round-name" title={record.enName ? `${record.name} (${record.enName})` : record.name}>
                     {record.enName ? `${record.name} (${record.enName})` : record.name}

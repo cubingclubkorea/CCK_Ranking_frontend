@@ -58,7 +58,7 @@ export const RecordDetailModal = ({
         className={["record-modal-attempt", highlightClass].filter(Boolean).join(" ")}
       >
         {getAttemptValue(selected.record.attempts, attemptTry)}
-        {showSeparator ? <span className="record-modal-attempt-sep">|</span> : null}
+        {showSeparator ? <span className="record-modal-attempt-sep"></span> : null}
       </span>
     );
   };
