@@ -8,6 +8,8 @@ import { RoundHeader } from "./components/RoundHeader";
 import { RecordTable } from "./components/RecordTable";
 import { RecordDetailModal } from "./components/RecordDetailModal";
 
+const COMPACT_RECORD_QUERY = "(max-width: 980px), (max-aspect-ratio: 5/4)";
+
 const formatTimeValue = (value?: number | null) => {
   if (value === null || value === undefined) {
     return "-";
@@ -40,6 +42,7 @@ export const RoundPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<{ record: Record; rank: number } | null>(null);
+  const [compactRecordView, setCompactRecordView] = useState(() => window.matchMedia(COMPACT_RECORD_QUERY).matches);
 
   useEffect(() => {
     let mounted = true;
@@ -78,6 +81,14 @@ export const RoundPage = () => {
       mounted = false;
     };
   }, [roundIdx]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(COMPACT_RECORD_QUERY);
+    const syncCompactMode = (event: MediaQueryListEvent) => setCompactRecordView(event.matches);
+    setCompactRecordView(mediaQuery.matches);
+    mediaQuery.addEventListener("change", syncCompactMode);
+    return () => mediaQuery.removeEventListener("change", syncCompactMode);
+  }, []);
 
   const sortedRecords = useMemo(() => {
     return [...records].sort((a, b) => {
@@ -153,6 +164,7 @@ export const RoundPage = () => {
           advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
           getAttemptValue={getAttemptValue}
+          compactAttempts={compactRecordView}
           onSelect={(record, rank) => setSelectedRecord({ record, rank })}
         />
       </section>

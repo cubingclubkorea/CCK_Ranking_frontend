@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet, useLocation } from "react-router-dom";
 import {
   MainPage,
   ApiDashboardPage,
@@ -31,6 +31,7 @@ import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorag
 
 type ThemeMode = "light" | "dark";
 const THEME_STORAGE_KEY = "cck-ranking-theme";
+const MOBILE_LAYOUT_QUERY = "(max-width: 820px)";
 
 const getInitialTheme = (): ThemeMode => {
   const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -39,6 +40,8 @@ const getInitialTheme = (): ThemeMode => {
   }
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 };
+
+const getInitialMobileLayout = (): boolean => window.matchMedia(MOBILE_LAYOUT_QUERY).matches;
 
 /**
  * 로그인 페이지 리다이렉트 컴포넌트
@@ -54,7 +57,10 @@ const LoginRedirect = () => {
 const
     // eslint-disable-next-line react-refresh/only-export-components
     AppLayout = () => {
+  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobileLayout, setIsMobileLayout] = useState(getInitialMobileLayout);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
 
   useEffect(() => {
@@ -63,16 +69,64 @@ const
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_LAYOUT_QUERY);
+    const syncMobileLayout = (event: MediaQueryListEvent) => {
+      setIsMobileLayout(event.matches);
+    };
+    setIsMobileLayout(mediaQuery.matches);
+    mediaQuery.addEventListener("change", syncMobileLayout);
+    return () => mediaQuery.removeEventListener("change", syncMobileLayout);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileLayout) {
+      setMobileMenuOpen(false);
+    }
+  }, [isMobileLayout]);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isMobileLayout || !mobileMenuOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMobileLayout, mobileMenuOpen]);
+
+  const handleSidebarToggle = () => {
+    if (isMobileLayout) {
+      setMobileMenuOpen((prev) => !prev);
+      return;
+    }
+    setSidebarCollapsed((prev) => !prev);
+  };
+
   return (
     <div className="app-layout">
       <Header
         collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(prev => !prev)}
+        onToggle={handleSidebarToggle}
         theme={theme}
         onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
+        isMobile={isMobileLayout}
+        mobileMenuOpen={mobileMenuOpen}
       />
-      <Sidebar collapsed={sidebarCollapsed} />
-      <main className={`content-area ${sidebarCollapsed ? "collapsed" : ""}`}>
+      <Sidebar
+        collapsed={!isMobileLayout && sidebarCollapsed}
+        isMobile={isMobileLayout}
+        mobileOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
+      <main className={`content-area ${!isMobileLayout && sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="content-inner">
           <Outlet />
         </div>

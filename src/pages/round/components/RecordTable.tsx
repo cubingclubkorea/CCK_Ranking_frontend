@@ -7,6 +7,7 @@ type RecordTableProps = {
   advanceCount?: number;
   formatTimeValue: (value?: number | null) => string;
   getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
+  compactAttempts?: boolean;
   onSelect?: (record: Record, rank: number) => void;
   onContextMenu?: (record: Record, rank: number, position: { x: number; y: number }) => void;
   selectedRecordIdx?: number;
@@ -18,6 +19,7 @@ export const RecordTable = ({
   advanceCount,
   formatTimeValue,
   getAttemptValue,
+  compactAttempts = false,
   onSelect,
   onContextMenu,
   selectedRecordIdx,
@@ -64,18 +66,22 @@ export const RecordTable = ({
 
   return (
     <div className="record-table-wrap">
-      <table className="record-table">
+      <table className={`record-table ${compactAttempts ? "record-table--compact" : ""}`}>
         <thead>
           <tr>
             <th>순위</th>
             <th>이름</th>
             <th>평균</th>
             <th>싱글</th>
-            <th>1</th>
-            <th>2</th>
-            <th>3</th>
-            <th>4</th>
-            <th>5</th>
+            {!compactAttempts && (
+              <>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -120,34 +126,35 @@ export const RecordTable = ({
               >
                 <td className="round-rank-cell">{rank}</td>
                 <td className="round-name-cell">
-                  <div className="round-name">
+                  <div className="round-name" title={record.enName ? `${record.name} (${record.enName})` : record.name}>
                     {record.enName ? `${record.name} (${record.enName})` : record.name}
                   </div>
                 </td>
                 <td className="round-score">{hasAllAttempts ? formatTimeValue(record.average) : "-"}</td>
                 <td className="round-score">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</td>
-                {[1, 2, 3, 4, 5].map((attemptTry) => (
-                  <td key={attemptTry} className="round-attempt-cell">
-                    {(() => {
-                      const attempt = record.attempts.find((item) => item.attemptTry === attemptTry);
-                      const time = attempt?.time;
-                      if (time === undefined || time === null) {
-                        return "-";
-                      }
-                      let highlightClass = "";
-                      if (negativeTimes.length > 0 && time < 0) {
-                        highlightClass = "attempt-worst";
-                      } else if (time === bestValue) {
-                        highlightClass = "attempt-best";
-                      } else if (time === worstValue) {
-                        highlightClass = "attempt-worst";
-                      }
-                      return (
-                        <span className={highlightClass || undefined}>{getAttemptValue(record.attempts, attemptTry)}</span>
-                      );
-                    })()}
-                  </td>
-                ))}
+                {!compactAttempts &&
+                  [1, 2, 3, 4, 5].map((attemptTry) => (
+                    <td key={attemptTry} className="round-attempt-cell">
+                      {(() => {
+                        const attempt = record.attempts.find((item) => item.attemptTry === attemptTry);
+                        const time = attempt?.time;
+                        if (time === undefined || time === null) {
+                          return "-";
+                        }
+                        let highlightClass = "";
+                        if (negativeTimes.length > 0 && time < 0) {
+                          highlightClass = "attempt-worst";
+                        } else if (time === bestValue) {
+                          highlightClass = "attempt-best";
+                        } else if (time === worstValue) {
+                          highlightClass = "attempt-worst";
+                        }
+                        return (
+                          <span className={highlightClass || undefined}>{getAttemptValue(record.attempts, attemptTry)}</span>
+                        );
+                      })()}
+                    </td>
+                  ))}
               </tr>
             );
           })}

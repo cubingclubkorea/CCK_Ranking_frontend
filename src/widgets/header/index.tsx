@@ -36,11 +36,15 @@ function Header({
   onToggle,
   theme,
   onToggleTheme,
+  isMobile,
+  mobileMenuOpen,
 }: {
   collapsed: boolean;
   onToggle: () => void;
   theme: "light" | "dark";
   onToggleTheme: () => void;
+  isMobile: boolean;
+  mobileMenuOpen: boolean;
 }) {
   const navigate = useNavigate();
   const [token, setToken] = useState(getAccessToken());
@@ -66,6 +70,51 @@ function Header({
     }
   };
 
+  if (isMobile) {
+    return (
+      <div className="header header--mobile">
+        <button
+          className="collapse-btn header-mobile-menu"
+          onClick={onToggle}
+          aria-pressed={mobileMenuOpen}
+          aria-label={mobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+        >
+          ☰
+        </button>
+
+        <div className="header-mobile-center">
+          <img
+            src={isDark ? "/logo/cck-ranking-white.png" : "/logo/cck-ranking-black.png"}
+            alt="logo"
+            className="logo header-mobile-logo"
+            onClick={() => navigate("/")}
+            draggable={false}
+          />
+        </div>
+
+        <div className="header-right header-mobile-actions">
+          <button
+            type="button"
+            className={`theme-toggle ${isDark ? "theme-toggle--dark" : ""}`}
+            onClick={onToggleTheme}
+            aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
+            title={isDark ? "라이트 모드" : "다크 모드"}
+          >
+            <img
+              className="theme-toggle-icon-img"
+              src={isDark ? "/icon/header/theme-light.svg" : "/icon/header/theme-dark.svg"}
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
+          <button onClick={() => navigate(isLoggedIn ? "/profile" : "/login")} className="login-btn login-btn--compact">
+            {isLoggedIn ? "내 정보" : "로그인"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="header">
       {/* 로고 & 사이드바 토글 */}
@@ -77,7 +126,20 @@ function Header({
           onClick={() => navigate("/")}
           draggable={false}
         />
-        <button className="collapse-btn" onClick={onToggle} aria-pressed={collapsed} aria-label={collapsed ? "사이드바 펼치기" : "사이드바 접기"}>
+        <button
+          className="collapse-btn"
+          onClick={onToggle}
+          aria-pressed={isMobile ? mobileMenuOpen : collapsed}
+          aria-label={
+            isMobile
+              ? mobileMenuOpen
+                ? "메뉴 닫기"
+                : "메뉴 열기"
+              : collapsed
+                ? "사이드바 펼치기"
+                : "사이드바 접기"
+          }
+        >
           ☰
         </button>
       </div>

@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { MenuItem } from "./MenuItem";
 import { authChangeEvent, hasAccessToken, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
-function Sidebar({ collapsed }: { collapsed: boolean }) {
+type SidebarProps = {
+  collapsed: boolean;
+  isMobile: boolean;
+  mobileOpen: boolean;
+  onClose: () => void;
+};
+
+function Sidebar({ collapsed, isMobile, mobileOpen, onClose }: SidebarProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(hasAccessToken());
   const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const icons = {
@@ -33,31 +40,34 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
   }, []);
 
   return (
-    <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
-      {/* 일반 메뉴 */}
-      <div className="menu-group">
-        <MenuItem text="대회 목록" icon={icons.list} to="/" />
-        <MenuItem text="신기록" icon={icons.record} to="/record" />
-        <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" />
-        {isLoggedIn && <MenuItem text="나의 정보" icon={icons.person} to="/profile/" />}
-        {isLoggedIn && <MenuItem text="기록 이전 신청" icon={icons.form} to="/transfer-record" />}
-      </div>
+    <>
+      {isMobile && mobileOpen && <button type="button" className="sidebar-backdrop" onClick={onClose} aria-label="메뉴 닫기" />}
+      <aside className={`sidebar ${collapsed ? "collapsed" : ""} ${isMobile ? "mobile" : ""} ${isMobile && mobileOpen ? "mobile-open" : ""}`}>
+        {/* 일반 메뉴 */}
+        <div className="menu-group">
+          <MenuItem text="대회 목록" icon={icons.list} to="/" onNavigate={isMobile ? onClose : undefined} />
+          <MenuItem text="신기록" icon={icons.record} to="/record" onNavigate={isMobile ? onClose : undefined} />
+          <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" onNavigate={isMobile ? onClose : undefined} />
+          {isLoggedIn && <MenuItem text="나의 정보" icon={icons.person} to="/profile/" onNavigate={isMobile ? onClose : undefined} />}
+          {isLoggedIn && <MenuItem text="기록 이전 신청" icon={icons.form} to="/transfer-record" onNavigate={isMobile ? onClose : undefined} />}
+        </div>
 
-      {isAdmin && (
-        <>
-          <div className="sidebar-divider" />
+        {isAdmin && (
+          <>
+            <div className="sidebar-divider" />
 
-          {/* 관리자 메뉴 */}
-          <div className="admin-group">
-            <MenuItem text="회원 관리" icon={icons.personData} to="/admin/member" />
-            <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" />
-            <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" />
-            <MenuItem text="OAuth 관리" icon={icons.lock} to="/admin/oauth" />
-            <MenuItem text="API 대시보드" icon={icons.dashboard} to="/admin/api-dashboard" />
-          </div>
-        </>
-      )}
-    </aside>
+            {/* 관리자 메뉴 */}
+            <div className="admin-group">
+              <MenuItem text="회원 관리" icon={icons.personData} to="/admin/member" onNavigate={isMobile ? onClose : undefined} />
+              <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" onNavigate={isMobile ? onClose : undefined} />
+              <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" onNavigate={isMobile ? onClose : undefined} />
+              <MenuItem text="OAuth 관리" icon={icons.lock} to="/admin/oauth" onNavigate={isMobile ? onClose : undefined} />
+              <MenuItem text="API 대시보드" icon={icons.dashboard} to="/admin/api-dashboard" onNavigate={isMobile ? onClose : undefined} />
+            </div>
+          </>
+        )}
+      </aside>
+    </>
   );
 }
 
