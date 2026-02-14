@@ -88,6 +88,10 @@ export const RecordTable = ({
           {records.map((record, index) => {
             const rank = record.ranking ?? index + 1;
             const isAdvance = advanceCount ? rank <= advanceCount : false;
+            const prevRecord = index > 0 ? records[index - 1] : null;
+            const prevRank = prevRecord ? (prevRecord.ranking ?? index) : null;
+            const prevIsAdvance = !!(advanceCount && prevRank !== null && prevRank <= advanceCount);
+            const isCutlineStart = !isAdvance && prevIsAdvance;
             const { bestValue, worstValue, negativeTimes } = getHighlightValues(record.attempts);
             const hasAllAttempts = hasCompleteMainAttempts(record);
             const isSelected = selectedRecordIdx === record.idx;
@@ -103,6 +107,7 @@ export const RecordTable = ({
                 }}
                 className={[
                   isAdvance ? "round-table-row-advance" : "",
+                  isCutlineStart ? "round-table-row-cutline" : "",
                   "record-table-row",
                   isSelected ? "record-table-row-selected" : "",
                 ]

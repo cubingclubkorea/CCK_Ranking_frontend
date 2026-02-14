@@ -1,5 +1,6 @@
 import type { Record } from "@/entities/record";
 import { createPortal } from "react-dom";
+import { useEffect, useRef, useState } from "react";
 
 type RecordDetailModalProps = {
   selected: { record: Record; rank: number } | null;
@@ -33,11 +34,62 @@ export const RecordDetailModal = ({
   };
 
   const { bestValue, worstValue, negativeTimes } = getHighlightValues(selected.record.attempts);
+  const attemptTries = [1, 2, 3, 4, 5] as const;
+  const attemptMeasureRef = useRef<HTMLDivElement | null>(null);
+  const [useSplitAttempts, setUseSplitAttempts] = useState(false);
+
+  const renderAttempt = (attemptTry: number, showSeparator: boolean) => {
+    const attempt = selected.record.attempts.find((item) => item.attemptTry === attemptTry);
+    const time = attempt?.time;
+    let highlightClass = "";
+    if (time !== undefined && time !== null) {
+      if (negativeTimes.length > 0 && time < 0) {
+        highlightClass = "attempt-worst";
+      } else if (time === bestValue) {
+        highlightClass = "attempt-best";
+      } else if (time === worstValue) {
+        highlightClass = "attempt-worst";
+      }
+    }
+
+    return (
+      <span
+        key={attemptTry}
+        className={["record-modal-attempt", highlightClass].filter(Boolean).join(" ")}
+      >
+        {getAttemptValue(selected.record.attempts, attemptTry)}
+        {showSeparator ? <span className="record-modal-attempt-sep">|</span> : null}
+      </span>
+    );
+  };
+
+  useEffect(() => {
+    const node = attemptMeasureRef.current;
+    if (!node) return;
+
+    const checkOverflow = () => {
+      const shouldSplit = node.scrollWidth > node.clientWidth + 1;
+      setUseSplitAttempts(shouldSplit);
+    };
+
+    checkOverflow();
+
+    const observer = new ResizeObserver(() => {
+      checkOverflow();
+    });
+    observer.observe(node);
+    window.addEventListener("resize", checkOverflow);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", checkOverflow);
+    };
+  }, [selected?.record.idx]);
 
   const modal = (
     <div className="record-modal-backdrop" onClick={onClose}>
       <div
-        className="record-modal"
+        className="record-modal record-modal--detail"
         role="dialog"
         aria-modal="true"
         onClick={(event) => event.stopPropagation()}
@@ -61,39 +113,63 @@ export const RecordDetailModal = ({
           </div>
           <div className="record-modal-row">
             <div className="record-modal-label">평균</div>
-            <div className="record-modal-value">{formatTimeValue(selected.record.average)}</div>
+            <div className="record-modal-value record-modal-score">{formatTimeValue(selected.record.average)}</div>
           </div>
           <div className="record-modal-row">
             <div className="record-modal-label">최고</div>
-            <div className="record-modal-value record-modal-highlight">
+            <div className="record-modal-value record-modal-score record-modal-highlight">
               {formatTimeValue(selected.record.single)}
             </div>
           </div>
           <div className="record-modal-row">
             <div className="record-modal-label">시도</div>
-            <div className="record-modal-value record-modal-attempts">
-              {[1, 2, 3, 4, 5].map((attemptTry, index) => {
-                const attempt = selected.record.attempts.find((item) => item.attemptTry === attemptTry);
-                const time = attempt?.time;
-                let highlightClass = "";
-                if (time !== undefined && time !== null) {
-                  if (negativeTimes.length > 0 && time < 0) {
-                    highlightClass = "attempt-worst";
-                  } else if (time === bestValue) {
-                    highlightClass = "attempt-best";
-                  } else if (time === worstValue) {
-                    highlightClass = "attempt-worst";
+            <div className="record-modal-value record-modal-attempts-wrap">
+              {!useSplitAttempts ? (
+                <div className="record-modal-attempts record-modal-attempts--single">
+                  {attemptTries.map((attemptTry, index) => renderAttempt(attemptTry, index < attemptTries.length - 1))}
+                </div>
+              ) : (
+                <div className="record-modal-attempts record-modal-attempts--split">
+                  <div className="record-modal-attempt-row">
+                    {[1, 2, 3].map((attemptTry) => renderAttempt(attemptTry, true))}
+                  </div>
+                  <div className="record-modal-attempt-row">
+                    {[4, 5].map((attemptTry, index) => renderAttempt(attemptTry, index === 0))}
+                  </div>
+                </div>
+              )}
+              <div
+                ref={attemptMeasureRef}
+                className="record-modal-attempts record-modal-attempts--single record-modal-attempts--measure"
+                aria-hidden="true"
+              >
+                {attemptTries.map((attemptTry, index) => renderAttempt(attemptTry, index < attemptTries.length - 1))}
+              </div>
+            </div>
+          </div>
+          <div className="record-modal-divider" aria-hidden="true" />
+          <div className="record-modal-round-info">
+            <div className="record-modal-round-icon" aria-hidden="true">
+              <img
+                src={`/icon/events/${encodeURIComponent(selected.record.eventName || "Question")}.svg`}
+                alt=""
+                loading="lazy"
+                onError={(event) => {
+                  const target = event.currentTarget;
+                  if (target.dataset.fallback === "true") {
+                    target.style.display = "none";
+                    return;
                   }
-                }
-                return (
-                  <span key={attemptTry}>
-                    {index > 0 ? " · " : ""}
-                    <span className={highlightClass || undefined}>
-                      {getAttemptValue(selected.record.attempts, attemptTry)}
-                    </span>
-                  </span>
-                );
-              })}
+                  target.dataset.fallback = "true";
+                  target.src = "/icon/events/Question.svg";
+                }}
+              />
+            </div>
+            <div className="record-modal-round-text">
+              <div className="record-modal-round-title">
+                {selected.record.eventName} {selected.record.roundName}
+              </div>
+              <div className="record-modal-round-subtitle">{selected.record.compName}</div>
             </div>
           </div>
         </div>

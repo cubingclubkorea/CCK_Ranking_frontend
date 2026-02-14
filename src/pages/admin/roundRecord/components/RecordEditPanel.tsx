@@ -133,7 +133,7 @@ export const RecordEditPanel = ({
 
         <div className="record-edit-section">
           <div className="record-edit-section-title">시도 기록</div>
-          <div className="record-edit-help">형식 : 1:23.45 = 12345 ∙ DNF = / </div>
+          <div className="record-edit-help">형식 : 1:23.45 = 12345 | DNF = / </div>
           <div className="record-edit-attempts">
             {attemptTries.map((attemptTry, index) => (
               <div className="record-edit-field" key={attemptTry}>
