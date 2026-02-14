@@ -2,6 +2,7 @@
     --bs-body-font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui;
     --page-side-gap: 30px;
     --page-max-width: 1280px;
+    --app-vh: 100vh;
     --icon-url: none;
     --record-edit-panel-height: auto;
 }
@@ -410,7 +411,7 @@ body {
 
 .sidebar {
     width: 250px;
-    height: calc(100vh - 70px);
+    height: calc(var(--app-vh) - 70px);
     background: #f6f7fb;
     padding: 20px 15px;
     transition: 0.25s ease;
@@ -438,8 +439,9 @@ body {
 }
 
 .sidebar-footer {
-    margin-top: 14px;
+    margin-bottom: 0;
     padding-top: 12px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid #dde1ee;
 }
 
@@ -3930,12 +3932,12 @@ body {
 .sidebar.mobile {
   width: min(84vw, 280px);
   padding: 20px 14px 24px;
-  z-index: 1200;
+  z-index: 1410;
   transform: translateX(-105%);
   box-shadow: 10px 0 28px rgba(15, 23, 42, 0.18);
   transition: transform 0.28s ease;
   top: 0;
-  height: 100vh;
+  height: var(--app-vh);
 }
 
 .sidebar.mobile.mobile-open {
@@ -3976,9 +3978,13 @@ body {
   }
 
   .header--mobile {
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     justify-content: space-between;
     border-bottom-color: #e6e8f0;
+    z-index: 1300;
   }
 
   .header-mobile-menu {
@@ -3997,8 +4003,8 @@ body {
     position: static;
     transform: none;
     pointer-events: auto;
-    height: 36px;
-    max-width: 168px;
+    height: 40px;
+    max-width: 188px;
     object-fit: contain;
   }
 
@@ -4032,8 +4038,8 @@ body {
     bottom: auto;
     overflow: visible;
     scrollbar-gutter: auto;
-    min-height: calc(100vh - 68px);
-    padding: 0 var(--page-side-gap);
+    min-height: calc(var(--app-vh) - 68px);
+    padding: 68px var(--page-side-gap) 0;
   }
 
   .sidebar-backdrop {
@@ -4045,7 +4051,7 @@ body {
     background: rgba(19, 24, 39, 0.28);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
-    z-index: 1100;
+    z-index: 1400;
     cursor: pointer;
   }
 
@@ -4059,7 +4065,7 @@ body {
   }
 
   .sidebar.mobile .sidebar-footer {
-    margin-top: 12px;
+    margin-top: 8px;
     padding-top: 10px;
   }
 

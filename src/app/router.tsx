@@ -32,6 +32,7 @@ import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorag
 type ThemeMode = "light" | "dark";
 const THEME_STORAGE_KEY = "cck-ranking-theme";
 const MOBILE_LAYOUT_QUERY = "(max-width: 820px)";
+const VIEWPORT_HEIGHT_CSS_VAR = "--app-vh";
 
 const getInitialTheme = (): ThemeMode => {
   const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -42,6 +43,11 @@ const getInitialTheme = (): ThemeMode => {
 };
 
 const getInitialMobileLayout = (): boolean => window.matchMedia(MOBILE_LAYOUT_QUERY).matches;
+
+const syncViewportHeightVar = () => {
+  const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+  document.documentElement.style.setProperty(VIEWPORT_HEIGHT_CSS_VAR, `${Math.round(viewportHeight)}px`);
+};
 
 /**
  * 로그인 페이지 리다이렉트 컴포넌트
@@ -77,6 +83,26 @@ const
     setIsMobileLayout(mediaQuery.matches);
     mediaQuery.addEventListener("change", syncMobileLayout);
     return () => mediaQuery.removeEventListener("change", syncMobileLayout);
+  }, []);
+
+  useEffect(() => {
+    syncViewportHeightVar();
+
+    const handleViewportChange = () => {
+      syncViewportHeightVar();
+    };
+
+    window.addEventListener("resize", handleViewportChange);
+    window.addEventListener("orientationchange", handleViewportChange);
+    window.visualViewport?.addEventListener("resize", handleViewportChange);
+    window.visualViewport?.addEventListener("scroll", handleViewportChange);
+
+    return () => {
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("orientationchange", handleViewportChange);
+      window.visualViewport?.removeEventListener("resize", handleViewportChange);
+      window.visualViewport?.removeEventListener("scroll", handleViewportChange);
+    };
   }, []);
 
   useEffect(() => {
