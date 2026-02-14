@@ -116,7 +116,6 @@ const
         collapsed={sidebarCollapsed}
         onToggle={handleSidebarToggle}
         theme={theme}
-        onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
         isMobile={isMobileLayout}
         mobileMenuOpen={mobileMenuOpen}
       />
@@ -125,6 +124,8 @@ const
         isMobile={isMobileLayout}
         mobileOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        theme={theme}
+        onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
       />
       <main className={`content-area ${!isMobileLayout && sidebarCollapsed ? "collapsed" : ""} ${isMobileLayout && mobileMenuOpen ? "mobile-menu-open" : ""}`}>
         <div className="content-inner">

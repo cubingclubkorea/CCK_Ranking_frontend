@@ -35,14 +35,12 @@ function Header({
   collapsed,
   onToggle,
   theme,
-  onToggleTheme,
   isMobile,
   mobileMenuOpen,
 }: {
   collapsed: boolean;
   onToggle: () => void;
   theme: "light" | "dark";
-  onToggleTheme: () => void;
   isMobile: boolean;
   mobileMenuOpen: boolean;
 }) {
@@ -93,20 +91,6 @@ function Header({
         </div>
 
         <div className="header-right header-mobile-actions">
-          <button
-            type="button"
-            className={`theme-toggle ${isDark ? "theme-toggle--dark" : ""}`}
-            onClick={onToggleTheme}
-            aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-            title={isDark ? "라이트 모드" : "다크 모드"}
-          >
-            <img
-              className="theme-toggle-icon-img"
-              src={isDark ? "/icon/header/theme-light.svg" : "/icon/header/theme-dark.svg"}
-              alt=""
-              aria-hidden="true"
-            />
-          </button>
           {isLoggedIn ? (
             <UserMenu
               avatarSrc="/icon/sidebar/person.svg"
@@ -176,20 +160,6 @@ function Header({
 
       {/* 로그인/회원 버튼 */}
       <div className="header-right">
-        <button
-          type="button"
-          className={`theme-toggle ${isDark ? "theme-toggle--dark" : ""}`}
-          onClick={onToggleTheme}
-          aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-          title={isDark ? "라이트 모드" : "다크 모드"}
-        >
-          <img
-            className="theme-toggle-icon-img"
-            src={isDark ? "/icon/header/theme-light.svg" : "/icon/header/theme-dark.svg"}
-            alt=""
-            aria-hidden="true"
-          />
-        </button>
         {isLoggedIn ? (
           <UserMenu
             avatarSrc="/icon/sidebar/person.svg"
