@@ -18,13 +18,6 @@ type RoundHeaderProps = {
 
 const isValidDate = (value?: Date): value is Date => value instanceof Date && !Number.isNaN(value.getTime());
 
-const formatDatePart = (date: Date) => {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, "0");
-  const day = `${date.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 const formatTimePart = (date: Date) => {
   const hour = `${date.getHours()}`.padStart(2, "0");
   const minute = `${date.getMinutes()}`.padStart(2, "0");
@@ -37,20 +30,10 @@ const formatRoundDateTime = (eventStart?: Date, eventEnd?: Date) => {
   }
   const start = eventStart;
   if (!isValidDate(eventEnd)) {
-    return `${formatDatePart(start)} ${formatTimePart(start)}`;
+    return formatTimePart(start);
   }
   const end = eventEnd;
-
-  const sameDay =
-    start.getFullYear() === end.getFullYear() &&
-    start.getMonth() === end.getMonth() &&
-    start.getDate() === end.getDate();
-
-  if (sameDay) {
-    return `${formatDatePart(start)} ${formatTimePart(start)}~${formatTimePart(end)}`;
-  }
-
-  return `${formatDatePart(start)} ${formatTimePart(start)} ~ ${formatDatePart(end)} ${formatTimePart(end)}`;
+  return `${formatTimePart(start)}~${formatTimePart(end)}`;
 };
 
 export const RoundHeader = ({
@@ -102,9 +85,15 @@ export const RoundHeader = ({
           />
         </div>
         <div className="round-title-text">
-          <h1 className="page-title">
-            {eventName ? `${eventName} ` : ""}
-            {title}
+          <h1 className="page-title round-title-heading">
+            {eventName ? (
+              <>
+                <span className="round-title-event">{eventName}</span>
+                <span className="round-title-round">{title}</span>
+              </>
+            ) : (
+              <span className="round-title-round">{title}</span>
+            )}
           </h1>
           {subtitle ? (
             <div className="page-title-meta">

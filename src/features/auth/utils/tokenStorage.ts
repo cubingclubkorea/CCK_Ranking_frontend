@@ -84,12 +84,20 @@ const extractRoles = (payload: AccessTokenPayload): string[] => {
   return [];
 };
 
+const extractPosition = (payload: AccessTokenPayload): string | null => {
+  const raw = payload.position ?? payload.memberPosition ?? payload.userPosition;
+  return typeof raw === 'string' ? raw.toUpperCase() : null;
+};
+
 export const hasAdminRole = (): boolean => {
   const payload = getAccessTokenPayload();
   if (!payload) return false;
 
   if (payload.admin === true || payload.isAdmin === true) return true;
 
+  const position = extractPosition(payload);
+  if (position === 'ADMIN' || position === 'ROOT') return true;
+
   const roles = extractRoles(payload).map((role) => role.toUpperCase());
-  return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN');
+  return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN') || roles.includes('ROOT') || roles.includes('ROLE_ROOT');
 };
