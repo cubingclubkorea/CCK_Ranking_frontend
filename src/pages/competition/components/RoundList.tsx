@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Round, RoundDayCount } from "@/entities/round";
+import { RoundListSkeleton } from "@/widgets";
 
 type RoundListProps = {
   schedule: RoundDayCount | null;
@@ -68,7 +69,7 @@ const isOverlappingDate = (start: Date, end: Date, selectedDate: Date) => {
 
 export const RoundList = ({ schedule, loading, selectedDate }: RoundListProps) => {
   if (loading) {
-    return <div className="round-list-empty">로딩중...</div>;
+    return <RoundListSkeleton />;
   }
 
   if (!schedule) {

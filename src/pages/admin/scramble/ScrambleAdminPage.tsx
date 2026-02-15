@@ -181,7 +181,11 @@ export const ScrambleAdminPage = () => {
             <img src="/icon/button/cube.svg" alt="" loading="lazy" />
           </div>
           <div className="round-title-text">
-            <h1 className="page-title">{competition?.compName ?? "대회 로딩중..."}</h1>
+            {competition ? (
+              <h1 className="page-title">{competition.compName}</h1>
+            ) : (
+              <div className="ui-skeleton ui-skeleton-title" aria-hidden="true" />
+            )}
             <div className="page-title-meta">
               <span>스크램블 모드</span>
             </div>

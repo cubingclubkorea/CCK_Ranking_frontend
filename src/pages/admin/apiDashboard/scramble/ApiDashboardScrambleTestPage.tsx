@@ -37,9 +37,7 @@ export const ApiDashboardScrambleTestPage = () => {
 
   const toast = error
     ? { variant: 'error' as const, message: error, onClose: () => setError(null) }
-    : loading
-      ? { variant: 'info' as const, message: '로딩 중...', onClose: undefined }
-      : null;
+    : null;
 
   return (
     <div className="dashboard-test-page">

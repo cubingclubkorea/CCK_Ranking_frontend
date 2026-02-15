@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CompList, type CompListItem } from "@/widgets";
+import { CompList, MainPageSkeleton, type CompListItem } from "@/widgets";
 import {
   getCompetitionFuture,
   getCompetitionNow,
@@ -10,6 +10,7 @@ export const MainPage = () => {
   const [upcoming, setUpcoming] = useState<CompListItem[]>([]);
   const [ongoing, setOngoing] = useState<CompListItem[]>([]);
   const [ended, setEnded] = useState<CompListItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -42,6 +43,7 @@ export const MainPage = () => {
     let mounted = true;
 
     const fetchData = async () => {
+      setLoading(true);
       try {
         const [future, now, past] = await Promise.all([
           getCompetitionFuture({ page: 0, size: 200 }),
@@ -81,6 +83,10 @@ export const MainPage = () => {
         );
       } catch (error) {
         console.error("메인 대회 목록 조회 실패:", error);
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -90,6 +96,10 @@ export const MainPage = () => {
       mounted = false;
     };
   }, []);
+
+  if (loading) {
+    return <MainPageSkeleton />;
+  }
 
   return(
     <div className="main-page">

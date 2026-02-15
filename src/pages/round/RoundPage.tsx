@@ -4,6 +4,7 @@ import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
+import { RoundPageSkeleton } from "@/widgets";
 import { RoundHeader } from "./components/RoundHeader";
 import { RecordTable } from "./components/RecordTable";
 import { RecordDetailModal } from "./components/RecordDetailModal";
@@ -160,7 +161,7 @@ export const RoundPage = () => {
   };
 
   if (loading) {
-    return <div className="round-page">로딩중...</div>;
+    return <RoundPageSkeleton />;
   }
 
   if (error) {
