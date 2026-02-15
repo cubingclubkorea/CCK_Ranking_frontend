@@ -1,3 +1,4 @@
+/*noinspection CssDuplicatedCode*/
 :root {
     --bs-body-font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui;
     --page-side-gap: 30px;
@@ -1232,11 +1233,11 @@ body {
     overflow: hidden;
 }
 
-.record-modal::before {
+.record-modal.record-modal--detail::before {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url("/logo/cck-logo.png");
+    background-image: url("../../public/logo/cck-logo.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: min(64%, 280px);
@@ -1245,7 +1246,7 @@ body {
     z-index: 0;
 }
 
-.record-modal > * {
+.record-modal.record-modal--detail > * {
     position: relative;
     z-index: 1;
 }
@@ -1461,11 +1462,17 @@ body {
 }
 
 .round-name-cell {
-    min-width: 160px;
+    width: 132px;
+    min-width: 96px;
+    max-width: 156px;
 }
 
 .round-name {
     font-weight: 600;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .round-sub {
@@ -3877,9 +3884,12 @@ body {
 }
 
 [data-theme="dark"] .round-day-tab.active {
-    background: #303030;
-    border-color: #4a4a4a;
-    color: #f0f0f0;
+    background: #334158;
+    border-color: #6ea8fe;
+    color: #f5f9ff;
+    box-shadow:
+            inset 0 0 0 1px rgba(110, 168, 254, 0.55),
+            0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
 [data-theme="dark"] .record-edit-btn--primary,
@@ -4026,9 +4036,9 @@ body {
 }
 
 .record-table.record-table--compact .round-name-cell {
-    width: 34%;
-    min-width: 96px;
-    max-width: 160px;
+    width: 24%;
+    min-width: 84px;
+    max-width: 132px;
 }
 
 .login-btn--compact {
@@ -4163,7 +4173,7 @@ body {
     }
 
     .content-area.mobile-menu-open {
-        filter: blur(1.5px);
+        filter: blur(2px);
         transition: filter 0.2s ease;
     }
 
