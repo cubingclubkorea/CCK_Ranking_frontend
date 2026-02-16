@@ -5,5 +5,18 @@ export { apiClient } from './api/base';
 export { ssoClient } from './api/auth_base';
 export type { Page } from './model/page';
 export type { ErrorResponse } from './model/error';
-export { mapRegionName } from './model/region';
+export { mapRegionName, REGION_FILTER_OPTIONS } from './model/region';
+export {
+  getRequiredAttemptCount,
+  getMainAttempts,
+  calculateAverageByRule,
+  resolveAverageValue,
+  normalizeAvgCalc,
+  isAo12AvgCalc,
+  isBo3AvgCalc,
+  isSingleAvgCalc,
+  isBA5Format,
+  getWorstAttemptTrySet,
+} from './model/averageRule';
+export { getEventIconSrc } from './utils/eventIcon';
 export * from './utils/apiHandler';

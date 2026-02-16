@@ -14,7 +14,7 @@ const SkeletonCardRow = () => (
 
 export const MainPageSkeleton = () => {
   return (
-    <div className="main-page ui-skeleton-page">
+    <div className="main-page ui-skeleton-page ui-skeleton-main-page">
       {["다가오는 대회", "진행중인 대회", "지나간 대회"].map((section) => (
         <div className="main-section" key={section}>
           <SkeletonLine className="ui-skeleton-main-title" />

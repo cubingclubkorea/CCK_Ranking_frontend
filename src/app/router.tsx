@@ -6,6 +6,7 @@ import {
   ApiDashboardCompetitionCUDTestPage,
   CompetitionPage,
   RoundPage,
+  RankingPage,
   ApiDashboardCubeEventTestPage,
   ApiDashboardRoundTestPage,
   ApiDashboardRoundCUDTestPage,
@@ -208,7 +209,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "ranking",
-        element: <ComingSoonPage />,
+        element: <RankingPage />,
       },
       {
         path: "profile",
@@ -217,14 +218,6 @@ export const router = createBrowserRouter([
       {
         path: "transfer-record",
         element: <ComingSoonPage />,
-      },
-      {
-        path: "admin/member",
-        element: (
-          <AdminRoute>
-            <ComingSoonPage />
-          </AdminRoute>
-        ),
       },
       {
         path: "admin/competition",
@@ -271,14 +264,6 @@ export const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <EventAdminPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/oauth",
-        element: (
-          <AdminRoute>
-            <ComingSoonPage />
           </AdminRoute>
         ),
       },

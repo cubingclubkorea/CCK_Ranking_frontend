@@ -1,5 +1,6 @@
 export { default as Header } from './header';
 export { default as Sidebar } from './sidebar';
+export { PageHeader } from './pageHeader';
 export { OverlayToast } from './overlay';
 export {
   CompetitionPageSkeleton,

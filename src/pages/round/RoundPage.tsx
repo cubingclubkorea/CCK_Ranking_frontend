@@ -4,12 +4,29 @@ import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
-import { RoundPageSkeleton } from "@/widgets";
-import { RoundHeader } from "./components/RoundHeader";
+import { getEventIconSrc, resolveAverageValue } from "@/shared";
+import { PageHeader, RoundPageSkeleton } from "@/widgets";
 import { RecordTable } from "./components/RecordTable";
 import { RecordDetailModal } from "./components/RecordDetailModal";
 
 const COMPACT_RECORD_QUERY = "(max-width: 980px), (max-aspect-ratio: 5/4)";
+const isValidDate = (value?: Date): value is Date => value instanceof Date && !Number.isNaN(value.getTime());
+
+const formatTimePart = (date: Date) => {
+  const hour = `${date.getHours()}`.padStart(2, "0");
+  const minute = `${date.getMinutes()}`.padStart(2, "0");
+  return `${hour}:${minute}`;
+};
+
+const formatRoundDateTime = (eventStart?: Date, eventEnd?: Date) => {
+  if (!isValidDate(eventStart)) {
+    return null;
+  }
+  if (!isValidDate(eventEnd)) {
+    return formatTimePart(eventStart);
+  }
+  return `${formatTimePart(eventStart)}~${formatTimePart(eventEnd)}`;
+};
 
 const formatTimeValue = (value?: number | null) => {
   if (value === null || value === undefined) {
@@ -28,11 +45,6 @@ const formatTimeValue = (value?: number | null) => {
     return `${minutes}:${seconds.toFixed(2).padStart(5, "0")}`;
   }
   return value.toFixed(2);
-};
-
-const getAttemptValue = (attempts: Record["attempts"], attemptTry: number) => {
-  const attempt = attempts?.find((item) => item.attemptTry === attemptTry);
-  return attempt ? formatTimeValue(attempt.time) : "-";
 };
 
 export const RoundPage = () => {
@@ -100,8 +112,8 @@ export const RoundPage = () => {
       const rankA = a.ranking ?? Number.MAX_SAFE_INTEGER;
       const rankB = b.ranking ?? Number.MAX_SAFE_INTEGER;
       if (rankA !== rankB) return rankA - rankB;
-      const avgA = a.average ?? Number.MAX_SAFE_INTEGER;
-      const avgB = b.average ?? Number.MAX_SAFE_INTEGER;
+      const avgA = resolveAverageValue(a.attempts, a.avgCalc, a.average) ?? Number.MAX_SAFE_INTEGER;
+      const avgB = resolveAverageValue(b.attempts, b.avgCalc, b.average) ?? Number.MAX_SAFE_INTEGER;
       if (avgA !== avgB) return avgA - avgB;
       const singleA = a.single ?? Number.MAX_SAFE_INTEGER;
       const singleB = b.single ?? Number.MAX_SAFE_INTEGER;
@@ -173,20 +185,65 @@ export const RoundPage = () => {
   }
 
   const backTarget = compIdx ?? String(round.compIdx);
+  const roundDateTime = formatRoundDateTime(round.eventStart, round.eventEnd);
 
   return (
     <div className="main-page">
-      <div className="comp-header">
-        <RoundHeader
-          title={round.roundName}
-          eventName={round.cubeEventName}
-          subtitle={round.compName}
-          eventStart={round.eventStart}
-          eventEnd={round.eventEnd}
-          compIdx={Number(backTarget)}
-          roundIdx={Number(round.idx)}
-        />
-      </div>
+      <PageHeader
+        containerClassName="comp-header"
+        titleClassName="page-title round-title-heading"
+        title={
+          <>
+            <span className="round-title-event">{round.cubeEventName}</span>
+            <span className="round-title-round">{round.roundName}</span>
+          </>
+        }
+        subtitle={
+          <>
+            <span>{round.compName}</span>
+            {roundDateTime ? (
+              <>
+                <span className="page-title-meta-divider">·</span>
+                <span>{roundDateTime}</span>
+              </>
+            ) : null}
+          </>
+        }
+        icon={
+          <img
+            src={getEventIconSrc(round.cubeEventName)}
+            alt=""
+            loading="lazy"
+            onError={(event) => {
+              const target = event.currentTarget;
+              if (target.dataset.fallback === "true") {
+                target.style.display = "none";
+                return;
+              }
+              target.dataset.fallback = "true";
+              target.src = "/icon/events/Question.svg";
+            }}
+          />
+        }
+        actions={[
+          {
+            label: "라운드 관리",
+            iconSrc: "/icon/button/hammer.svg",
+            to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}`,
+            adminOnly: true,
+          },
+          {
+            label: "라운드 목록",
+            iconSrc: "/icon/button/back.svg",
+            to: `/competition/${Number(backTarget)}`,
+          },
+          {
+            label: "랭킹 홈",
+            iconSrc: "/icon/button/home.svg",
+            to: "/",
+          },
+        ]}
+      />
 
       <section className="round-panel">
         <div className="round-panel-top">
@@ -280,7 +337,6 @@ export const RoundPage = () => {
           emptyMessage={records.length === 0 ? "아직 기록이 없습니다." : "검색 결과가 없습니다."}
           advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
-          getAttemptValue={getAttemptValue}
           compactAttempts={compactRecordView}
           onSelect={(record, rank) => setSelectedRecord({ record, rank })}
         />
@@ -290,7 +346,6 @@ export const RoundPage = () => {
         selected={selectedRecord}
         onClose={() => setSelectedRecord(null)}
         formatTimeValue={formatTimeValue}
-        getAttemptValue={getAttemptValue}
       />
     </div>
   );

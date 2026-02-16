@@ -6,6 +6,7 @@ export { ApiDashboardCompetitionTestPage } from './admin/apiDashboard/competitio
 export { ApiDashboardCompetitionCUDTestPage } from './admin/apiDashboard/competition/ApiDashboardCompetitionCUDTestPage';
 export { CompetitionPage } from './competition/CompetitionPage';
 export { RoundPage } from './round/RoundPage';
+export { RankingPage } from './ranking/RankingPage';
 export { ApiDashboardCubeEventTestPage } from './admin/apiDashboard/cubeEvent/ApiDashboardCubeEventTestPage';
 export { ApiDashboardRoundTestPage } from './admin/apiDashboard/round/ApiDashboardRoundTestPage';
 export { ApiDashboardRoundCUDTestPage } from './admin/apiDashboard/round/ApiDashboardRoundCUDTestPage';

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CubeEvent } from "@/entities/cubeEvent";
+import { getEventIconSrc } from "@/shared";
 
 export type RoundForm = {
   idx: number;
@@ -172,7 +173,7 @@ export const RoundManagementSection = ({
                       <span className="round-editor-icon" aria-hidden="true">
                       <img
                         className="round-editor-icon-img"
-                        src={`/icon/events/${encodeURIComponent(item.round.cubeEvent || "Question")}.svg`}
+                        src={getEventIconSrc(item.round.cubeEvent)}
                         alt=""
                         loading="lazy"
                         onError={(event) => {

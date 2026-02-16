@@ -6,8 +6,7 @@ import { getRecordList } from "@/entities/record";
 import { addExtra, deleteExtra, deleteRecord, updateRecord, updateRecordInfo } from "@/features/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
-import { OverlayToast, RoundRecordEditPageSkeleton } from "@/widgets";
-import { RoundRecordHeader } from "./components/RoundRecordHeader.tsx";
+import { OverlayToast, PageHeader, RoundRecordEditPageSkeleton } from "@/widgets";
 import { ExtraAddModal } from "./components/ExtraAddModal.tsx";
 import { RecordContextMenu } from "./components/RecordContextMenu.tsx";
 import { RecordEditPanel } from "./components/RecordEditPanel.tsx";
@@ -583,15 +582,24 @@ export const RoundRecordEditPage = () => {
         message={toast?.message ?? ""}
         onClose={toast?.onClose}
       />
-      <div className="comp-header">
-        <RoundRecordHeader
-          title={round.roundName}
-          eventName={round.cubeEventName}
-          subtitle={round.compName}
-          compIdx={Number(backTarget)}
-          roundIdx={Number(round.idx)}
-        />
-      </div>
+      <PageHeader
+        containerClassName="comp-header"
+        iconSrc="/icon/button/hammer.svg"
+        title={`${round.cubeEventName ? `${round.cubeEventName} ` : ""}${round.roundName}`}
+        subtitle={round.compName ? `라운드 관리 모드 · ${round.compName}` : undefined}
+        actions={[
+          {
+            label: "라운드로 돌아가기",
+            iconSrc: "/icon/button/back.svg",
+            to: `/competition/${Number(backTarget)}/round/${Number(round.idx)}`,
+          },
+          {
+            label: "랭킹 홈",
+            iconSrc: "/icon/button/home.svg",
+            to: "/",
+          },
+        ]}
+      />
 
       <section ref={roundEditLayoutRef} className="round-panel round-edit-layout">
         <RecordEditPanel
