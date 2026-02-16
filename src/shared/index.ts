@@ -19,4 +19,5 @@ export {
   getWorstAttemptTrySet,
 } from './model/averageRule';
 export { getEventIconSrc } from './utils/eventIcon';
+export { getNewRecordBadgeSrc } from './utils/newRecord';
 export * from './utils/apiHandler';

@@ -7,6 +7,7 @@ import {
   CompetitionPage,
   RoundPage,
   RankingPage,
+  ProfilePage,
   ApiDashboardCubeEventTestPage,
   ApiDashboardRoundTestPage,
   ApiDashboardRoundCUDTestPage,
@@ -213,6 +214,14 @@ export const router = createBrowserRouter([
       },
       {
         path: "profile",
+        element: <ComingSoonPage />,
+      },
+      {
+        path: "profile/:cckId",
+        element: <ProfilePage />,
+      },
+      {
+        path: "settings",
         element: <ComingSoonPage />,
       },
       {

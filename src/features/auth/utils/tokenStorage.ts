@@ -38,12 +38,24 @@ export const hasAccessToken = (): boolean => {
 export const authChangeEvent = AUTH_EVENT;
 
 type AccessTokenPayload = Record<string, unknown>;
+export type AuthUserProfile = {
+  name: string;
+  englishName?: string;
+  cckId: string;
+  gender?: string;
+  region?: string;
+  role?: string;
+};
 
 const decodeBase64Url = (value: string): string | null => {
   const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
   const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
   try {
-    return atob(padded);
+    const binary = atob(padded);
+    const percentEncoded = Array.from(binary)
+      .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
+      .join('');
+    return decodeURIComponent(percentEncoded);
   } catch {
     return null;
   }
@@ -82,6 +94,37 @@ const extractRoles = (payload: AccessTokenPayload): string[] => {
   }
 
   return [];
+};
+
+const pickString = (payload: AccessTokenPayload, keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = payload[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return undefined;
+};
+
+export const getAuthUserProfile = (): AuthUserProfile | null => {
+  const payload = getAccessTokenPayload();
+  if (!payload) return null;
+
+  const name = pickString(payload, ['name', 'nickname', 'preferred_username', 'username']) ?? '사용자';
+  const cckId = pickString(payload, ['cckId', 'memberId', 'id', 'sub']) ?? '';
+  const englishName = pickString(payload, ['englishName', 'enName', 'nameEn', 'name_en']);
+  const gender = pickString(payload, ['gender', 'sex']);
+  const region = pickString(payload, ['state', 'region', 'location']);
+  const role =
+    pickString(payload, ['role', 'userRole', 'memberRole', 'position']) ??
+    extractRoles(payload)[0];
+
+  return {
+    name,
+    englishName,
+    cckId: String(cckId),
+    gender,
+    region,
+    role,
+  };
 };
 
 const extractPosition = (payload: AccessTokenPayload): string | null => {

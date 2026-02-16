@@ -6,6 +6,7 @@ import {
   isAo12AvgCalc,
   isBo3AvgCalc,
   isSingleAvgCalc,
+  getNewRecordBadgeSrc,
   resolveAverageValue,
 } from "@/shared";
 
@@ -108,6 +109,8 @@ export const RecordTable = ({
             const isCutlineStart = !isAdvance && prevIsAdvance;
             const { bestValue } = getHighlightValues(record);
             const displayAverage = resolveAverageValue(record.attempts, record.avgCalc, record.average);
+            const singleBestTypeBadgeSrc = getNewRecordBadgeSrc(record.singleBestType);
+            const averageBestTypeBadgeSrc = getNewRecordBadgeSrc(record.averageBestType);
             const mainAttempts = getMainAttempts(record.attempts, record.avgCalc);
             const isSelected = selectedRecordIdx === record.idx;
             return (
@@ -150,9 +153,23 @@ export const RecordTable = ({
                     {record.enName ? `${record.name} (${record.enName})` : record.name}
                   </div>
                 </td>
-                <td className="round-score">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</td>
+                <td className="round-score">
+                  <span className="record-value-with-badge">
+                    <span>{hasAllAttempts ? formatTimeValue(record.single) : "-"}</span>
+                    {hasAllAttempts && singleBestTypeBadgeSrc ? (
+                      <img className="new-record-badge" src={singleBestTypeBadgeSrc} alt={String(record.singleBestType)} />
+                    ) : null}
+                  </span>
+                </td>
                 {!singleMode && !bo3Mode ? (
-                  <td className="round-score">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</td>
+                  <td className="round-score">
+                    <span className="record-value-with-badge">
+                      <span>{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</span>
+                      {hasAllAttempts && averageBestTypeBadgeSrc ? (
+                        <img className="new-record-badge" src={averageBestTypeBadgeSrc} alt={String(record.averageBestType)} />
+                      ) : null}
+                    </span>
+                  </td>
                 ) : null}
                 {showAttemptColumns &&
                   attemptTries.map((attemptTry) => (

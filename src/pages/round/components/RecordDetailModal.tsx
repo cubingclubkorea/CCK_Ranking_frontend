@@ -2,6 +2,7 @@ import type { Record } from "@/entities/record";
 import {
   getEventIconSrc,
   getMainAttempts,
+  getNewRecordBadgeSrc,
   isBo3AvgCalc,
   isSingleAvgCalc,
   resolveAverageValue,
@@ -67,6 +68,8 @@ export const RecordDetailModal = ({
     selected.record.avgCalc,
     selected.record.average
   );
+  const singleBestTypeBadgeSrc = getNewRecordBadgeSrc(selected.record.singleBestType);
+  const averageBestTypeBadgeSrc = getNewRecordBadgeSrc(selected.record.averageBestType);
 
   const renderAttempt = (attemptTry: number, showSeparator: boolean) => {
     const attempt = mainAttempts.find((item) => item.attemptTry === attemptTry);
@@ -124,13 +127,25 @@ export const RecordDetailModal = ({
           {!hideAverage ? (
             <div className="record-modal-row">
               <div className="record-modal-label">평균</div>
-              <div className="record-modal-value record-modal-score">{formatTimeValue(displayAverage)}</div>
+              <div className="record-modal-value record-modal-score">
+                <span className="record-value-with-badge">
+                  <span>{formatTimeValue(displayAverage)}</span>
+                  {averageBestTypeBadgeSrc ? (
+                    <img className="new-record-badge" src={averageBestTypeBadgeSrc} alt={String(selected.record.averageBestType)} />
+                  ) : null}
+                </span>
+              </div>
             </div>
           ) : null}
           <div className="record-modal-row">
             <div className="record-modal-label">최고</div>
             <div className="record-modal-value record-modal-score record-modal-highlight">
-              {formatTimeValue(selected.record.single)}
+              <span className="record-value-with-badge">
+                <span>{formatTimeValue(selected.record.single)}</span>
+                {singleBestTypeBadgeSrc ? (
+                  <img className="new-record-badge" src={singleBestTypeBadgeSrc} alt={String(selected.record.singleBestType)} />
+                ) : null}
+              </span>
             </div>
           </div>
           <div className="record-modal-row">

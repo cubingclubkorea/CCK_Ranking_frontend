@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MenuItem } from "./MenuItem";
-import { authChangeEvent, hasAccessToken, hasAdminRole } from "@/features/auth/utils/tokenStorage";
+import { authChangeEvent, getAuthUserProfile, hasAccessToken, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
 type SidebarProps = {
   collapsed: boolean;
@@ -14,6 +14,7 @@ type SidebarProps = {
 function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleTheme }: SidebarProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(hasAccessToken());
   const [isAdmin, setIsAdmin] = useState(hasAdminRole());
+  const [myCckId, setMyCckId] = useState(getAuthUserProfile()?.cckId ?? "");
   const isDark = theme === "dark";
   const icons = {
     list: "/icon/sidebar/list.svg",
@@ -33,6 +34,7 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
     const syncAuthState = () => {
       setIsLoggedIn(hasAccessToken());
       setIsAdmin(hasAdminRole());
+      setMyCckId(getAuthUserProfile()?.cckId ?? "");
     };
     window.addEventListener(authChangeEvent, syncAuthState);
     window.addEventListener("storage", syncAuthState);
@@ -52,7 +54,7 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
             <MenuItem text="대회 목록" icon={icons.list} to="/" onNavigate={isMobile ? onClose : undefined} />
             <MenuItem text="신기록" icon={icons.record} to="/record" onNavigate={isMobile ? onClose : undefined} />
             <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" onNavigate={isMobile ? onClose : undefined} />
-            {isLoggedIn && <MenuItem text="나의 정보" icon={icons.person} to="/profile/" onNavigate={isMobile ? onClose : undefined} />}
+            {isLoggedIn && <MenuItem text="나의 정보" icon={icons.person} to={myCckId ? `/profile/${encodeURIComponent(myCckId)}` : "/profile"} onNavigate={isMobile ? onClose : undefined} />}
             {isLoggedIn && <MenuItem text="기록 이전 신청" icon={icons.form} to="/transfer-record" onNavigate={isMobile ? onClose : undefined} />}
           </div>
 

@@ -1,35 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/features/auth";
-import { authChangeEvent, getAccessToken } from "@/features/auth/utils/tokenStorage";
+import { authChangeEvent, getAccessToken, getAuthUserProfile } from "@/features/auth/utils/tokenStorage";
 import { UserMenu } from "./UserMenu";
-
-const decodeBase64Url = (input: string): string => {
-  const base64 = input.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(input.length / 4) * 4, "=");
-  const binary = atob(base64);
-  const percentEncoded = Array.from(binary)
-    .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, "0")}`)
-    .join("");
-  try {
-    return decodeURIComponent(percentEncoded);
-  } catch {
-    return binary;
-  }
-};
-
-const getProfileFromToken = (token: string): { name: string; cckId: string } => {
-  const parts = token.split(".");
-  const payloadPart = parts.length >= 2 ? parts[1] : token;
-
-  try {
-    const payload = JSON.parse(decodeBase64Url(payloadPart));
-    const name = payload?.name || payload?.nickname || payload?.preferred_username || "사용자";
-    const cckId = payload?.cckId || payload?.memberId || payload?.id || payload?.sub || "";
-    return { name, cckId: String(cckId) };
-  } catch {
-    return { name: "사용자", cckId: "" };
-  }
-};
 
 function Header({
   collapsed,
@@ -47,8 +20,9 @@ function Header({
   const navigate = useNavigate();
   const [token, setToken] = useState(getAccessToken());
   const isLoggedIn = !!token;
-  const profile = token ? getProfileFromToken(token) : null;
+  const profile = token ? getAuthUserProfile() : null;
   const isDark = theme === "dark";
+  const profilePath = profile?.cckId ? `/profile/${encodeURIComponent(profile.cckId)}` : "/profile";
 
   useEffect(() => {
     const syncAuthState = () => setToken(getAccessToken());
@@ -96,7 +70,7 @@ function Header({
               avatarSrc="/icon/sidebar/person.svg"
               name={profile?.name ?? "사용자"}
               cckId={profile?.cckId ?? ""}
-              onProfile={() => navigate("/profile")}
+              onProfile={() => navigate(profilePath)}
               onSettings={() => navigate("/settings")}
               onLogout={handleLogout}
             />
@@ -165,7 +139,7 @@ function Header({
             avatarSrc="/icon/sidebar/person.svg"
             name={profile?.name ?? "사용자"}
             cckId={profile?.cckId ?? ""}
-            onProfile={() => navigate("/profile")}
+            onProfile={() => navigate(profilePath)}
             onSettings={() => navigate("/settings")}
             onLogout={handleLogout}
           />
