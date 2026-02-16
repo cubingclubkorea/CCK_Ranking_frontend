@@ -9,6 +9,7 @@ import {
 } from "@/shared";
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type RecordDetailModalProps = {
   selected: { record: Record; rank: number } | null;
@@ -21,6 +22,7 @@ export const RecordDetailModal = ({
   onClose,
   formatTimeValue,
 }: RecordDetailModalProps) => {
+  const navigate = useNavigate();
   const attemptMeasureRef = useRef<HTMLDivElement | null>(null);
   const [useSplitAttempts, setUseSplitAttempts] = useState(false);
 
@@ -107,6 +109,13 @@ export const RecordDetailModal = ({
           <div className="record-modal-actions">
             <button
               type="button"
+              className="record-modal-profile-btn"
+              onClick={() => navigate(`/profile/${encodeURIComponent(selected.record.cckId)}`)}
+            >
+              프로필
+            </button>
+            <button
+              type="button"
               className="record-modal-close"
               onClick={onClose}
               aria-label="닫기"
@@ -128,8 +137,8 @@ export const RecordDetailModal = ({
             <div className="record-modal-row">
               <div className="record-modal-label">평균</div>
               <div className="record-modal-value record-modal-score">
-                <span className="record-value-with-badge">
-                  <span>{formatTimeValue(displayAverage)}</span>
+                <span className="record-value-with-badge record-value-with-badge--floating">
+                  <span className="record-value-with-badge-text">{formatTimeValue(displayAverage)}</span>
                   {averageBestTypeBadgeSrc ? (
                     <img className="new-record-badge" src={averageBestTypeBadgeSrc} alt={String(selected.record.averageBestType)} />
                   ) : null}
@@ -140,8 +149,8 @@ export const RecordDetailModal = ({
           <div className="record-modal-row">
             <div className="record-modal-label">최고</div>
             <div className="record-modal-value record-modal-score record-modal-highlight">
-              <span className="record-value-with-badge">
-                <span>{formatTimeValue(selected.record.single)}</span>
+              <span className="record-value-with-badge record-value-with-badge--floating">
+                <span className="record-value-with-badge-text">{formatTimeValue(selected.record.single)}</span>
                 {singleBestTypeBadgeSrc ? (
                   <img className="new-record-badge" src={singleBestTypeBadgeSrc} alt={String(selected.record.singleBestType)} />
                 ) : null}
@@ -201,10 +210,20 @@ export const RecordDetailModal = ({
               />
             </div>
             <div className="record-modal-round-text">
-              <div className="record-modal-round-title">
+              <button
+                type="button"
+                className="record-modal-link-button record-modal-round-title"
+                onClick={() => navigate(`/competition/${selected.record.compIdx}/round/${selected.record.roundIdx}`)}
+              >
                 {selected.record.eventName} {selected.record.roundName}
-              </div>
-              <div className="record-modal-round-subtitle">{selected.record.compName}</div>
+              </button>
+              <button
+                type="button"
+                className="record-modal-link-button record-modal-round-subtitle"
+                onClick={() => navigate(`/competition/${selected.record.compIdx}`)}
+              >
+                {selected.record.compName}
+              </button>
             </div>
           </div>
         </div>

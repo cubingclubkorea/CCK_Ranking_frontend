@@ -4,7 +4,6 @@ import {
   getMainAttempts,
   isAo12AvgCalc,
   isSingleAvgCalc,
-  getNewRecordBadgeSrc,
   resolveAverageValue,
 } from "@/shared";
 
@@ -54,8 +53,6 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
           {rows.map((row, index) => {
             const displayAverage = resolveAverageValue(row.attempts, row.avgCalc, row.average);
             const displayRecord = singleMode ? row.single : metric === "single" ? row.single : displayAverage;
-            const recordBestType = singleMode || metric === "single" ? row.singleBestType : row.averageBestType;
-            const recordBestTypeBadgeSrc = getNewRecordBadgeSrc(recordBestType);
             const mainAttempts = getMainAttempts(row.attempts, row.avgCalc);
             const bestValue = mainAttempts
               .map((attempt) => attempt.time)
@@ -75,12 +72,7 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
                   <div className="ranking-player-id">{row.cckId}</div>
                 </td>
                 <td className="ranking-record-cell">
-                  <span className="record-value-with-badge">
-                    <span>{formatTime(displayRecord)}</span>
-                    {recordBestTypeBadgeSrc ? (
-                      <img className="new-record-badge" src={recordBestTypeBadgeSrc} alt={String(recordBestType)} />
-                    ) : null}
-                  </span>
+                  {formatTime(displayRecord)}
                 </td>
                 {singleMode ? <td>{renderAttemptValue(firstAttempt?.time)}</td> : null}
                 {!singleMode ? <td>{row.state || "-"}</td> : null}

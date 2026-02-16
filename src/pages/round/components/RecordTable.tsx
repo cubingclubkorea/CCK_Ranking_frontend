@@ -83,8 +83,8 @@ export const RecordTable = ({
           <tr>
             <th>순위</th>
             <th>이름</th>
-            <th>최고</th>
             {!singleMode && !bo3Mode ? <th>평균</th> : null}
+            <th>최고</th>
             {showAttemptColumns && (
               <>
                 {attemptTries.map((attemptTry) => (
@@ -153,24 +153,24 @@ export const RecordTable = ({
                     {record.enName ? `${record.name} (${record.enName})` : record.name}
                   </div>
                 </td>
-                <td className="round-score">
-                  <span className="record-value-with-badge">
-                    <span>{hasAllAttempts ? formatTimeValue(record.single) : "-"}</span>
-                    {hasAllAttempts && singleBestTypeBadgeSrc ? (
-                      <img className="new-record-badge" src={singleBestTypeBadgeSrc} alt={String(record.singleBestType)} />
-                    ) : null}
-                  </span>
-                </td>
                 {!singleMode && !bo3Mode ? (
                   <td className="round-score">
-                    <span className="record-value-with-badge">
-                      <span>{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</span>
+                    <span className="record-value-with-badge record-value-with-badge--floating">
+                      <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</span>
                       {hasAllAttempts && averageBestTypeBadgeSrc ? (
                         <img className="new-record-badge" src={averageBestTypeBadgeSrc} alt={String(record.averageBestType)} />
                       ) : null}
                     </span>
                   </td>
                 ) : null}
+                <td className="round-score">
+                  <span className="record-value-with-badge record-value-with-badge--floating">
+                    <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</span>
+                    {hasAllAttempts && singleBestTypeBadgeSrc ? (
+                      <img className="new-record-badge" src={singleBestTypeBadgeSrc} alt={String(record.singleBestType)} />
+                    ) : null}
+                  </span>
+                </td>
                 {showAttemptColumns &&
                   attemptTries.map((attemptTry) => (
                     <td key={attemptTry} className="round-attempt-cell">
