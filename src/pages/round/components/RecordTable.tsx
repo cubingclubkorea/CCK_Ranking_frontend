@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { Record } from "@/entities/record";
 import {
   getMainAttempts,
+  getWorstAttemptTrySet,
   getRequiredAttemptCount,
   isAo12AvgCalc,
   isBo3AvgCalc,
@@ -73,7 +74,8 @@ export const RecordTable = ({
       .filter((time) => typeof time === "number");
     const positiveTimes = times.filter((time) => time >= 0);
     const bestValue = positiveTimes.length > 0 ? Math.min(...positiveTimes) : undefined;
-    return { bestValue };
+    const worstTrySet = getWorstAttemptTrySet(record.attempts, record.avgCalc, record.eventName);
+    return { bestValue, worstTrySet };
   };
 
   return (
@@ -107,7 +109,7 @@ export const RecordTable = ({
             const prevIsAdvanceEligible = prevRecord ? prevHasAllAttempts && hasComputedAverage(prevRecord) : false;
             const prevIsAdvance = !!(advanceCount && prevRank !== null && prevRank <= advanceCount && prevIsAdvanceEligible);
             const isCutlineStart = !isAdvance && prevIsAdvance;
-            const { bestValue } = getHighlightValues(record);
+            const { bestValue, worstTrySet } = getHighlightValues(record);
             const displayAverage = resolveAverageValue(record.attempts, record.avgCalc, record.average);
             const singleBestTypeBadgeSrc = getNewRecordBadgeSrc(record.singleBestType);
             const averageBestTypeBadgeSrc = getNewRecordBadgeSrc(record.averageBestType);
@@ -183,6 +185,8 @@ export const RecordTable = ({
                         let highlightClass = "";
                         if (time === bestValue) {
                           highlightClass = "attempt-best";
+                        } else if (worstTrySet.has(attemptTry)) {
+                          highlightClass = "attempt-worst";
                         }
                         return (
                           <span className={highlightClass || undefined}>{formatTimeValue(time)}</span>

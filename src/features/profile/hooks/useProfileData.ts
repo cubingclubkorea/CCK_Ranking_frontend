@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { getPlayerRanking, getPlayerStaffCount, type PlayerEventRanking } from "@/entities/statistics";
+import { getPlayerCount, getPlayerRanking, getPlayerStaffCount, type PlayerEventRanking } from "@/entities/statistics";
 import { getAuthInfo } from "@/entities/authInfo";
 import { getAuthUserProfile, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 import { mapRegionName } from "@/shared";
@@ -11,6 +11,8 @@ type ProfileData = {
   judgeCount: number;
   scramblerCount: number;
   totalStaffCount: number;
+  competitionCount: number;
+  completeCount: number;
   isOrganizer: boolean;
   koreanName: string;
   englishName: string;
@@ -36,6 +38,8 @@ export const useProfileData = (cckId?: string) => {
   const [judgeCount, setJudgeCount] = useState(0);
   const [scramblerCount, setScramblerCount] = useState(0);
   const [totalStaffCount, setTotalStaffCount] = useState(0);
+  const [competitionCount, setCompetitionCount] = useState(0);
+  const [completeCount, setCompleteCount] = useState(0);
   const [isOrganizer, setIsOrganizer] = useState(false);
   const [resolvedKoreanName, setResolvedKoreanName] = useState<string | null>(null);
   const [resolvedRegion, setResolvedRegion] = useState<string | null>(null);
@@ -58,9 +62,10 @@ export const useProfileData = (cckId?: string) => {
       setError(null);
 
       try {
-        const [rankingData, staffData] = await Promise.all([
+        const [rankingData, staffData, playerCountData] = await Promise.all([
           getPlayerRanking(normalizedCckId),
           getPlayerStaffCount(normalizedCckId),
+          getPlayerCount(normalizedCckId),
         ]);
         if (!mounted) return;
 
@@ -68,6 +73,8 @@ export const useProfileData = (cckId?: string) => {
         setJudgeCount(staffData.judgeCount ?? 0);
         setScramblerCount(staffData.scramblerCount ?? 0);
         setTotalStaffCount(staffData.totalCount ?? 0);
+        setCompetitionCount(playerCountData.competitionCount ?? 0);
+        setCompleteCount(playerCountData.completeCount ?? 0);
 
         const roleLabel = staffData.role ?? authProfile?.role ?? "";
         const detectedOrganizer = Boolean(staffData.isOrganizer || organizerPattern.test(roleLabel));
@@ -126,6 +133,8 @@ export const useProfileData = (cckId?: string) => {
     judgeCount,
     scramblerCount,
     totalStaffCount,
+    competitionCount,
+    completeCount,
     isOrganizer,
     koreanName,
     englishName,

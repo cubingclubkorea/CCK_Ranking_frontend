@@ -7,6 +7,7 @@ import {
   CompetitionPage,
   RoundPage,
   RankingPage,
+  RecordPage,
   ProfilePage,
   ApiDashboardCubeEventTestPage,
   ApiDashboardRoundTestPage,
@@ -206,7 +207,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "record",
-        element: <ComingSoonPage />,
+        element: <RecordPage />,
       },
       {
         path: "ranking",

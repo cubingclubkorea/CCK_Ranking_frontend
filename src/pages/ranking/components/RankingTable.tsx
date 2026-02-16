@@ -2,6 +2,7 @@ import type { GlobalSingleRankingRecord } from "@/entities/statistics";
 import { formatTime, type RankingMetric } from "@/features/ranking";
 import {
   getMainAttempts,
+  getWorstAttemptTrySet,
   isAo12AvgCalc,
   isSingleAvgCalc,
   resolveAverageValue,
@@ -58,6 +59,7 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
               .map((attempt) => attempt.time)
               .filter((time): time is number => typeof time === "number" && time >= 0)
               .reduce<number | undefined>((best, value) => (best === undefined || value < best ? value : best), undefined);
+            const worstTrySet = getWorstAttemptTrySet(row.attempts, row.avgCalc, row.eventName);
             const firstAttempt = mainAttempts.find((attempt) => attempt.attemptTry === 1);
 
             return (
@@ -84,6 +86,8 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
                         let highlightClass = "";
                         if (typeof attempt.time === "number" && attempt.time === bestValue) {
                           highlightClass = "attempt-best";
+                        } else if (worstTrySet.has(attempt.attemptTry)) {
+                          highlightClass = "attempt-worst";
                         }
 
                         return (

@@ -1225,6 +1225,114 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+/* ===== Recent Record Page ===== */
+
+.recent-record-page {
+    gap: 26px;
+}
+
+.recent-record-panel {
+    border: 1px solid #d9dde7;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    padding: 16px;
+}
+
+.recent-record-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.recent-record-panel-title {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.recent-record-panel-meta {
+    font-size: 13px;
+    font-weight: 600;
+    color: #7d879a;
+}
+
+.recent-record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.recent-record-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 14px;
+    border: 1px solid #e4e8f2;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.recent-record-badge-wrap {
+    width: 70px;
+    min-width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recent-record-badge-image {
+    display: block;
+    width: auto;
+    height: 26px;
+}
+
+.recent-record-content {
+    min-width: 0;
+}
+
+.recent-record-title {
+    margin: 0;
+    color: #202736;
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.recent-record-subtitle {
+    margin: 2px 0 0;
+    color: #6b7488;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.recent-record-skeleton-badge {
+    width: 70px;
+    min-width: 70px;
+    height: 26px;
+    border-radius: 6px;
+}
+
+.recent-record-skeleton-title {
+    width: 420px;
+    max-width: min(75vw, 420px);
+    height: 22px;
+    border-radius: 6px;
+}
+
+.recent-record-skeleton-subtitle {
+    width: 520px;
+    max-width: min(85vw, 520px);
+    height: 16px;
+    border-radius: 6px;
+    margin-top: 6px;
+}
+
 /* ===== Profile Page ===== */
 
 .profile-page {
@@ -1239,13 +1347,13 @@ body {
     border-radius: 14px;
     background: #ffffff;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    min-height: 168px;
+    min-height: 225px;
 }
 
 .profile-avatar-block {
-    width: 126px;
+    width: 150px;
     min-width: 126px;
-    height: 126px;
+    height: 200px;
     border-radius: 12px;
     border: 1px dashed #c9d2e6;
     background:
@@ -1273,7 +1381,7 @@ body {
 
 .profile-name {
     margin: 0;
-    font-size: 31px;
+    font-size: 40px;
     line-height: 1.15;
     font-weight: 800;
     color: #1d2333;
@@ -1282,21 +1390,22 @@ body {
 
 .profile-name-en {
     margin: 0;
-    font-size: 17px;
+    font-size: 25px;
     line-height: 1.2;
     font-weight: 600;
-    color: #6a7388;
+    color: #1d2333;
 }
 
 .profile-badge {
     display: inline-flex;
     align-items: center;
-    height: 28px;
+    gap: 6px;
+    height: 35px;
     padding: 0 10px;
     border-radius: 9px;
     background: #dcf5e8;
     color: #2f8f64;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
 }
 
@@ -1308,29 +1417,61 @@ body {
 .profile-role-wrap {
     position: relative;
     display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .profile-role-info-btn {
-    width: 24px;
-    height: 24px;
-    border: 1px solid #cfd8e8;
-    border-radius: 999px;
-    background: #ffffff;
-    color: #63708a;
-    font-size: 13px;
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    border-radius: 50%;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 10px;
     font-weight: 800;
-    line-height: 1;
+    line-height: 10px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    margin-top: 1px;
 }
 
 .profile-role-info-btn:hover {
-    background: #f2f6ff;
-    border-color: #b7c6e5;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.profile-role-tip {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 8px);
+    transform: translateX(calc(-50% + 46px));
+    z-index: 3;
+    white-space: nowrap;
+    max-width: none;
+    border-radius: 10px;
+    background: #e8e8ee;
+    color: #343746;
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 500;
+    padding: 10px 12px;
+    box-shadow: 0 3px 10px rgba(31, 41, 55, 0.14);
+}
+
+.profile-role-tip::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 100%;
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 8px solid #e8e8ee;
 }
 
 .profile-meta-grid {
@@ -1638,6 +1779,40 @@ body {
         width: 100%;
     }
 
+    .recent-record-panel {
+        padding: 12px;
+    }
+
+    .recent-record-panel-title {
+        font-size: 17px;
+    }
+
+    .recent-record-panel-meta {
+        font-size: 12px;
+    }
+
+    .recent-record-title {
+        font-size: 15px;
+    }
+
+    .recent-record-subtitle {
+        font-size: 13px;
+    }
+
+    .recent-record-item {
+        padding: 10px 10px;
+        gap: 8px;
+    }
+
+    .recent-record-badge-wrap {
+        width: 58px;
+        min-width: 58px;
+    }
+
+    .recent-record-badge-image {
+        height: 22px;
+    }
+
     .profile-identity-card {
         flex-direction: column;
         min-height: 0;
@@ -1659,6 +1834,19 @@ body {
 
     .profile-meta-grid {
         grid-template-columns: 1fr;
+    }
+
+    .profile-role-tip {
+        left: 50%;
+        font-size: 13px;
+        white-space: nowrap;
+        max-width: none;
+        padding: 9px 11px;
+        transform: translateX(calc(-50% + 20px));
+    }
+
+    .profile-role-tip::before {
+        left: 50%;
     }
 
     .profile-section-title {
@@ -4714,6 +4902,23 @@ body {
     color: #c8d1dd;
 }
 
+[data-theme="dark"] .recent-record-panel {
+    border-color: #d9dde7;
+    background: #ffffff;
+}
+
+[data-theme="dark"] .recent-record-panel-meta {
+    color: #7d879a;
+}
+
+[data-theme="dark"] .recent-record-title {
+    color: #202736;
+}
+
+[data-theme="dark"] .recent-record-subtitle {
+    color: #6b7488;
+}
+
 [data-theme="dark"] .profile-identity-card,
 [data-theme="dark"] .profile-event-card,
 [data-theme="dark"] .profile-stat-card,
@@ -4766,14 +4971,22 @@ body {
 }
 
 [data-theme="dark"] .profile-role-info-btn {
-    border-color: #586275;
-    background: #2f3640;
-    color: #c2cad7;
+    border-color: rgba(205, 217, 229, 0.45);
+    background: transparent;
+    color: rgba(205, 217, 229, 0.85);
 }
 
 [data-theme="dark"] .profile-role-info-btn:hover {
-    border-color: #6b7590;
-    background: #38414d;
+    background: rgba(205, 217, 229, 0.14);
+}
+
+[data-theme="dark"] .profile-role-tip {
+    background: #414a57;
+    color: #e6ecf3;
+}
+
+[data-theme="dark"] .profile-role-tip::before {
+    border-bottom-color: #414a57;
 }
 
 [data-theme="dark"] .profile-event-row em {

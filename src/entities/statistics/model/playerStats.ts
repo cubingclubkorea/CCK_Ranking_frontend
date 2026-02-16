@@ -14,3 +14,8 @@ export interface PlayerStaffCountResponse {
   role?: string;
   isOrganizer?: boolean;
 }
+
+export interface PlayerCountResponse {
+  competitionCount: number;
+  completeCount: number;
+}

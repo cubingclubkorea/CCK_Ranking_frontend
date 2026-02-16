@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProfileData } from "@/features/profile";
 import { PageHeader } from "@/widgets";
 import {
-  OrganizerInfoModal,
   ProfileCompetitionsSection,
   ProfileIdentityCard,
   ProfilePageSkeleton,
@@ -13,7 +11,6 @@ import {
 
 export const ProfilePage = () => {
   const { cckId } = useParams();
-  const [organizerInfoOpen, setOrganizerInfoOpen] = useState(false);
   const profile = useProfileData(cckId);
 
   if (profile.loading) return <ProfilePageSkeleton />;
@@ -36,7 +33,6 @@ export const ProfilePage = () => {
         gender={profile.gender}
         region={profile.region}
         isOrganizer={profile.isOrganizer}
-        onOpenOrganizerInfo={() => setOrganizerInfoOpen(true)}
       />
 
       <ProfileRankingSection eventRankings={profile.eventRankings} />
@@ -45,9 +41,10 @@ export const ProfilePage = () => {
         judgeCount={profile.judgeCount}
         scramblerCount={profile.scramblerCount}
         totalStaffCount={profile.totalStaffCount}
+        competitionCount={profile.competitionCount}
+        completeCount={profile.completeCount}
         eventCount={profile.eventRankings.length}
       />
-      <OrganizerInfoModal open={organizerInfoOpen} onClose={() => setOrganizerInfoOpen(false)} />
     </div>
   );
 };

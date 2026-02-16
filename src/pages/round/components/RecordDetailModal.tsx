@@ -3,6 +3,7 @@ import {
   getEventIconSrc,
   getMainAttempts,
   getNewRecordBadgeSrc,
+  getWorstAttemptTrySet,
   isBo3AvgCalc,
   isSingleAvgCalc,
   resolveAverageValue,
@@ -60,10 +61,15 @@ export const RecordDetailModal = ({
       .filter((time) => typeof time === "number");
     const positiveTimes = times.filter((time) => time >= 0);
     const bestValue = positiveTimes.length > 0 ? Math.min(...positiveTimes) : undefined;
-    return { bestValue };
+    const worstTrySet = getWorstAttemptTrySet(
+      selected.record.attempts,
+      selected.record.avgCalc,
+      selected.record.eventName
+    );
+    return { bestValue, worstTrySet };
   };
 
-  const { bestValue } = getHighlightValues();
+  const { bestValue, worstTrySet } = getHighlightValues();
   const attemptTries = mainAttempts.map((attempt) => attempt.attemptTry);
   const displayAverage = resolveAverageValue(
     selected.record.attempts,
@@ -80,6 +86,8 @@ export const RecordDetailModal = ({
     if (time !== undefined && time !== null) {
       if (time === bestValue) {
         highlightClass = "attempt-best";
+      } else if (worstTrySet.has(attemptTry)) {
+        highlightClass = "attempt-worst";
       }
     }
 
