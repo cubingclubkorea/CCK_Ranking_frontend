@@ -991,6 +991,11 @@ body {
     color: #ffffff;
 }
 
+.ranking-metric-tab:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .ranking-region-select {
     height: 38px;
     border: 1px solid #d5ddec;
@@ -1102,6 +1107,10 @@ body {
     table-layout: fixed;
 }
 
+.ranking-table--single {
+    min-width: 860px;
+}
+
 .ranking-table--average {
     min-width: 860px;
 }
@@ -1111,11 +1120,15 @@ body {
 }
 
 .ranking-col-player {
-    width: 170px;
+    width: 146px;
 }
 
 .ranking-col-record {
     width: 88px;
+}
+
+.ranking-col-attempt-single {
+    width: 70px;
 }
 
 .ranking-col-region {
@@ -1126,8 +1139,16 @@ body {
     width: 180px;
 }
 
+.ranking-table--single .ranking-col-comp {
+    width: 452px;
+}
+
 .ranking-col-attempts {
     width: auto;
+}
+
+.ranking-table--single-avgcalc {
+    min-width: 520px;
 }
 
 .ranking-table thead {
@@ -1169,9 +1190,12 @@ body {
     margin-top: 2px;
     font-size: 11px;
     color: #8a8f9f;
+    display: block;
+    width: 100%;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+    max-width: none;
 }
 
 .ranking-record-cell {
@@ -4077,6 +4101,10 @@ body {
 [data-theme="dark"] .ranking-metric-tab.active {
     background: #4d6fa8;
     color: #f0f4ff;
+}
+
+[data-theme="dark"] .ranking-metric-tab:disabled {
+    opacity: 0.5;
 }
 
 [data-theme="dark"] .record-edit-input:focus,

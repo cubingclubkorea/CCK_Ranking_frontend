@@ -4,7 +4,7 @@ import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
-import { getEventIconSrc } from "@/shared";
+import { getEventIconSrc, resolveAverageValue } from "@/shared";
 import { PageHeader, RoundPageSkeleton } from "@/widgets";
 import { RecordTable } from "./components/RecordTable";
 import { RecordDetailModal } from "./components/RecordDetailModal";
@@ -45,11 +45,6 @@ const formatTimeValue = (value?: number | null) => {
     return `${minutes}:${seconds.toFixed(2).padStart(5, "0")}`;
   }
   return value.toFixed(2);
-};
-
-const getAttemptValue = (attempts: Record["attempts"], attemptTry: number) => {
-  const attempt = attempts?.find((item) => item.attemptTry === attemptTry);
-  return attempt ? formatTimeValue(attempt.time) : "-";
 };
 
 export const RoundPage = () => {
@@ -117,8 +112,8 @@ export const RoundPage = () => {
       const rankA = a.ranking ?? Number.MAX_SAFE_INTEGER;
       const rankB = b.ranking ?? Number.MAX_SAFE_INTEGER;
       if (rankA !== rankB) return rankA - rankB;
-      const avgA = a.average ?? Number.MAX_SAFE_INTEGER;
-      const avgB = b.average ?? Number.MAX_SAFE_INTEGER;
+      const avgA = resolveAverageValue(a.attempts, a.avgCalc, a.average) ?? Number.MAX_SAFE_INTEGER;
+      const avgB = resolveAverageValue(b.attempts, b.avgCalc, b.average) ?? Number.MAX_SAFE_INTEGER;
       if (avgA !== avgB) return avgA - avgB;
       const singleA = a.single ?? Number.MAX_SAFE_INTEGER;
       const singleB = b.single ?? Number.MAX_SAFE_INTEGER;
@@ -342,7 +337,6 @@ export const RoundPage = () => {
           emptyMessage={records.length === 0 ? "아직 기록이 없습니다." : "검색 결과가 없습니다."}
           advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
-          getAttemptValue={getAttemptValue}
           compactAttempts={compactRecordView}
           onSelect={(record, rank) => setSelectedRecord({ record, rank })}
         />
@@ -352,7 +346,6 @@ export const RoundPage = () => {
         selected={selectedRecord}
         onClose={() => setSelectedRecord(null)}
         formatTimeValue={formatTimeValue}
-        getAttemptValue={getAttemptValue}
       />
     </div>
   );

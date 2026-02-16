@@ -7,6 +7,7 @@ type RankingControlsProps = {
   onSelectEvent: (eventName: string) => void;
   metric: RankingMetric;
   onSelectMetric: (metric: RankingMetric) => void;
+  averageDisabled?: boolean;
   regionOptions: string[];
   selectedRegion: string;
   onSelectRegion: (region: string) => void;
@@ -18,6 +19,7 @@ export const RankingControls = ({
   onSelectEvent,
   metric,
   onSelectMetric,
+  averageDisabled = false,
   regionOptions,
   selectedRegion,
   onSelectRegion,
@@ -69,6 +71,8 @@ export const RankingControls = ({
             type="button"
             className={`ranking-metric-tab ${metric === "average" ? "active" : ""}`.trim()}
             onClick={() => onSelectMetric("average")}
+            disabled={averageDisabled}
+            aria-disabled={averageDisabled}
           >
             평균
           </button>

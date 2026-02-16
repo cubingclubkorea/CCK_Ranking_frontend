@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { getCubeEventList } from "@/entities/cubeEvent";
 import { type GlobalSingleRankingRecord } from "@/entities/statistics";
-import { mapRegionName, REGION_FILTER_OPTIONS } from "@/shared";
-import { getRankingEventNames } from "../api/getRankingEventNames";
+import { isBo3AvgCalc, isSingleAvgCalc, mapRegionName, REGION_FILTER_OPTIONS } from "@/shared";
 import { getRankingRecords } from "../api/getRankingRecords";
 import {
   getErrorMessage,
@@ -13,6 +13,7 @@ import {
 
 export const useRankingData = () => {
   const [orderedEventNames, setOrderedEventNames] = useState<string[]>([]);
+  const [eventAvgCalcMap, setEventAvgCalcMap] = useState<Record<string, string>>({});
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [metric, setMetric] = useState<RankingMetric>("single");
   const [selectedRegion, setSelectedRegion] = useState("전체 지역");
@@ -29,10 +30,18 @@ export const useRankingData = () => {
       setError(null);
 
       try {
-        const eventNames = await getRankingEventNames();
+        const events = await getCubeEventList();
         if (!mounted) return;
 
+        const eventNames = Array.from(new Set(events.map((event) => event.eventName)));
+        const avgCalcMap = events.reduce<Record<string, string>>((acc, event) => {
+          if (!acc[event.eventName]) {
+            acc[event.eventName] = event.avgCalc;
+          }
+          return acc;
+        }, {});
         setOrderedEventNames(sortEventNames(eventNames));
+        setEventAvgCalcMap(avgCalcMap);
       } catch (err) {
         if (!mounted) return;
         setError(getErrorMessage(err));
@@ -58,6 +67,18 @@ export const useRankingData = () => {
     }
   }, [orderedEventNames, selectedEvent]);
 
+  const averageEnabled = useMemo(() => {
+    if (!selectedEvent) return true;
+    const avgCalc = eventAvgCalcMap[selectedEvent];
+    return !isSingleAvgCalc(avgCalc) && !isBo3AvgCalc(avgCalc);
+  }, [eventAvgCalcMap, selectedEvent]);
+
+  useEffect(() => {
+    if (!averageEnabled && metric === "average") {
+      setMetric("single");
+    }
+  }, [averageEnabled, metric]);
+
   const cacheKey = useMemo(
     () => `${metric}:${selectedEvent}` as MetricEventKey,
     [metric, selectedEvent]
@@ -68,6 +89,10 @@ export const useRankingData = () => {
 
     const fetchSelectedRanking = async () => {
       if (!selectedEvent) {
+        setRankingLoading(false);
+        return;
+      }
+      if (metric === "average" && !averageEnabled) {
         setRankingLoading(false);
         return;
       }
@@ -101,7 +126,7 @@ export const useRankingData = () => {
     return () => {
       mounted = false;
     };
-  }, [cacheKey, metric, rankingCache, selectedEvent]);
+  }, [averageEnabled, cacheKey, metric, rankingCache, selectedEvent]);
 
   const rankingRows = selectedEvent ? rankingCache[cacheKey] ?? [] : [];
   const regionOptions = useMemo(
@@ -118,6 +143,11 @@ export const useRankingData = () => {
     });
   }, [rankingRows, selectedRegion]);
 
+  const handleSetMetric = (nextMetric: RankingMetric) => {
+    if (nextMetric === "average" && !averageEnabled) return;
+    setMetric(nextMetric);
+  };
+
   return {
     eventLoading,
     rankingLoading,
@@ -126,7 +156,8 @@ export const useRankingData = () => {
     selectedEvent,
     setSelectedEvent,
     metric,
-    setMetric,
+    setMetric: handleSetMetric,
+    averageEnabled,
     selectedRegion,
     setSelectedRegion,
     regionOptions,

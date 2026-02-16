@@ -1,12 +1,20 @@
 import { useEffect, useRef } from "react";
 import type { Record } from "@/entities/record";
+import {
+  getMainAttempts,
+  getRequiredAttemptCount,
+  isAo12AvgCalc,
+  isBo3AvgCalc,
+  isSingleAvgCalc,
+  resolveAverageValue,
+} from "@/shared";
 
 type RecordTableProps = {
   records: Record[];
   emptyMessage: string;
   advanceCount?: number;
   formatTimeValue: (value?: number | null) => string;
-  getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
+  getAttemptValue?: (attempts: Record["attempts"], attemptTry: number) => string;
   compactAttempts?: boolean;
   onSelect?: (record: Record, rank: number) => void;
   onContextMenu?: (record: Record, rank: number, position: { x: number; y: number }) => void;
@@ -18,7 +26,6 @@ export const RecordTable = ({
   emptyMessage,
   advanceCount,
   formatTimeValue,
-  getAttemptValue,
   compactAttempts = false,
   onSelect,
   onContextMenu,
@@ -37,33 +44,35 @@ export const RecordTable = ({
     return <div className="round-ranking-empty">{emptyMessage}</div>;
   }
 
+  const tableAvgCalc = records[0]?.avgCalc;
+  const singleMode = isSingleAvgCalc(tableAvgCalc);
+  const bo3Mode = isBo3AvgCalc(tableAvgCalc);
+  const ao12Mode = isAo12AvgCalc(tableAvgCalc);
+  const showAttemptColumns = !compactAttempts && !ao12Mode;
+
+  const maxAttemptCount = singleMode
+    ? 1
+    : records.reduce((max, record) => {
+        return Math.max(max, getRequiredAttemptCount(record.avgCalc));
+      }, 1);
+  const attemptTries = Array.from({ length: maxAttemptCount }, (_, index) => index + 1);
+
   const hasCompleteMainAttempts = (record: Record) => {
-    return [1, 2, 3, 4, 5].every((attemptTry) =>
-      record.attempts.some(
-        (attempt) =>
-          attempt.attemptTry === attemptTry &&
-          attempt.time !== undefined &&
-          attempt.time !== null
-      )
-    );
+    const mainAttempts = getMainAttempts(record.attempts, record.avgCalc);
+    return mainAttempts.every((attempt) => attempt.time !== undefined && attempt.time !== null);
   };
 
-  const hasComputedAverage = (record: Record) => typeof record.average === "number";
+  const hasComputedAverage = (record: Record) =>
+    typeof resolveAverageValue(record.attempts, record.avgCalc, record.average) === "number";
 
-  const getHighlightValues = (attempts: Record["attempts"]) => {
-    const times = attempts
+  const getHighlightValues = (record: Record) => {
+    const mainAttempts = getMainAttempts(record.attempts, record.avgCalc);
+    const times = mainAttempts
       .map((attempt) => attempt.time)
       .filter((time) => typeof time === "number");
     const positiveTimes = times.filter((time) => time >= 0);
-    const negativeTimes = times.filter((time) => time < 0);
     const bestValue = positiveTimes.length > 0 ? Math.min(...positiveTimes) : undefined;
-    const worstValue =
-      negativeTimes.length > 0
-        ? Math.min(...negativeTimes)
-        : positiveTimes.length > 0
-          ? Math.max(...positiveTimes)
-          : undefined;
-    return { bestValue, worstValue, negativeTimes };
+    return { bestValue };
   };
 
   return (
@@ -73,15 +82,13 @@ export const RecordTable = ({
           <tr>
             <th>순위</th>
             <th>이름</th>
-            <th>평균</th>
             <th>최고</th>
-            {!compactAttempts && (
+            {!singleMode && !bo3Mode ? <th>평균</th> : null}
+            {showAttemptColumns && (
               <>
-                <th>1</th>
-                <th>2</th>
-                <th>3</th>
-                <th>4</th>
-                <th>5</th>
+                {attemptTries.map((attemptTry) => (
+                  <th key={attemptTry}>{attemptTry}</th>
+                ))}
               </>
             )}
           </tr>
@@ -90,7 +97,7 @@ export const RecordTable = ({
           {records.map((record, index) => {
             const rank = record.ranking ?? index + 1;
             const hasAllAttempts = hasCompleteMainAttempts(record);
-            const isRanked = hasAllAttempts && hasComputedAverage(record);
+            const isRanked = hasAllAttempts && (singleMode ? typeof record.single === "number" : hasComputedAverage(record));
             const isAdvanceEligible = hasAllAttempts && isRanked;
             const isAdvance = advanceCount ? rank <= advanceCount && isAdvanceEligible : false;
             const prevRecord = index > 0 ? records[index - 1] : null;
@@ -99,7 +106,9 @@ export const RecordTable = ({
             const prevIsAdvanceEligible = prevRecord ? prevHasAllAttempts && hasComputedAverage(prevRecord) : false;
             const prevIsAdvance = !!(advanceCount && prevRank !== null && prevRank <= advanceCount && prevIsAdvanceEligible);
             const isCutlineStart = !isAdvance && prevIsAdvance;
-            const { bestValue, worstValue, negativeTimes } = getHighlightValues(record.attempts);
+            const { bestValue } = getHighlightValues(record);
+            const displayAverage = resolveAverageValue(record.attempts, record.avgCalc, record.average);
+            const mainAttempts = getMainAttempts(record.attempts, record.avgCalc);
             const isSelected = selectedRecordIdx === record.idx;
             return (
               <tr
@@ -141,27 +150,25 @@ export const RecordTable = ({
                     {record.enName ? `${record.name} (${record.enName})` : record.name}
                   </div>
                 </td>
-                <td className="round-score">{hasAllAttempts ? formatTimeValue(record.average) : "-"}</td>
                 <td className="round-score">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</td>
-                {!compactAttempts &&
-                  [1, 2, 3, 4, 5].map((attemptTry) => (
+                {!singleMode && !bo3Mode ? (
+                  <td className="round-score">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</td>
+                ) : null}
+                {showAttemptColumns &&
+                  attemptTries.map((attemptTry) => (
                     <td key={attemptTry} className="round-attempt-cell">
                       {(() => {
-                        const attempt = record.attempts.find((item) => item.attemptTry === attemptTry);
+                        const attempt = mainAttempts.find((item) => item.attemptTry === attemptTry);
                         const time = attempt?.time;
                         if (time === undefined || time === null) {
                           return "-";
                         }
                         let highlightClass = "";
-                        if (negativeTimes.length > 0 && time < 0) {
-                          highlightClass = "attempt-worst";
-                        } else if (time === bestValue) {
+                        if (time === bestValue) {
                           highlightClass = "attempt-best";
-                        } else if (time === worstValue) {
-                          highlightClass = "attempt-worst";
                         }
                         return (
-                          <span className={highlightClass || undefined}>{getAttemptValue(record.attempts, attemptTry)}</span>
+                          <span className={highlightClass || undefined}>{formatTimeValue(time)}</span>
                         );
                       })()}
                     </td>

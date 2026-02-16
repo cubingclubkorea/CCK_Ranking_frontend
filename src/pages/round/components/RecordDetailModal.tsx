@@ -1,5 +1,11 @@
 import type { Record } from "@/entities/record";
-import { getEventIconSrc } from "@/shared";
+import {
+  getEventIconSrc,
+  getMainAttempts,
+  isBo3AvgCalc,
+  isSingleAvgCalc,
+  resolveAverageValue,
+} from "@/shared";
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 
@@ -7,14 +13,12 @@ type RecordDetailModalProps = {
   selected: { record: Record; rank: number } | null;
   onClose: () => void;
   formatTimeValue: (value?: number | null) => string;
-  getAttemptValue: (attempts: Record["attempts"], attemptTry: number) => string;
 };
 
 export const RecordDetailModal = ({
   selected,
   onClose,
   formatTimeValue,
-  getAttemptValue,
 }: RecordDetailModalProps) => {
   const attemptMeasureRef = useRef<HTMLDivElement | null>(null);
   const [useSplitAttempts, setUseSplitAttempts] = useState(false);
@@ -44,36 +48,33 @@ export const RecordDetailModal = ({
 
   if (!selected) return null;
 
-  const getHighlightValues = (attempts: Record["attempts"]) => {
-    const times = attempts
+  const mainAttempts = getMainAttempts(selected.record.attempts, selected.record.avgCalc);
+  const hideAverage = isSingleAvgCalc(selected.record.avgCalc) || isBo3AvgCalc(selected.record.avgCalc);
+
+  const getHighlightValues = () => {
+    const times = mainAttempts
       .map((attempt) => attempt.time)
       .filter((time) => typeof time === "number");
     const positiveTimes = times.filter((time) => time >= 0);
-    const negativeTimes = times.filter((time) => time < 0);
     const bestValue = positiveTimes.length > 0 ? Math.min(...positiveTimes) : undefined;
-    const worstValue =
-      negativeTimes.length > 0
-        ? Math.min(...negativeTimes)
-        : positiveTimes.length > 0
-          ? Math.max(...positiveTimes)
-          : undefined;
-    return { bestValue, worstValue, negativeTimes };
+    return { bestValue };
   };
 
-  const { bestValue, worstValue, negativeTimes } = getHighlightValues(selected.record.attempts);
-  const attemptTries = [1, 2, 3, 4, 5] as const;
+  const { bestValue } = getHighlightValues();
+  const attemptTries = mainAttempts.map((attempt) => attempt.attemptTry);
+  const displayAverage = resolveAverageValue(
+    selected.record.attempts,
+    selected.record.avgCalc,
+    selected.record.average
+  );
 
   const renderAttempt = (attemptTry: number, showSeparator: boolean) => {
-    const attempt = selected.record.attempts.find((item) => item.attemptTry === attemptTry);
+    const attempt = mainAttempts.find((item) => item.attemptTry === attemptTry);
     const time = attempt?.time;
     let highlightClass = "";
     if (time !== undefined && time !== null) {
-      if (negativeTimes.length > 0 && time < 0) {
-        highlightClass = "attempt-worst";
-      } else if (time === bestValue) {
+      if (time === bestValue) {
         highlightClass = "attempt-best";
-      } else if (time === worstValue) {
-        highlightClass = "attempt-worst";
       }
     }
 
@@ -82,7 +83,7 @@ export const RecordDetailModal = ({
         key={attemptTry}
         className={["record-modal-attempt", highlightClass].filter(Boolean).join(" ")}
       >
-        {getAttemptValue(selected.record.attempts, attemptTry)}
+        {formatTimeValue(time)}
         {showSeparator ? <span className="record-modal-attempt-sep"></span> : null}
       </span>
     );
@@ -120,10 +121,12 @@ export const RecordDetailModal = ({
             <div className="record-modal-label">지역</div>
             <div className="record-modal-value">{selected.record.state ?? "-"}</div>
           </div>
-          <div className="record-modal-row">
-            <div className="record-modal-label">평균</div>
-            <div className="record-modal-value record-modal-score">{formatTimeValue(selected.record.average)}</div>
-          </div>
+          {!hideAverage ? (
+            <div className="record-modal-row">
+              <div className="record-modal-label">평균</div>
+              <div className="record-modal-value record-modal-score">{formatTimeValue(displayAverage)}</div>
+            </div>
+          ) : null}
           <div className="record-modal-row">
             <div className="record-modal-label">최고</div>
             <div className="record-modal-value record-modal-score record-modal-highlight">
@@ -140,10 +143,18 @@ export const RecordDetailModal = ({
               ) : (
                 <div className="record-modal-attempts record-modal-attempts--split">
                   <div className="record-modal-attempt-row">
-                    {[1, 2, 3].map((attemptTry) => renderAttempt(attemptTry, true))}
+                    {attemptTries
+                      .slice(0, Math.ceil(attemptTries.length / 2))
+                      .map((attemptTry, index, list) =>
+                        renderAttempt(attemptTry, index < list.length - 1)
+                      )}
                   </div>
                   <div className="record-modal-attempt-row">
-                    {[4, 5].map((attemptTry, index) => renderAttempt(attemptTry, index === 0))}
+                    {attemptTries
+                      .slice(Math.ceil(attemptTries.length / 2))
+                      .map((attemptTry, index, list) =>
+                        renderAttempt(attemptTry, index < list.length - 1)
+                      )}
                   </div>
                 </div>
               )}

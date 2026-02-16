@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Record as RoundRecord } from "@/entities/record";
-import { getAttemptValue, formatTimeValue, toRecord, useRankingData } from "@/features/ranking";
+import { formatTimeValue, toRecord, useRankingData } from "@/features/ranking";
 import { PageHeader } from "@/widgets";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
 import { RankingControls } from "./components/RankingControls";
@@ -18,6 +18,7 @@ export const RankingPage = () => {
     setSelectedEvent,
     metric,
     setMetric,
+    averageEnabled,
     selectedRegion,
     setSelectedRegion,
     regionOptions,
@@ -61,6 +62,7 @@ export const RankingPage = () => {
           onSelectEvent={setSelectedEvent}
           metric={metric}
           onSelectMetric={setMetric}
+          averageDisabled={!averageEnabled}
           regionOptions={regionOptions}
           selectedRegion={selectedRegion}
           onSelectRegion={setSelectedRegion}
@@ -107,7 +109,6 @@ export const RankingPage = () => {
         selected={selectedRecord}
         onClose={() => setSelectedRecord(null)}
         formatTimeValue={formatTimeValue}
-        getAttemptValue={getAttemptValue}
       />
     </div>
   );

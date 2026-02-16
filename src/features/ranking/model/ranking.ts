@@ -1,5 +1,6 @@
 import type { BestType, Record as RoundRecord } from "@/entities/record";
 import type { GlobalSingleRankingRecord } from "@/entities/statistics";
+import { resolveAverageValue } from "@/shared";
 
 export type RankingMetric = "single" | "average";
 export type MetricEventKey = `${RankingMetric}:${string}`;
@@ -58,8 +59,14 @@ export const sortEventNames = (rawEventNames: string[]) => {
 
 export const sortRanking = (rows: GlobalSingleRankingRecord[], metric: RankingMetric) =>
   [...rows].sort((a, b) => {
-    const aValue = (metric === "single" ? a.single : a.average) ?? Number.POSITIVE_INFINITY;
-    const bValue = (metric === "single" ? b.single : b.average) ?? Number.POSITIVE_INFINITY;
+    const aValue =
+      (metric === "single"
+        ? a.single
+        : resolveAverageValue(a.attempts, a.avgCalc, a.average)) ?? Number.POSITIVE_INFINITY;
+    const bValue =
+      (metric === "single"
+        ? b.single
+        : resolveAverageValue(b.attempts, b.avgCalc, b.average)) ?? Number.POSITIVE_INFINITY;
     if (aValue !== bValue) return aValue - bValue;
     if (a.ranking !== b.ranking) return a.ranking - b.ranking;
     return a.name.localeCompare(b.name);
