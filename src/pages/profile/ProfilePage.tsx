@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useProfileData } from "@/features/profile";
 import { PageHeader } from "@/widgets";
-import { useProfileData } from "./hooks/useProfileData";
 import {
   OrganizerInfoModal,
   ProfileCompetitionsSection,

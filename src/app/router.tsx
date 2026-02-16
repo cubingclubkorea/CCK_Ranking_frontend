@@ -213,10 +213,6 @@ export const router = createBrowserRouter([
         element: <RankingPage />,
       },
       {
-        path: "profile",
-        element: <ComingSoonPage />,
-      },
-      {
         path: "profile/:cckId",
         element: <ProfilePage />,
       },

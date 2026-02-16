@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPlayerRanking, getPlayerStaffCount, type PlayerEventRanking } from "@/entities/statistics";
+import { getAuthInfo } from "@/entities/authInfo";
 import { getAuthUserProfile, hasAdminRole } from "@/features/auth/utils/tokenStorage";
+import { mapRegionName } from "@/shared";
 
 type ProfileData = {
   loading: boolean;
@@ -25,6 +27,7 @@ const getErrorMessage = (error: unknown) => {
 };
 
 const normalizeText = (value?: string) => (value && value.trim() ? value.trim() : "-");
+const normalizeName = (value?: string) => (value && value.trim() ? value.trim() : "사용자");
 
 export const useProfileData = (cckId?: string) => {
   const [loading, setLoading] = useState(true);
@@ -34,6 +37,8 @@ export const useProfileData = (cckId?: string) => {
   const [scramblerCount, setScramblerCount] = useState(0);
   const [totalStaffCount, setTotalStaffCount] = useState(0);
   const [isOrganizer, setIsOrganizer] = useState(false);
+  const [resolvedKoreanName, setResolvedKoreanName] = useState<string | null>(null);
+  const [resolvedRegion, setResolvedRegion] = useState<string | null>(null);
 
   const authProfile = useMemo(() => getAuthUserProfile(), []);
   const normalizedCckId = cckId?.trim() ?? "";
@@ -81,10 +86,38 @@ export const useProfileData = (cckId?: string) => {
     };
   }, [authProfile?.role, isMyProfile, normalizedCckId]);
 
-  const koreanName = isMyProfile ? normalizeText(authProfile?.name) : "사용자";
+  useEffect(() => {
+    let mounted = true;
+
+    setResolvedKoreanName(null);
+    setResolvedRegion(null);
+    if (!normalizedCckId) return;
+
+    const fetchAuthInfo = async () => {
+      try {
+        const authInfo = await getAuthInfo(normalizedCckId);
+        if (!mounted) return;
+        const nextName = authInfo.name?.trim();
+        const nextRegion = authInfo.state?.trim();
+        setResolvedKoreanName(nextName || null);
+        setResolvedRegion(nextRegion || null);
+      } catch {
+        if (!mounted) return;
+        setResolvedKoreanName(null);
+        setResolvedRegion(null);
+      }
+    };
+
+    fetchAuthInfo();
+    return () => {
+      mounted = false;
+    };
+  }, [normalizedCckId]);
+
+  const koreanName = normalizeName(resolvedKoreanName ?? (isMyProfile ? authProfile?.name : undefined));
   const englishName = isMyProfile ? normalizeText(authProfile?.englishName ?? "User") : "User";
   const gender = isMyProfile ? normalizeText(authProfile?.gender) : "-";
-  const region = isMyProfile ? normalizeText(authProfile?.region) : "-";
+  const region = normalizeText(mapRegionName(resolvedRegion ?? (isMyProfile ? authProfile?.region : undefined)) ?? undefined);
 
   const data: ProfileData = {
     loading,
@@ -102,4 +135,3 @@ export const useProfileData = (cckId?: string) => {
 
   return data;
 };
-
