@@ -1,4 +1,5 @@
 import type { Record } from "@/entities/record";
+import { getEventIconSrc } from "@/shared";
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 
@@ -159,7 +160,7 @@ export const RecordDetailModal = ({
           <div className="record-modal-round-info">
             <div className="record-modal-round-icon" aria-hidden="true">
               <img
-                src={`/icon/events/${encodeURIComponent(selected.record.eventName || "Question")}.svg`}
+                src={getEventIconSrc(selected.record.eventName)}
                 alt=""
                 loading="lazy"
                 onError={(event) => {

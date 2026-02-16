@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Round, RoundDayCount } from "@/entities/round";
+import { getEventIconSrc } from "@/shared";
 import { RoundListSkeleton } from "@/widgets";
 
 type RoundListProps = {
@@ -102,7 +103,7 @@ export const RoundList = ({ schedule, loading, selectedDate }: RoundListProps) =
             <div className="round-card-icon" aria-hidden="true">
               <img
                 className="round-card-icon-img"
-                src={`/icon/events/${encodeURIComponent(round.cubeEventName)}.svg`}
+                src={getEventIconSrc(round.cubeEventName)}
                 alt=""
                 loading="lazy"
                 onError={(event) => {

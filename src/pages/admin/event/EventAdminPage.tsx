@@ -4,6 +4,7 @@ import { getCubeEventList } from "@/entities/cubeEvent";
 import type { CubeEvent, ColorType } from "@/entities/cubeEvent/model/cubeEvent";
 import { ColorType as ColorTypeValue } from "@/entities/cubeEvent/model/cubeEvent";
 import { createCubeEvent } from "@/features/cubeEvent";
+import { getEventIconSrc } from "@/shared";
 import { OverlayToast } from "@/widgets";
 
 const colorTypeOptions: ColorType[] = [
@@ -303,7 +304,7 @@ export const EventAdminPage = () => {
                 <div className="event-detail-icon-wrap" aria-hidden="true">
                   <img
                     className="event-detail-icon"
-                    src={`/icon/events/${encodeURIComponent(selectedEvent.eventName || "Question")}.svg`}
+                    src={getEventIconSrc(selectedEvent.eventName)}
                     alt=""
                     loading="lazy"
                     onError={(event) => {

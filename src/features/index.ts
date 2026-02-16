@@ -3,5 +3,6 @@
 export * from './auth';
 export * from './competition';
 export * from './cubeEvent';
+export * from './ranking';
 export * from './round';
 export * from './scramble';

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
+import { getEventIconSrc } from "@/shared";
 
 type RoundHeaderProps = {
   title: string;
@@ -70,7 +71,7 @@ export const RoundHeader = ({
       <div className="page-title-area round-title-area">
         <div className="page-title-icon" aria-hidden="true">
           <img
-            src={`/icon/events/${encodeURIComponent(eventName || "Question")}.svg`}
+            src={getEventIconSrc(eventName)}
             alt=""
             loading="lazy"
             onError={(event) => {
