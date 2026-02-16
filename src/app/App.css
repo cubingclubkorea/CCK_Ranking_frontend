@@ -2264,15 +2264,22 @@ body {
 }
 
 .record-modal-profile-btn {
+    width: 24px;
     height: 24px;
-    padding: 0 8px;
-    border-radius: 8px;
-    border: 1px solid #cfd7e6;
-    background: #f8faff;
-    color: #2f5cad;
-    font-size: 12px;
-    font-weight: 700;
+    padding: 0;
+    border: none;
+    background: transparent;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.record-modal-profile-btn img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    filter: brightness(0) saturate(100%);
 }
 
 .record-modal-close {
@@ -4951,11 +4958,6 @@ body {
     filter: brightness(0) invert(0.75);
 }
 
-[data-theme="dark"] .record-modal-profile-btn {
-    border-color: #54627b;
-    background: #374151;
-    color: #c5d7ff;
-}
 
 [data-theme="dark"] .header-user-info {
     border-bottom-color: #444c56;

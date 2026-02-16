@@ -24,7 +24,7 @@ export const ProfilePage = () => {
     <div className="main-page profile-page">
       <PageHeader
         containerClassName="comp-header"
-        iconSrc="/icon/sidebar/person-data.svg"
+        iconSrc="/icon/sidebar/person.svg"
         title="선수 정보"
         subtitle="Competitor Information"
       />

@@ -111,8 +111,9 @@ export const RecordDetailModal = ({
               type="button"
               className="record-modal-profile-btn"
               onClick={() => navigate(`/profile/${encodeURIComponent(selected.record.cckId)}`)}
+              aria-label="선수 프로필로 이동"
             >
-              프로필
+              <img src="/icon/sidebar/person.svg" alt="" aria-hidden="true" />
             </button>
             <button
               type="button"
