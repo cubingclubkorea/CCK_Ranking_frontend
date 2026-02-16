@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { type RankingRecordMetric, getRankingEventNames, getRankingRecords, formatTimeValue } from "@/features/ranking";
+import { type RankingRecordMetric, getRankingEventNames, getRankingRecords, formatTimeValue, toRecord } from "@/features/ranking";
+import { getCompetition } from "@/entities/competition";
+import type { Record } from "@/entities/record";
 import { resolveAverageValue } from "@/shared";
 
 export type RecentRecordItem = {
@@ -12,7 +14,10 @@ export type RecentRecordItem = {
   cckId: string;
   state: string;
   compName: string;
+  compIdx: number;
   idx: number;
+  rank: number;
+  record: Record;
 };
 
 type UseRecentRecordsResult = {
@@ -73,7 +78,10 @@ export const useRecentRecords = (): UseRecentRecordsResult => {
                 cckId: row.cckId,
                 state: row.state ?? "",
                 compName: row.compName,
+                compIdx: row.compIdx,
                 idx: row.idx,
+                rank: row.ranking,
+                record: toRecord(row),
               });
               return;
             }
@@ -91,12 +99,37 @@ export const useRecentRecords = (): UseRecentRecordsResult => {
               cckId: row.cckId,
               state: row.state ?? "",
               compName: row.compName,
+              compIdx: row.compIdx,
               idx: row.idx,
+              rank: row.ranking,
+              record: toRecord(row),
             });
           });
         });
 
-        const sorted = merged
+        const uniqueCompIdx = Array.from(new Set(merged.map((item) => item.compIdx)));
+        const competitionDateMap = new Map<number, Date>();
+        const competitionSettled = await Promise.allSettled(
+          uniqueCompIdx.map(async (compIdx) => {
+            const competition = await getCompetition(compIdx);
+            return { compIdx, compDateEnd: competition.compDateEnd };
+          })
+        );
+
+        competitionSettled.forEach((result) => {
+          if (result.status !== "fulfilled") return;
+          competitionDateMap.set(result.value.compIdx, result.value.compDateEnd);
+        });
+
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - 30);
+        const recentOnly = merged.filter((item) => {
+          const compDateEnd = competitionDateMap.get(item.compIdx);
+          if (!compDateEnd) return false;
+          return compDateEnd >= cutoff;
+        });
+
+        const sorted = recentOnly
           .sort((a, b) => {
             if (a.bestType !== b.bestType) {
               return a.bestType === "CCR" ? -1 : 1;
