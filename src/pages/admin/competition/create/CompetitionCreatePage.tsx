@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { createCompetition, type CompetitionCreateDTO } from "@/features/competition";
 import { getCubeEventList } from "@/entities/cubeEvent";
 import type { CubeEvent } from "@/entities/cubeEvent";
-import { OverlayToast } from "@/widgets";
+import { OverlayToast, PageHeader } from "@/widgets";
 import { CompetitionFormFields, type CompetitionFormShape } from "../shared/CompetitionFormFields";
-import { CompetitionCreateHeader } from "./components/CompetitionCreateHeader";
 import {
   RoundManagementSection,
   type NewRoundForm,
@@ -195,7 +194,19 @@ export const CompetitionCreatePage = () => {
         onClose={toast?.onClose}
       />
 
-      <CompetitionCreateHeader />
+      <PageHeader
+        containerClassName="admin-header"
+        iconSrc="/icon/sidebar/pencil.svg"
+        title="대회 만들기"
+        subtitle="기본 정보와 종목별 참가비를 등록하세요."
+        actions={[
+          {
+            label: "목록으로",
+            iconSrc: "/icon/button/back.svg",
+            to: "/admin/competition",
+          },
+        ]}
+      />
 
       <div className="round-day-tabs">
         <button

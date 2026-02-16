@@ -20,5 +20,9 @@ const REGION_LABELS: Record<string, string> = {
   Geyongnam: "경상남도",
 };
 
+export const REGION_FILTER_OPTIONS = Array.from(
+  new Set(Object.values(REGION_LABELS))
+);
+
 export const mapRegionName = (value?: string | null) =>
   value ? (REGION_LABELS[value] ?? value) : value;

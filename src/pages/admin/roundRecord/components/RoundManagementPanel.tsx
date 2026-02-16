@@ -73,7 +73,7 @@ export const RoundManagementPanel = ({
   const [addForm, setAddForm] = useState<PlayerAddDTO>({
     pdx: 0,
     name: "",
-    state: "KOR",
+    state: "",
     cckId: "",
     roundIdx: round.idx,
     roundGroup: "",
@@ -310,7 +310,7 @@ export const RoundManagementPanel = ({
             />
           </div>
           <div className="record-edit-field">
-            <label className="record-edit-label">국가</label>
+            <label className="record-edit-label">지역</label>
             <input
               className="record-edit-input"
               type="text"

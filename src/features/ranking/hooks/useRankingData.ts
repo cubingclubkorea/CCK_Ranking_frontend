@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { type GlobalSingleRankingRecord } from "@/entities/statistics";
+import { mapRegionName, REGION_FILTER_OPTIONS } from "@/shared";
 import { getRankingEventNames } from "../api/getRankingEventNames";
 import { getRankingRecords } from "../api/getRankingRecords";
 import {
@@ -12,9 +13,9 @@ import {
 
 export const useRankingData = () => {
   const [orderedEventNames, setOrderedEventNames] = useState<string[]>([]);
-  const [visibleEventNames, setVisibleEventNames] = useState<string[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [metric, setMetric] = useState<RankingMetric>("single");
+  const [selectedRegion, setSelectedRegion] = useState("전체 지역");
   const [eventLoading, setEventLoading] = useState(true);
   const [rankingLoading, setRankingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,12 +49,32 @@ export const useRankingData = () => {
   }, []);
 
   useEffect(() => {
+    if (orderedEventNames.length === 0) {
+      setSelectedEvent("");
+      return;
+    }
+    if (!selectedEvent || !orderedEventNames.includes(selectedEvent)) {
+      setSelectedEvent(orderedEventNames[0]);
+    }
+  }, [orderedEventNames, selectedEvent]);
+
+  const cacheKey = useMemo(
+    () => `${metric}:${selectedEvent}` as MetricEventKey,
+    [metric, selectedEvent]
+  );
+
+  useEffect(() => {
     let mounted = true;
 
-    const fetchAvailability = async () => {
-      if (orderedEventNames.length === 0) {
-        setVisibleEventNames([]);
-        setSelectedEvent("");
+    const fetchSelectedRanking = async () => {
+      if (!selectedEvent) {
+        setRankingLoading(false);
+        return;
+      }
+
+      const cachedRows = rankingCache[cacheKey];
+      if (cachedRows) {
+        setRankingLoading(false);
         return;
       }
 
@@ -61,39 +82,12 @@ export const useRankingData = () => {
       setError(null);
 
       try {
-        const rowsByEvent = await Promise.all(
-          orderedEventNames.map(async (eventName) => {
-            const key = `${metric}:${eventName}` as MetricEventKey;
-            const cached = rankingCache[key];
-            if (cached) {
-              return { eventName, key, rows: cached };
-            }
-
-            const fetchedRows = await getRankingRecords(metric, eventName);
-            return { eventName, key, rows: sortRanking(fetchedRows, metric) };
-          })
-        );
-
+        const rows = await getRankingRecords(metric, selectedEvent);
         if (!mounted) return;
-
-        setRankingCache((prev) => {
-          const next = { ...prev };
-          for (const item of rowsByEvent) {
-            next[item.key] = item.rows;
-          }
-          return next;
-        });
-
-        const nextVisible = rowsByEvent
-          .filter((item) => item.rows.length > 0)
-          .map((item) => item.eventName);
-        setVisibleEventNames(nextVisible);
-
-        if (nextVisible.length === 0) {
-          setSelectedEvent("");
-        } else if (!nextVisible.includes(selectedEvent)) {
-          setSelectedEvent(nextVisible[0]);
-        }
+        setRankingCache((prev) => ({
+          ...prev,
+          [cacheKey]: sortRanking(rows, metric),
+        }));
       } catch (err) {
         if (!mounted) return;
         setError(getErrorMessage(err));
@@ -102,29 +96,40 @@ export const useRankingData = () => {
       }
     };
 
-    fetchAvailability();
+    fetchSelectedRanking();
 
     return () => {
       mounted = false;
     };
-  }, [metric, orderedEventNames]);
-
-  const cacheKey = useMemo(
-    () => `${metric}:${selectedEvent}` as MetricEventKey,
-    [metric, selectedEvent]
-  );
+  }, [cacheKey, metric, rankingCache, selectedEvent]);
 
   const rankingRows = selectedEvent ? rankingCache[cacheKey] ?? [] : [];
+  const regionOptions = useMemo(
+    () => ["전체 지역", ...REGION_FILTER_OPTIONS],
+    []
+  );
+  const filteredRankingRows = useMemo(() => {
+    if (selectedRegion === "전체 지역") {
+      return rankingRows;
+    }
+    return rankingRows.filter((row) => {
+      const mappedRegion = mapRegionName(row.state);
+      return mappedRegion === selectedRegion;
+    });
+  }, [rankingRows, selectedRegion]);
 
   return {
     eventLoading,
     rankingLoading,
     error,
-    visibleEventNames,
+    visibleEventNames: orderedEventNames,
     selectedEvent,
     setSelectedEvent,
     metric,
     setMetric,
-    rankingRows,
+    selectedRegion,
+    setSelectedRegion,
+    regionOptions,
+    rankingRows: filteredRankingRows,
   };
 };

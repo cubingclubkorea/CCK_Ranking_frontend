@@ -19,8 +19,9 @@ const EVENT_ORDER_CANDIDATES: string[][] = [
   ["3x3x3 OH"],
   ["3x3x3 BLD"],
   ["4x4x4 BLD"],
-  ["3x3x3 MULTIBLD", "3x3x3 MULBLD"],
+  ["3x3x3 MULTBLD"],
   ["5x5x5 BLD"],
+  ["3x3x3 FMC"],
   ["3x3x3 Ao12"],
   ["2x2x2 Ao12"],
   ["3x3x3 BA5"],
@@ -31,6 +32,7 @@ const EVENT_ORDER_CANDIDATES: string[][] = [
   ["FTO"],
   ["234 Relay"],
   ["Mini-Guildford"],
+  ["2인 1조"]
 ];
 
 export const getErrorMessage = (error: unknown) => {

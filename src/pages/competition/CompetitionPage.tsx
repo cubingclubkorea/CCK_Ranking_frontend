@@ -4,8 +4,7 @@ import { getCompetition } from "@/entities/competition";
 import { getRoundByDayCount } from "@/entities/round";
 import type { Competition } from "@/entities/competition";
 import type { Round, RoundDayCount } from "@/entities/round";
-import { CompetitionPageSkeleton } from "@/widgets";
-import { CompetitionHeader } from "./components/CompetitionHeader";
+import { CompetitionPageSkeleton, PageHeader } from "@/widgets";
 import { RoundList } from "./components/RoundList";
 
 type DayItem = {
@@ -199,14 +198,46 @@ export const CompetitionPage = () => {
 
   return (
     <div className="main-page">
-      <div className="comp-header">
-        <CompetitionHeader
-          title={competition.compName}
-          dateStart={competition.compDateStart}
-          location={competition.location}
-          compIdx={competition.idx}
-        />
-      </div>
+      <PageHeader
+        containerClassName="comp-header"
+        title={competition.compName}
+        subtitle={
+          <>
+            <span>{formatDate(competition.compDateStart)}</span>
+            {competition.location ? (
+              <>
+                <span className="page-title-meta-divider">·</span>
+                <span>{competition.location}</span>
+              </>
+            ) : null}
+          </>
+        }
+        actions={[
+          {
+            label: "스크램블",
+            iconSrc: "/icon/button/cube.svg",
+            to: `/admin/competition/${competition.idx}/scramble`,
+            adminOnly: true,
+          },
+          {
+            label: "대회 관리",
+            iconSrc: "/icon/button/hammer.svg",
+            to: `/admin/competition/${competition.idx}`,
+            adminOnly: true,
+          },
+          {
+            label: "대회 정보",
+            iconSrc: "/logo/cck-logo.png",
+            iconClassName: "page-action-icon page-action-icon--logo",
+            href: "https://cubingclub.com/pages/competition",
+          },
+          {
+            label: "랭킹 홈",
+            iconSrc: "/icon/button/home.svg",
+            to: "/",
+          },
+        ]}
+      />
       <div className="comp-content">
         <div className="round-schedule">
           <div className="round-day-tabs">

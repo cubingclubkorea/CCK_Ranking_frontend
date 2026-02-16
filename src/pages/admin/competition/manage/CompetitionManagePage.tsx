@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { OverlayToast } from "@/widgets";
+import { OverlayToast, PageHeader } from "@/widgets";
 import { getCompetition } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
 import { getRoundByDayCount } from "@/entities/round";
@@ -23,7 +23,6 @@ import {
   type NewRoundForm,
   type RoundForm,
 } from "../shared/RoundManagementSection";
-import { CompetitionManageHeader } from "./components/CompetitionManageHeader";
 
 const pad2 = (value: number) => `${value}`.padStart(2, "0");
 
@@ -442,12 +441,24 @@ export const CompetitionManagePage = () => {
         onClose={toast?.onClose}
       />
 
-      <CompetitionManageHeader
+      <PageHeader
+        containerClassName="admin-header"
+        iconSrc="/icon/button/hammer.svg"
         title={competition?.compName ?? "대회 편집"}
         subtitle="대회 편집"
-        iconSrc="/icon/button/hammer.svg"
-        onViewCompetition={competition ? () => navigate(`/competition/${competition.idx}`) : undefined}
-        saving={saving || roundSaving}
+        actions={[
+          {
+            label: "목록으로",
+            iconSrc: "/icon/button/back.svg",
+            to: "/admin/competition",
+          },
+          {
+            label: "대회 페이지 보기",
+            iconSrc: "/icon/button/home.svg",
+            onClick: competition ? () => navigate(`/competition/${competition.idx}`) : undefined,
+            disabled: !competition,
+          },
+        ]}
       />
 
       <div className="round-day-tabs">

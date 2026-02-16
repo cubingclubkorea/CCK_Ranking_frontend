@@ -7,6 +7,9 @@ type RankingControlsProps = {
   onSelectEvent: (eventName: string) => void;
   metric: RankingMetric;
   onSelectMetric: (metric: RankingMetric) => void;
+  regionOptions: string[];
+  selectedRegion: string;
+  onSelectRegion: (region: string) => void;
 };
 
 export const RankingControls = ({
@@ -15,6 +18,9 @@ export const RankingControls = ({
   onSelectEvent,
   metric,
   onSelectMetric,
+  regionOptions,
+  selectedRegion,
+  onSelectRegion,
 }: RankingControlsProps) => (
   <div className="ranking-controls">
     <div className="ranking-control-block">
@@ -48,23 +54,40 @@ export const RankingControls = ({
         ))}
       </div>
     </div>
-    <div className="ranking-control-block">
-      <div className="ranking-control-title">유형</div>
-      <div className="ranking-metric-tabs" role="tablist" aria-label="기록 유형 선택">
-        <button
-          type="button"
-          className={`ranking-metric-tab ${metric === "single" ? "active" : ""}`.trim()}
-          onClick={() => onSelectMetric("single")}
+    <div className="ranking-control-row">
+      <div className="ranking-control-block">
+        <div className="ranking-control-title">구분</div>
+        <div className="ranking-metric-tabs" role="tablist" aria-label="기록 유형 선택">
+          <button
+            type="button"
+            className={`ranking-metric-tab ${metric === "single" ? "active" : ""}`.trim()}
+            onClick={() => onSelectMetric("single")}
+          >
+            최고
+          </button>
+          <button
+            type="button"
+            className={`ranking-metric-tab ${metric === "average" ? "active" : ""}`.trim()}
+            onClick={() => onSelectMetric("average")}
+          >
+            평균
+          </button>
+        </div>
+      </div>
+      <div className="ranking-control-block">
+        <div className="ranking-control-title">지역</div>
+        <select
+          className="ranking-region-select"
+          value={selectedRegion}
+          onChange={(event) => onSelectRegion(event.target.value)}
+          aria-label="지역 선택"
         >
-          최고
-        </button>
-        <button
-          type="button"
-          className={`ranking-metric-tab ${metric === "average" ? "active" : ""}`.trim()}
-          onClick={() => onSelectMetric("average")}
-        >
-          평균
-        </button>
+          {regionOptions.map((region) => (
+            <option key={region} value={region}>
+              {region}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   </div>

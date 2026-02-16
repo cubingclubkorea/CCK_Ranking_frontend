@@ -3,9 +3,9 @@ import { createPortal } from "react-dom";
 import { getCubeEventList } from "@/entities/cubeEvent";
 import type { CubeEvent, ColorType } from "@/entities/cubeEvent/model/cubeEvent";
 import { ColorType as ColorTypeValue } from "@/entities/cubeEvent/model/cubeEvent";
-import { createCubeEvent } from "@/features/cubeEvent";
+import { createCubeEvent, deleteCubeEvent, updateCubeEvent } from "@/features/cubeEvent";
 import { getEventIconSrc } from "@/shared";
-import { OverlayToast } from "@/widgets";
+import { OverlayToast, PageHeader } from "@/widgets";
 
 const colorTypeOptions: ColorType[] = [
   ColorTypeValue.cube,
@@ -21,8 +21,8 @@ const avgCalcOptions = ["ao5", "bo3", "ao12", "single", "mo3"] as const;
 
 const colorTypeLabelMap: Record<ColorType, string> = {
   [ColorTypeValue.cube]: "정육면체",
-  [ColorTypeValue.tetra]: "정사면체 (피라밍크스류)",
-  [ColorTypeValue.dode]: "정십이면체 (메가밍크스류)",
+  [ColorTypeValue.tetra]: "정사면체",
+  [ColorTypeValue.dode]: "정십이면체",
   [ColorTypeValue.skewb]: "스큐브",
   [ColorTypeValue.clock]: "Clock",
   [ColorTypeValue.square]: "스퀘어",
@@ -63,7 +63,11 @@ export const EventAdminPage = () => {
   const [createError, setCreateError] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CubeEvent | null>(null);
+  const [editForm, setEditForm] = useState<EventFormState>(initialForm);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const editFileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -113,6 +117,69 @@ export const EventAdminPage = () => {
     }
   };
 
+  const openDetailModal = (event: CubeEvent) => {
+    setSelectedEvent(event);
+    setEditError(null);
+    setEditForm({
+      eventName: event.eventName,
+      avgCalc: event.avgCalc,
+      colorType: event.colorType,
+      file: null,
+    });
+    if (editFileInputRef.current) {
+      editFileInputRef.current.value = "";
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!selectedEvent) return;
+    if (!editForm.eventName.trim() || !editForm.avgCalc.trim()) {
+      setEditError("종목명과 평균 계산 방식을 입력해주세요.");
+      return;
+    }
+
+    setSaving(true);
+    setEditError(null);
+    setError(null);
+    setNotice(null);
+    try {
+      await updateCubeEvent({
+        eventName: editForm.eventName.trim(),
+        avgCalc: editForm.avgCalc.trim(),
+        colorType: editForm.colorType,
+        file: editForm.file ?? undefined,
+      });
+      await fetchEvents();
+      setSelectedEvent(null);
+      setNotice("큐브 종목이 수정되었습니다.");
+    } catch (err) {
+      setEditError(getErrorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedEvent) return;
+    const confirmed = window.confirm(`"${selectedEvent.eventName}" 종목을 삭제할까요?`);
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setEditError(null);
+    setError(null);
+    setNotice(null);
+    try {
+      await deleteCubeEvent(selectedEvent.eventName);
+      await fetchEvents();
+      setSelectedEvent(null);
+      setNotice("큐브 종목이 삭제되었습니다.");
+    } catch (err) {
+      setEditError(getErrorMessage(err));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const toast = error
     ? { variant: "error" as const, message: error, onClose: () => setError(null) }
     : notice
@@ -120,6 +187,8 @@ export const EventAdminPage = () => {
       : null;
   const modalToast = createError
     ? { variant: "error" as const, message: createError, onClose: () => setCreateError(null) }
+    : editError
+      ? { variant: "error" as const, message: editError, onClose: () => setEditError(null) }
     : null;
 
   return (
@@ -137,34 +206,22 @@ export const EventAdminPage = () => {
         onClose={modalToast?.onClose}
       />
 
-      <div className="admin-header">
-        <div className="page-title-area round-title-area">
-          <div className="page-title-icon" aria-hidden="true">
-            <img src="/icon/sidebar/cube.svg" alt="" loading="lazy" />
-          </div>
-          <div className="round-title-text">
-            <h1 className="page-title">큐브 종목 관리</h1>
-            <div className="page-title-meta">
-              <span>Manage Cube Events</span>
-              <span className="page-title-meta-divider">·</span>
-              <span>총 {events.length}개</span>
-            </div>
-          </div>
-        </div>
-        <div className="page-actions">
-          <button
-            type="button"
-            className="page-action-btn"
-            onClick={() => {
+      <PageHeader
+        containerClassName="admin-header"
+        iconSrc="/icon/sidebar/cube.svg"
+        title="큐브 종목 관리"
+        subtitle="Manage Cube Events"
+        actions={[
+          {
+            label: "종목 추가",
+            iconSrc: "/icon/button/plus.svg",
+            onClick: () => {
               setCreateError(null);
               setCreateModalOpen(true);
-            }}
-          >
-            <img className="page-action-icon" src="/icon/button/plus.svg" alt="" aria-hidden="true" />
-            종목 추가
-          </button>
-        </div>
-      </div>
+            },
+          },
+        ]}
+      />
 
       <div className="admin-table-wrap">
         <table className="admin-table">
@@ -180,7 +237,7 @@ export const EventAdminPage = () => {
               <tr
                 key={`${event.eventName}-${event.avgCalc}`}
                 className="admin-table-row--clickable"
-                onClick={() => setSelectedEvent(event)}
+                onClick={() => openDetailModal(event)}
               >
                 <td className="admin-name">{event.eventName}</td>
                 <td>{event.avgCalc}</td>
@@ -304,7 +361,7 @@ export const EventAdminPage = () => {
                 <div className="event-detail-icon-wrap" aria-hidden="true">
                   <img
                     className="event-detail-icon"
-                    src={getEventIconSrc(selectedEvent.eventName)}
+                    src={getEventIconSrc(editForm.eventName || selectedEvent.eventName)}
                     alt=""
                     loading="lazy"
                     onError={(event) => {
@@ -319,17 +376,81 @@ export const EventAdminPage = () => {
                   />
                 </div>
 
-                <div className="record-modal-row">
-                  <span className="record-modal-label">종목명</span>
-                  <span className="record-modal-value">{selectedEvent.eventName}</span>
+                <div className="dashboard-test-grid">
+                  <div className="dashboard-test-field">
+                    <label className="dashboard-test-label">종목명</label>
+                    <input
+                      type="text"
+                      value={editForm.eventName}
+                      onChange={(e) => setEditForm((prev) => ({ ...prev, eventName: e.target.value }))}
+                      placeholder="예: 3x3x3"
+                      className="dashboard-test-input"
+                    />
+                  </div>
+                  <div className="dashboard-test-field">
+                    <label className="dashboard-test-label">평균 계산 방식</label>
+                    <select
+                      value={editForm.avgCalc}
+                      onChange={(e) => setEditForm((prev) => ({ ...prev, avgCalc: e.target.value }))}
+                      className="dashboard-test-select"
+                    >
+                      <option value="">평균 계산 방식 선택</option>
+                      {avgCalcOptions.map((avgCalc) => (
+                        <option key={avgCalc} value={avgCalc}>
+                          {avgCalc}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="dashboard-test-field">
+                    <label className="dashboard-test-label">큐브 구분 (섞기 방식)</label>
+                    <select
+                      value={editForm.colorType}
+                      onChange={(e) =>
+                        setEditForm((prev) => ({ ...prev, colorType: e.target.value as ColorType }))
+                      }
+                      className="dashboard-test-select"
+                    >
+                      {colorTypeOptions.map((colorType) => (
+                        <option key={colorType} value={colorType}>
+                          {colorTypeLabelMap[colorType]}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="dashboard-test-field">
+                    <label className="dashboard-test-label">아이콘 파일 (선택)</label>
+                    <input
+                      ref={editFileInputRef}
+                      type="file"
+                      onChange={(e) =>
+                        setEditForm((prev) => ({
+                          ...prev,
+                          file: e.target.files && e.target.files[0] ? e.target.files[0] : null,
+                        }))
+                      }
+                      className="dashboard-test-input"
+                    />
+                  </div>
                 </div>
-                <div className="record-modal-row">
-                  <span className="record-modal-label">평균 계산 방식</span>
-                  <span className="record-modal-value">{selectedEvent.avgCalc}</span>
-                </div>
-                <div className="record-modal-row">
-                  <span className="record-modal-label">큐브 구분</span>
-                  <span className="record-modal-value">{colorTypeLabelMap[selectedEvent.colorType]}</span>
+
+                <div className="dashboard-test-actions">
+                  <button
+                    type="button"
+                    className="dashboard-test-button dashboard-test-button--primary"
+                    onClick={handleUpdate}
+                    disabled={saving || deleting}
+                  >
+                    {saving ? "수정 중..." : "종목 수정"}
+                  </button>
+                  <button
+                    type="button"
+                    className="dashboard-test-button dashboard-test-button--danger"
+                    onClick={handleDelete}
+                    disabled={saving || deleting}
+                  >
+                    {deleting ? "삭제 중..." : "종목 삭제"}
+                  </button>
                 </div>
               </div>
             </div>

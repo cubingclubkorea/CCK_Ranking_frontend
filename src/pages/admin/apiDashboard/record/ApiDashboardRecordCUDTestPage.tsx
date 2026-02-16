@@ -28,7 +28,7 @@ export const ApiDashboardRecordCUDTestPage = () => {
     {
       pdx: 1,
       name: '홍길동',
-      state: 'KOR',
+      state: 'Seoul',
       cckId: 'test123',
       roundIdx: 1,
       roundGroup: 'A',
@@ -185,7 +185,7 @@ export const ApiDashboardRecordCUDTestPage = () => {
                   />
                 </div>
                 <div className="dashboard-test-field">
-                  <label className="dashboard-test-label">state (국가)</label>
+                  <label className="dashboard-test-label">state (지역)</label>
                   <input
                     type="text"
                     value={player.state}
@@ -194,7 +194,7 @@ export const ApiDashboardRecordCUDTestPage = () => {
                       newList[index] = { ...newList[index], state: e.target.value };
                       setPlayerList(newList);
                     }}
-                    placeholder="KOR"
+                    placeholder="Seoul"
                     className="dashboard-test-input"
                   />
                 </div>

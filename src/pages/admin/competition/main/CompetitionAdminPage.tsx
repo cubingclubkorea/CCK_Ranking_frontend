@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCompetitionFuture, getCompetitionNow, getCompetitionPast } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
-import { OverlayToast } from "@/widgets";
-import { CompetitionAdminHeader } from "./components/CompetitionAdminHeader";
+import { OverlayToast, PageHeader } from "@/widgets";
 
 type CompetitionRow = {
   status: "ongoing" | "upcoming" | "ended";
@@ -94,7 +93,6 @@ export const CompetitionAdminPage = () => {
     };
   }, []);
 
-  const totalCount = useMemo(() => rows.length, [rows.length]);
   const toast = error
     ? { variant: "error" as const, message: error, onClose: () => setError(null) }
     : notice
@@ -110,7 +108,19 @@ export const CompetitionAdminPage = () => {
         onClose={toast?.onClose}
       />
 
-      <CompetitionAdminHeader totalCount={totalCount} />
+      <PageHeader
+        containerClassName="admin-header"
+        iconSrc="/icon/sidebar/pencil.svg"
+        title="대회 관리"
+        subtitle="Manage Competition"
+        actions={[
+          {
+            label: "대회 추가",
+            iconSrc: "/icon/button/plus.svg",
+            to: "/admin/competition/create",
+          },
+        ]}
+      />
 
       <div className="admin-table-wrap">
         <table className="admin-table">

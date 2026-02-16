@@ -4,7 +4,7 @@ import { getCompetition } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
 import type { ScrambleResponse } from "@/entities/scramble";
 import { updateScrambler } from "@/features/scramble";
-import { OverlayToast } from "@/widgets";
+import { OverlayToast, PageHeader } from "@/widgets";
 import { hasKoreanChar, parseTaggedCard, type TaggedCard } from "./utils/tagParser";
 
 const getErrorMessage = (error: unknown) => {
@@ -175,44 +175,26 @@ export const ScrambleAdminPage = () => {
         onClose={toast?.onClose}
       />
 
-      <div className="admin-header">
-        <div className="page-title-area round-title-area">
-          <div className="page-title-icon" aria-hidden="true">
-            <img src="/icon/button/cube.svg" alt="" loading="lazy" />
-          </div>
-          <div className="round-title-text">
-            {competition ? (
-              <h1 className="page-title">{competition.compName}</h1>
-            ) : (
-              <div className="ui-skeleton ui-skeleton-title" aria-hidden="true" />
-            )}
-            <div className="page-title-meta">
-              <span>스크램블 모드</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="page-actions">
-          <button
-            className="page-action-btn"
-            type="button"
-            onClick={() => navigate(`/competition/${competitionId}`)}
-            disabled={!competitionId}
-          >
-            <img className="page-action-icon" src="/icon/button/back.svg" alt="" aria-hidden="true" />
-            대회로 돌아가기
-          </button>
-          <button
-            className="page-action-btn"
-            type="button"
-            onClick={() => navigate(`/competition/${competitionId}`)}
-            disabled={!competitionId}
-          >
-            <img className="page-action-icon" src="/icon/button/home.svg" alt="" aria-hidden="true" />
-            대회 페이지 보기
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        containerClassName="admin-header"
+        iconSrc="/icon/button/cube.svg"
+        title={competition ? competition.compName : <div className="ui-skeleton ui-skeleton-title" aria-hidden="true" />}
+        subtitle="스크램블 모드"
+        actions={[
+          {
+            label: "대회로 돌아가기",
+            iconSrc: "/icon/button/back.svg",
+            onClick: () => navigate(`/competition/${competitionId}`),
+            disabled: !competitionId,
+          },
+          {
+            label: "대회 페이지 보기",
+            iconSrc: "/icon/button/home.svg",
+            onClick: () => navigate(`/competition/${competitionId}`),
+            disabled: !competitionId,
+          },
+        ]}
+      />
 
       <section className="scramble-admin-layout">
         <div className="scramble-admin-top-grid">
