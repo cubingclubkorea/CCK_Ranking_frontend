@@ -74,7 +74,7 @@ export const RecordTable = ({
             <th>순위</th>
             <th>이름</th>
             <th>평균</th>
-            <th>싱글</th>
+            <th>최고</th>
             {!compactAttempts && (
               <>
                 <th>1</th>

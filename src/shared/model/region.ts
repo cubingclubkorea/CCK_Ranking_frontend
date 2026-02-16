@@ -14,6 +14,8 @@ const REGION_LABELS: Record<string, string> = {
   Sejong: "세종특별자치시",
   Jeju: "제주특별자치도",
   Chungnam: "충청남도",
+  Gyeongbuk: "경상북도",
+  Gyeongnam: "경상남도",
   Geyongbuk: "경상북도",
   Geyongnam: "경상남도",
 };
