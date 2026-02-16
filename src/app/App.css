@@ -1,3 +1,4 @@
+/*noinspection CssDuplicatedCode*/
 :root {
     --bs-body-font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui;
     --page-side-gap: 30px;
@@ -5,6 +6,193 @@
     --app-vh: 100vh;
     --icon-url: none;
     --record-edit-panel-height: auto;
+}
+
+@keyframes ui-skeleton-shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+.ui-skeleton {
+    border-radius: 10px;
+    background: linear-gradient(90deg, #eef2f8 25%, #e2e8f0 37%, #eef2f8 63%);
+    background-size: 280% 100%;
+    animation: ui-skeleton-shimmer 1.25s ease-in-out infinite;
+}
+
+.ui-skeleton-page {
+    gap: 18px;
+}
+
+.ui-skeleton-actions {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ui-skeleton-chip {
+    width: 120px;
+    height: 36px;
+    border-radius: 12px;
+}
+
+.ui-skeleton-search {
+    width: min(420px, 100%);
+    height: 40px;
+    border-radius: 12px;
+}
+
+.ui-skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ui-skeleton-main-title {
+    width: min(220px, 46%);
+    height: 28px;
+}
+
+.ui-skeleton-card-row {
+    width: 100%;
+    border: 1px solid #ececf2;
+    border-radius: 16px;
+    background: #ffffff;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.ui-skeleton-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(520px, 100%);
+}
+
+.ui-skeleton-card-title {
+    width: min(340px, 80%);
+    height: 24px;
+}
+
+.ui-skeleton-card-meta {
+    width: min(280px, 66%);
+    height: 16px;
+}
+
+.ui-skeleton-card-pill {
+    width: 96px;
+    height: 44px;
+    border-radius: 12px;
+}
+
+.ui-skeleton-comp-header {
+    align-items: flex-start;
+}
+
+.ui-skeleton-comp-head-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 280px;
+    flex: 1 1 auto;
+}
+
+.ui-skeleton-comp-title {
+    width: min(460px, 78%);
+    height: 40px;
+    border-radius: 12px;
+}
+
+.ui-skeleton-title {
+    width: min(420px, 76%);
+    height: 46px;
+    border-radius: 12px;
+}
+
+.ui-skeleton-comp-meta {
+    width: min(260px, 48%);
+    height: 18px;
+    border-radius: 10px;
+}
+
+.ui-skeleton-comp-head-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 10px;
+    flex: 0 0 auto;
+    align-self: flex-start;
+}
+
+.ui-skeleton-action-btn {
+    width: 106px;
+    height: 36px;
+    border-radius: 12px;
+}
+
+.ui-skeleton-day-tab {
+    width: 160px;
+    height: 38px;
+    border-radius: 12px;
+}
+
+.ui-skeleton-round-card {
+    width: 100%;
+    height: 96px;
+    border-radius: 16px;
+}
+
+.ui-skeleton-table-head {
+    width: 100%;
+    height: 44px;
+    border-radius: 0;
+}
+
+.ui-skeleton-table-row {
+    width: 100%;
+    height: 54px;
+    border-radius: 0;
+    margin-top: 1px;
+}
+
+.ui-skeleton-input {
+    width: 100%;
+    height: 42px;
+    border-radius: 10px;
+}
+
+@media (max-width: 980px) {
+    .ui-skeleton-comp-title {
+        height: 42px;
+    }
+
+    .ui-skeleton-comp-meta {
+        height: 22px;
+    }
+}
+
+@media (max-width: 720px) {
+    .ui-skeleton-comp-head-actions {
+        justify-content: flex-start;
+        flex-basis: 100%;
+    }
+
+    .ui-skeleton-card-row {
+        padding: 16px;
+    }
+
+    .ui-skeleton-card-pill {
+        width: 82px;
+        height: 36px;
+    }
 }
 
 * {
@@ -414,7 +602,10 @@ body {
     height: calc(var(--app-vh) - 70px);
     background: #f6f7fb;
     padding: 20px 15px;
-    transition: 0.25s ease;
+    transition:
+            width 0.25s ease,
+            padding 0.25s ease,
+            transform 0.28s ease;
     border-right: 1px solid #e5e5ec;
     position: fixed;
     top: 70px;
@@ -1232,11 +1423,11 @@ body {
     overflow: hidden;
 }
 
-.record-modal::before {
+.record-modal.record-modal--detail::before {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url("/logo/cck-logo.png");
+    background-image: url("../../public/logo/cck-logo.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: min(64%, 280px);
@@ -1245,7 +1436,7 @@ body {
     z-index: 0;
 }
 
-.record-modal > * {
+.record-modal.record-modal--detail > * {
     position: relative;
     z-index: 1;
 }
@@ -1461,11 +1652,17 @@ body {
 }
 
 .round-name-cell {
-    min-width: 160px;
+    width: 132px;
+    min-width: 96px;
+    max-width: 156px;
 }
 
 .round-name {
     font-weight: 600;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .round-sub {
@@ -3775,6 +3972,16 @@ body {
     color: #a1a1a1;
 }
 
+[data-theme="dark"] .ui-skeleton {
+    background: linear-gradient(90deg, #2c3139 25%, #3a414b 37%, #2c3139 63%);
+    background-size: 280% 100%;
+}
+
+[data-theme="dark"] .ui-skeleton-card-row {
+    background: #252525;
+    border-color: #353535;
+}
+
 [data-theme="dark"] .menu:hover,
 [data-theme="dark"] .menu.active {
     color: #f0f0f0;
@@ -3877,9 +4084,12 @@ body {
 }
 
 [data-theme="dark"] .round-day-tab.active {
-    background: #303030;
-    border-color: #4a4a4a;
-    color: #f0f0f0;
+    background: #334158;
+    border-color: #6ea8fe;
+    color: #f5f9ff;
+    box-shadow:
+            inset 0 0 0 1px rgba(110, 168, 254, 0.55),
+            0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
 [data-theme="dark"] .record-edit-btn--primary,
@@ -4026,9 +4236,9 @@ body {
 }
 
 .record-table.record-table--compact .round-name-cell {
-    width: 34%;
-    min-width: 96px;
-    max-width: 160px;
+    width: 24%;
+    min-width: 84px;
+    max-width: 132px;
 }
 
 .login-btn--compact {
@@ -4163,7 +4373,7 @@ body {
     }
 
     .content-area.mobile-menu-open {
-        filter: blur(1.5px);
+        filter: blur(2px);
         transition: filter 0.2s ease;
     }
 

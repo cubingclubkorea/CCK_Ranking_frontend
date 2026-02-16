@@ -105,7 +105,6 @@ export const CompetitionManagePage = () => {
   const [newRounds, setNewRounds] = useState<NewRoundForm[]>([]);
   const [deletedRoundIds, setDeletedRoundIds] = useState<number[]>([]);
   const [eventOptions, setEventOptions] = useState<CubeEvent[]>([]);
-  const [loading, setLoading] = useState(true);
   const [roundLoading, setRoundLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [roundSaving, setRoundSaving] = useState(false);
@@ -129,7 +128,6 @@ export const CompetitionManagePage = () => {
     let mounted = true;
 
     const fetchCompetition = async () => {
-      setLoading(true);
       setError(null);
       try {
         const competitionData = await getCompetition(competitionId);
@@ -154,8 +152,6 @@ export const CompetitionManagePage = () => {
       } catch (err) {
         if (!mounted) return;
         setError(getErrorMessage(err));
-      } finally {
-        if (mounted) setLoading(false);
       }
     };
 
@@ -434,9 +430,7 @@ export const CompetitionManagePage = () => {
       ? { variant: "error" as const, message: error, onClose: () => setError(null) }
       : notice
         ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
-        : loading
-          ? { variant: "info" as const, message: "로딩 중...", onClose: undefined }
-          : null;
+        : null;
 
 
   return (

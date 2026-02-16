@@ -15,165 +15,8 @@ export const RecordDetailModal = ({
   formatTimeValue,
   getAttemptValue,
 }: RecordDetailModalProps) => {
-  const modalCardRef = useRef<HTMLDivElement | null>(null);
-  const [isSharing, setIsSharing] = useState(false);
   const attemptMeasureRef = useRef<HTMLDivElement | null>(null);
   const [useSplitAttempts, setUseSplitAttempts] = useState(false);
-
-  const inlineComputedStyles = (source: HTMLElement, target: HTMLElement) => {
-    const computedStyle = window.getComputedStyle(source);
-    for (let index = 0; index < computedStyle.length; index += 1) {
-      const propertyName = computedStyle[index];
-      target.style.setProperty(
-        propertyName,
-        computedStyle.getPropertyValue(propertyName),
-        computedStyle.getPropertyPriority(propertyName),
-      );
-    }
-  };
-
-  const createCardImageBlob = async () => {
-    const cardNode = modalCardRef.current;
-    if (!cardNode) throw new Error("card-node-not-found");
-
-    const cloneRoot = cardNode.cloneNode(true) as HTMLElement;
-    cloneRoot.querySelectorAll("[data-export-hidden='true']").forEach((node) => node.remove());
-
-    const sourceElements = [cardNode, ...Array.from(cardNode.querySelectorAll<HTMLElement>("*"))];
-    const targetElements = [cloneRoot, ...Array.from(cloneRoot.querySelectorAll<HTMLElement>("*"))];
-    sourceElements.forEach((sourceElement, index) => {
-      const targetElement = targetElements[index];
-      if (!targetElement) return;
-      inlineComputedStyles(sourceElement, targetElement);
-    });
-
-    cloneRoot.querySelectorAll("img").forEach((imageNode) => {
-      const src = imageNode.getAttribute("src");
-      if (!src) return;
-      imageNode.setAttribute("src", new URL(src, window.location.href).href);
-      imageNode.setAttribute("crossorigin", "anonymous");
-    });
-
-    cloneRoot.style.maxHeight = "none";
-    cloneRoot.style.width = `${cardNode.offsetWidth}px`;
-    cloneRoot.style.height = `${cardNode.offsetHeight}px`;
-
-    const serializer = new XMLSerializer();
-    const markup = serializer.serializeToString(cloneRoot);
-    const width = cardNode.offsetWidth;
-    const height = cardNode.offsetHeight;
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-        <foreignObject width="100%" height="100%">${markup}</foreignObject>
-      </svg>
-    `;
-    const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-    const svgUrl = URL.createObjectURL(svgBlob);
-
-    try {
-      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const nextImage = new Image();
-        nextImage.onload = () => resolve(nextImage);
-        nextImage.onerror = () => reject(new Error("svg-load-failed"));
-        nextImage.src = svgUrl;
-      });
-
-      const scale = Math.max(window.devicePixelRatio || 1, 2);
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(width * scale);
-      canvas.height = Math.round(height * scale);
-      const context = canvas.getContext("2d");
-      if (!context) throw new Error("canvas-context-unavailable");
-      context.setTransform(scale, 0, 0, scale, 0, 0);
-      context.drawImage(image, 0, 0, width, height);
-
-      const pngBlob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            reject(new Error("png-export-failed"));
-            return;
-          }
-          resolve(blob);
-        }, "image/png");
-      });
-      return pngBlob;
-    } finally {
-      URL.revokeObjectURL(svgUrl);
-    }
-  };
-
-  const downloadImage = (blob: Blob) => {
-    if (!selected) return;
-    const sanitizedName = selected.record.name.replace(/\s+/g, "-").toLowerCase();
-    const filename = `cck-record-${selected.rank}-${sanitizedName || "player"}.png`;
-    const blobUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(blobUrl);
-  };
-
-  const handleShare = async () => {
-    if (!selected) return;
-    if (isSharing) return;
-
-    setIsSharing(true);
-    let imageBlob: Blob | null = null;
-    try {
-      imageBlob = await createCardImageBlob();
-      const sanitizedName = selected.record.name.replace(/\s+/g, "-").toLowerCase();
-      const filename = `cck-record-${selected.rank}-${sanitizedName || "player"}.png`;
-      const shareFile = new File([imageBlob], filename, { type: "image/png" });
-      const shareText = `${selected.record.compName} - ${selected.record.eventName} ${selected.record.roundName}`;
-      const hasWebShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
-      const canShareFiles =
-        hasWebShare &&
-        typeof navigator.canShare === "function" &&
-        navigator.canShare({ files: [shareFile] });
-
-      if (canShareFiles) {
-        try {
-          await navigator.share({
-            files: [shareFile],
-            title: `${selected.record.name} 기록 카드`,
-            text: shareText,
-          });
-          return;
-        } catch (error) {
-          if (error instanceof DOMException && error.name === "AbortError") {
-            return;
-          }
-        }
-      }
-
-      if (hasWebShare) {
-        try {
-          await navigator.share({
-            title: `${selected.record.name} 기록 카드`,
-            text: shareText,
-            url: window.location.href,
-          });
-        } catch (error) {
-          if (error instanceof DOMException && error.name === "AbortError") {
-            return;
-          }
-        }
-      }
-
-      downloadImage(imageBlob);
-    } catch {
-      if (imageBlob) {
-        downloadImage(imageBlob);
-      } else {
-        window.alert("공유를 지원하지 않는 환경입니다. HTTPS 모바일 브라우저에서 다시 시도해주세요.");
-      }
-    } finally {
-      setIsSharing(false);
-    }
-  };
 
   useEffect(() => {
     const node = attemptMeasureRef.current;
@@ -247,7 +90,6 @@ export const RecordDetailModal = ({
   const modal = (
     <div className="record-modal-backdrop" onClick={onClose}>
       <div
-        ref={modalCardRef}
         className="record-modal record-modal--detail"
         role="dialog"
         aria-modal="true"
@@ -260,20 +102,9 @@ export const RecordDetailModal = ({
           <div className="record-modal-actions">
             <button
               type="button"
-              className="record-modal-action-btn"
-              onClick={handleShare}
-              aria-label="공유"
-              disabled={isSharing}
-              data-export-hidden="true"
-            >
-              <img src="/icon/modal/share.svg" alt="" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
               className="record-modal-close"
               onClick={onClose}
               aria-label="닫기"
-              data-export-hidden="true"
             >
               <img src="/icon/modal/close.svg" alt="" aria-hidden="true" />
             </button>

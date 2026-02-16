@@ -25,7 +25,7 @@ import {
   ComingSoonPage
 } from "@/pages";
 import { LOGIN_URL } from "@/shared/config";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 import { Header, Sidebar } from "@/widgets";
 import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
@@ -69,7 +69,7 @@ const
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.style.colorScheme = theme;
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);

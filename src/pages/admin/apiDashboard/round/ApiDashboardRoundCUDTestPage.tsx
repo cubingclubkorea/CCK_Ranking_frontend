@@ -124,9 +124,7 @@ export const ApiDashboardRoundCUDTestPage = () => {
     ? { variant: 'error' as const, message: error, onClose: () => setError(null) }
     : result
       ? { variant: 'success' as const, message: result, onClose: () => setResult(null) }
-      : loading
-        ? { variant: 'info' as const, message: '로딩 중...', onClose: undefined }
-        : null;
+      : null;
 
   const addCreateItem = () => {
     setCreateList([

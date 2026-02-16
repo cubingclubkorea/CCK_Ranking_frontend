@@ -116,9 +116,7 @@ export const EventAdminPage = () => {
     ? { variant: "error" as const, message: error, onClose: () => setError(null) }
     : notice
       ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
-      : loading
-        ? { variant: "info" as const, message: "로딩 중...", onClose: undefined }
-        : null;
+      : null;
   const modalToast = createError
     ? { variant: "error" as const, message: createError, onClose: () => setCreateError(null) }
     : null;

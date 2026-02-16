@@ -6,7 +6,7 @@ import { getRecordList } from "@/entities/record";
 import { addExtra, deleteExtra, deleteRecord, updateRecord, updateRecordInfo } from "@/features/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
-import { OverlayToast } from "@/widgets";
+import { OverlayToast, RoundRecordEditPageSkeleton } from "@/widgets";
 import { RoundRecordHeader } from "./components/RoundRecordHeader.tsx";
 import { ExtraAddModal } from "./components/ExtraAddModal.tsx";
 import { RecordContextMenu } from "./components/RecordContextMenu.tsx";
@@ -553,7 +553,7 @@ export const RoundRecordEditPage = () => {
   };
 
   if (loading) {
-    return <div className="round-page">로딩중...</div>;
+    return <RoundRecordEditPageSkeleton />;
   }
 
   if (error) {

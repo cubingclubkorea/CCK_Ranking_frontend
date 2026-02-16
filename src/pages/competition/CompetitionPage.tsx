@@ -4,6 +4,7 @@ import { getCompetition } from "@/entities/competition";
 import { getRoundByDayCount } from "@/entities/round";
 import type { Competition } from "@/entities/competition";
 import type { Round, RoundDayCount } from "@/entities/round";
+import { CompetitionPageSkeleton } from "@/widgets";
 import { CompetitionHeader } from "./components/CompetitionHeader";
 import { RoundList } from "./components/RoundList";
 
@@ -187,7 +188,7 @@ export const CompetitionPage = () => {
   }, [visibleDayItems, dayCount]);
 
   if (loading) {
-    return <div>로딩중...</div>;
+    return <CompetitionPageSkeleton />;
   }
 
   if (!competition) {
