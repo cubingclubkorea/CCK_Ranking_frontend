@@ -1166,6 +1166,19 @@ body {
     height: 54px;
 }
 
+.region-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.region-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
 .ranking-table-row--clickable {
     cursor: pointer;
 }

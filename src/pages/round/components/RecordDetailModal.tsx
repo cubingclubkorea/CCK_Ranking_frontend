@@ -4,8 +4,10 @@ import {
   getMainAttempts,
   getNewRecordBadgeSrc,
   getWorstAttemptTrySet,
+  getRegionLogoSrc,
   isBo3AvgCalc,
   isSingleAvgCalc,
+  mapRegionName,
   resolveAverageValue,
 } from "@/shared";
 import { createPortal } from "react-dom";
@@ -76,6 +78,8 @@ export const RecordDetailModal = ({
     selected.record.avgCalc,
     selected.record.average
   );
+  const regionLabel = mapRegionName(selected.record.state) ?? selected.record.state ?? "-";
+  const regionLogoSrc = getRegionLogoSrc(selected.record.state);
   const singleBestTypeBadgeSrc = getNewRecordBadgeSrc(selected.record.singleBestType);
   const averageBestTypeBadgeSrc = getNewRecordBadgeSrc(selected.record.averageBestType);
 
@@ -140,7 +144,10 @@ export const RecordDetailModal = ({
           </div>
           <div className="record-modal-row">
             <div className="record-modal-label">지역</div>
-            <div className="record-modal-value">{selected.record.state ?? "-"}</div>
+            <div className="record-modal-value record-modal-region region-inline">
+              {regionLogoSrc ? <img className="region-logo" src={regionLogoSrc} alt="" aria-hidden="true" /> : null}
+              <span>{regionLabel}</span>
+            </div>
           </div>
           {!hideAverage ? (
             <div className="record-modal-row">

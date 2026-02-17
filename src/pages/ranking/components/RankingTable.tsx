@@ -3,8 +3,10 @@ import { formatTime, type RankingMetric } from "@/features/ranking";
 import {
   getMainAttempts,
   getWorstAttemptTrySet,
+  getRegionLogoSrc,
   isAo12AvgCalc,
   isSingleAvgCalc,
+  mapRegionName,
   resolveAverageValue,
 } from "@/shared";
 
@@ -61,6 +63,8 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
               .reduce<number | undefined>((best, value) => (best === undefined || value < best ? value : best), undefined);
             const worstTrySet = getWorstAttemptTrySet(row.attempts, row.avgCalc, row.eventName);
             const firstAttempt = mainAttempts.find((attempt) => attempt.attemptTry === 1);
+            const regionLabel = mapRegionName(row.state) ?? row.state ?? "-";
+            const regionLogoSrc = getRegionLogoSrc(row.state);
 
             return (
               <tr
@@ -77,7 +81,14 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
                   {formatTime(displayRecord)}
                 </td>
                 {singleMode ? <td>{renderAttemptValue(firstAttempt?.time)}</td> : null}
-                {!singleMode ? <td>{row.state || "-"}</td> : null}
+                {!singleMode ? (
+                  <td>
+                    <span className="region-inline">
+                      {regionLogoSrc ? <img className="region-logo" src={regionLogoSrc} alt="" aria-hidden="true" /> : null}
+                      <span>{regionLabel}</span>
+                    </span>
+                  </td>
+                ) : null}
                 {!singleMode ? <td className="ranking-comp-cell" title={row.compName}>{row.compName}</td> : null}
                 {showAttemptsColumn ? (
                   <td className="ranking-attempts-cell">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getRegionLogoSrc, mapRegionName } from "@/shared";
 
 type ProfileIdentityCardProps = {
   koreanName: string;
@@ -18,6 +19,8 @@ export const ProfileIdentityCard = ({
   isOrganizer,
 }: ProfileIdentityCardProps) => {
   const [organizerTipOpen, setOrganizerTipOpen] = useState(false);
+  const regionLabel = mapRegionName(region) ?? region ?? "-";
+  const regionLogoSrc = getRegionLogoSrc(region);
 
   return (
     <section className="profile-identity-card">
@@ -62,7 +65,10 @@ export const ProfileIdentityCard = ({
           </div>
           <div>
             <span className="profile-meta-key">지역</span>
-            <span className="profile-meta-value">{region}</span>
+            <span className="profile-meta-value profile-region-value region-inline">
+              {regionLogoSrc ? <img className="region-logo" src={regionLogoSrc} alt="" aria-hidden="true" /> : null}
+              <span>{regionLabel}</span>
+            </span>
           </div>
         </div>
       </div>

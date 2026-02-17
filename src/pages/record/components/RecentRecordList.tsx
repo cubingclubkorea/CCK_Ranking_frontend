@@ -1,5 +1,5 @@
 import type { RecentRecordItem } from "@/features/recentRecord";
-import { getNewRecordBadgeSrc, mapRegionName } from "@/shared";
+import { getNewRecordBadgeSrc, getRegionLogoSrc, mapRegionName } from "@/shared";
 
 type RecentRecordListProps = {
   records: RecentRecordItem[];
@@ -10,6 +10,8 @@ export const RecentRecordList = ({ records, onSelect }: RecentRecordListProps) =
   <div className="recent-record-list">
     {records.map((item) => {
       const badgeSrc = getNewRecordBadgeSrc(item.bestType);
+      const regionLabel = mapRegionName(item.state) ?? item.state ?? "-";
+      const regionLogoSrc = getRegionLogoSrc(item.state);
       return (
         <article
           className="recent-record-item"
@@ -32,7 +34,12 @@ export const RecentRecordList = ({ records, onSelect }: RecentRecordListProps) =
               {item.eventName} {item.metric === "single" ? "최고" : "평균"} {item.value}
             </p>
             <p className="recent-record-subtitle">
-              {item.name} ({item.cckId}) · {mapRegionName(item.state) || "-"} · {item.compName}
+              {item.name} ({item.cckId}) ·{" "}
+              <span className="region-inline">
+                {regionLogoSrc ? <img className="region-logo" src={regionLogoSrc} alt="" aria-hidden="true" /> : null}
+                <span>{regionLabel}</span>
+              </span>{" "}
+              · {item.compName}
             </p>
           </div>
         </article>
