@@ -33,6 +33,13 @@ export const RankingPage = () => {
   }, [metric, selectedEvent, selectedRegion]);
 
   const metricLabel = useMemo(() => (metric === "single" ? "최고" : "평균"), [metric]);
+  const rankingTitle = useMemo(() => {
+    const baseTitle = `${selectedEvent || "-"} · ${metricLabel}`;
+    if (selectedRegion === "전체 지역") {
+      return baseTitle;
+    }
+    return `${baseTitle} · ${selectedRegion}`;
+  }, [metricLabel, selectedEvent, selectedRegion]);
 
   if (eventLoading) {
     return (
@@ -83,7 +90,7 @@ export const RankingPage = () => {
           ) : (
             <>
               <h2 className="ranking-panel-title">
-                {selectedEvent || "-"} · {metricLabel}
+                {rankingTitle}
               </h2>
               <span className="ranking-panel-meta">
                 {rankingRows.length > 0 ? `총 ${rankingRows.length.toLocaleString()}명` : "데이터 없음"}

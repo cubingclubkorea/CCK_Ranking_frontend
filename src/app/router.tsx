@@ -9,6 +9,7 @@ import {
   RankingPage,
   RecordPage,
   ProfilePage,
+  ProfileRecordHistoryPage,
   ApiDashboardCubeEventTestPage,
   ApiDashboardRoundTestPage,
   ApiDashboardRoundCUDTestPage,
@@ -216,6 +217,10 @@ export const router = createBrowserRouter([
       {
         path: "profile/:cckId",
         element: <ProfilePage />,
+      },
+      {
+        path: "profile/:cckId/record/:event",
+        element: <ProfileRecordHistoryPage />,
       },
       {
         path: "settings",

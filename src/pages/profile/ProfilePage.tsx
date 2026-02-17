@@ -41,7 +41,7 @@ export const ProfilePage = () => {
         isOrganizer={profile.isOrganizer}
       />
 
-      <ProfileRankingSection eventRankings={profile.eventRankings} />
+      <ProfileRankingSection cckId={cckId ?? ""} eventRankings={profile.eventRankings} />
       <ProfileCompetitionsSection />
       <ProfileStatisticsSection
         judgeCount={profile.judgeCount}

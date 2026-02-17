@@ -1,5 +1,5 @@
 import type { GlobalSingleRankingRecord } from "@/entities/statistics";
-import { formatTime, type RankingMetric } from "@/features/ranking";
+import { formatTimeValue, type RankingMetric } from "@/features/ranking";
 import {
   getMainAttempts,
   getWorstAttemptTrySet,
@@ -20,7 +20,7 @@ const renderAttemptValue = (time: number | null | undefined) => {
   if (time === null || time === undefined) return "-";
   if (time === -1) return "DNF";
   if (time === -2) return "DNS";
-  return formatTime(time);
+  return formatTimeValue(time);
 };
 
 export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) => {
@@ -78,7 +78,7 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
                   <div className="ranking-player-id">{row.cckId}</div>
                 </td>
                 <td className="ranking-record-cell">
-                  {formatTime(displayRecord)}
+                  {formatTimeValue(displayRecord)}
                 </td>
                 {singleMode ? <td>{renderAttemptValue(firstAttempt?.time)}</td> : null}
                 {!singleMode ? (

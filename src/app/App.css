@@ -1567,6 +1567,22 @@ body {
     min-height: 132px;
 }
 
+.profile-event-card--clickable {
+    cursor: pointer;
+    transition: transform 0.14s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.profile-event-card--clickable:hover {
+    transform: translateY(-2px);
+    border-color: #cfd8ee;
+    box-shadow: 0 6px 14px rgba(41, 57, 97, 0.12);
+}
+
+.profile-event-card--clickable:focus-visible {
+    outline: 2px solid #4d6bb2;
+    outline-offset: 2px;
+}
+
 .profile-event-head {
     display: flex;
     align-items: center;
@@ -1603,6 +1619,146 @@ body {
     border-radius: 8px;
     padding: 1px 8px;
     font-weight: 700;
+}
+
+.profile-record-history-card {
+    border: 1px solid #e4e8f3;
+    border-radius: 14px;
+    background: #ffffff;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-record-history-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.profile-record-history-meta {
+    font-size: 12px;
+    color: #6f7891;
+    font-weight: 700;
+}
+
+.profile-record-history-chart {
+    width: 100%;
+    height: 320px;
+}
+
+.profile-record-history-skeleton-chart {
+    width: 100%;
+    height: 320px;
+    border-radius: 12px;
+}
+
+.profile-record-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-record-history-table-wrap {
+    border: 1px solid #e4e8f3;
+    border-radius: 12px;
+    overflow-x: auto;
+    background: #ffffff;
+}
+
+.profile-record-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+
+.profile-record-history-table th,
+.profile-record-history-table td {
+    padding: 11px 12px;
+    border-bottom: 1px solid #e7ebf4;
+    text-align: left;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.profile-record-history-table th {
+    background: #f4f6fb;
+    color: #66718a;
+    font-weight: 700;
+}
+
+.profile-record-history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.profile-record-history-row--clickable {
+    cursor: pointer;
+}
+
+.profile-record-history-row--clickable:hover td {
+    background: #f8faff;
+}
+
+.profile-record-history-row--clickable:focus-visible {
+    outline: 2px solid #4d6bb2;
+    outline-offset: -2px;
+}
+
+.profile-record-history-item {
+    border: 1px solid #e4e8f3;
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1.35fr) minmax(0, 1fr) minmax(78px, auto) minmax(78px, auto);
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.profile-record-history-item:hover {
+    border-color: #cad4eb;
+    box-shadow: 0 4px 12px rgba(33, 49, 80, 0.1);
+    transform: translateY(-1px);
+}
+
+.profile-record-history-item:focus-visible {
+    outline: 2px solid #4d6bb2;
+    outline-offset: 2px;
+}
+
+.profile-record-history-index {
+    font-size: 12px;
+    color: #6f7891;
+    font-weight: 700;
+}
+
+.profile-record-history-comp {
+    font-size: 14px;
+    font-weight: 700;
+    color: #25304a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-record-history-round {
+    font-size: 13px;
+    color: #5f6883;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-record-history-value {
+    font-size: 13px;
+    color: #2f3a56;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }
 
 .profile-competition-board {
@@ -1860,6 +2016,21 @@ body {
 
     .profile-name-en {
         font-size: 15px;
+    }
+
+    .profile-record-history-chart,
+    .profile-record-history-skeleton-chart {
+        height: 260px;
+    }
+
+    .profile-record-history-table {
+        min-width: 560px;
+    }
+
+    .profile-record-history-table th,
+    .profile-record-history-table td {
+        padding: 10px 10px;
+        font-size: 12px;
     }
 
     .profile-meta-grid {
@@ -4955,6 +5126,9 @@ body {
 
 [data-theme="dark"] .profile-identity-card,
 [data-theme="dark"] .profile-event-card,
+[data-theme="dark"] .profile-record-history-card,
+[data-theme="dark"] .profile-record-history-item,
+[data-theme="dark"] .profile-record-history-table-wrap,
 [data-theme="dark"] .profile-stat-card,
 [data-theme="dark"] .profile-stats-subsection,
 [data-theme="dark"] .profile-competition-board {
@@ -4985,13 +5159,31 @@ body {
 [data-theme="dark"] .profile-meta-key,
 [data-theme="dark"] .profile-stat-card h4,
 [data-theme="dark"] .profile-stat-card h5,
-[data-theme="dark"] .profile-stats-subtitle {
+[data-theme="dark"] .profile-stats-subtitle,
+[data-theme="dark"] .profile-record-history-meta,
+[data-theme="dark"] .profile-record-history-index {
     color: #8b949e;
 }
 
 [data-theme="dark"] .profile-meta-value,
-[data-theme="dark"] .profile-event-row {
+[data-theme="dark"] .profile-event-row,
+[data-theme="dark"] .profile-record-history-round {
     color: #adbac7;
+}
+
+[data-theme="dark"] .profile-record-history-comp,
+[data-theme="dark"] .profile-record-history-value {
+    color: #d3dbe7;
+}
+
+[data-theme="dark"] .profile-record-history-table th,
+[data-theme="dark"] .profile-record-history-table td {
+    border-color: #444c56;
+}
+
+[data-theme="dark"] .profile-record-history-table th {
+    background: #2d333b;
+    color: #8b949e;
 }
 
 [data-theme="dark"] .profile-badge {
@@ -5046,6 +5238,16 @@ body {
 [data-theme="dark"] .profile-competition-item {
     background: #313a46;
     border-color: #49515d;
+}
+
+[data-theme="dark"] .profile-event-card--clickable:hover,
+[data-theme="dark"] .profile-record-history-item:hover {
+    border-color: #5b6574;
+    box-shadow: 0 5px 14px rgba(1, 4, 9, 0.28);
+}
+
+[data-theme="dark"] .profile-record-history-row--clickable:hover td {
+    background: #313943;
 }
 
 [data-theme="dark"] .profile-competition-item strong {

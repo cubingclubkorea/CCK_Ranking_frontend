@@ -1,7 +1,9 @@
 import type { PlayerEventRanking } from "@/entities/statistics";
 import { getEventIconSrc } from "@/shared";
+import { useNavigate } from "react-router-dom";
 
 type ProfileRankingSectionProps = {
+  cckId: string;
   eventRankings: PlayerEventRanking[];
 };
 
@@ -16,31 +18,49 @@ const formatTime = (value?: number | null) => {
   return value.toFixed(2);
 };
 
-export const ProfileRankingSection = ({ eventRankings }: ProfileRankingSectionProps) => (
-  <section className="profile-section">
-    <div className="profile-section-head">
-      <h3 className="profile-main-section-title">큐브 개인 기록</h3>
-    </div>
-    <div className="profile-event-grid">
-      {eventRankings.map((item) => (
-        <article className="profile-event-card" key={item.eventName}>
-          <div className="profile-event-head">
-            <img className="profile-event-icon" src={getEventIconSrc(item.eventName)} alt="" aria-hidden="true" />
-            <strong className="profile-event-title">{item.eventName}</strong>
-          </div>
-          <div className="profile-event-row">
-            <span>싱글</span>
-            <span>{formatTime(item.bestSingle)}</span>
-            <em>#{item.rankSingle ?? "-"}</em>
-          </div>
-          <div className="profile-event-row">
-            <span>평균</span>
-            <span>{formatTime(item.bestAverage)}</span>
-            <em>#{item.rankAverage ?? "-"}</em>
-          </div>
-        </article>
-      ))}
-      {eventRankings.length === 0 ? <div className="round-list-empty">표시할 종목 기록이 없습니다.</div> : null}
-    </div>
-  </section>
-);
+export const ProfileRankingSection = ({ cckId, eventRankings }: ProfileRankingSectionProps) => {
+  const navigate = useNavigate();
+
+  return (
+    <section className="profile-section">
+      <div className="profile-section-head">
+        <h3 className="profile-main-section-title">큐브 개인 기록</h3>
+      </div>
+      <div className="profile-event-grid">
+        {eventRankings.map((item) => (
+          <article
+            className="profile-event-card profile-event-card--clickable"
+            key={item.eventName}
+            role="button"
+            tabIndex={0}
+            onClick={() =>
+              navigate(`/profile/${encodeURIComponent(cckId)}/record/${encodeURIComponent(item.eventName)}`)
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                navigate(`/profile/${encodeURIComponent(cckId)}/record/${encodeURIComponent(item.eventName)}`);
+              }
+            }}
+          >
+            <div className="profile-event-head">
+              <img className="profile-event-icon" src={getEventIconSrc(item.eventName)} alt="" aria-hidden="true" />
+              <strong className="profile-event-title">{item.eventName}</strong>
+            </div>
+            <div className="profile-event-row">
+              <span>싱글</span>
+              <span>{formatTime(item.bestSingle)}</span>
+              <em>#{item.rankSingle ?? "-"}</em>
+            </div>
+            <div className="profile-event-row">
+              <span>평균</span>
+              <span>{formatTime(item.bestAverage)}</span>
+              <em>#{item.rankAverage ?? "-"}</em>
+            </div>
+          </article>
+        ))}
+        {eventRankings.length === 0 ? <div className="round-list-empty">표시할 종목 기록이 없습니다.</div> : null}
+      </div>
+    </section>
+  );
+};
