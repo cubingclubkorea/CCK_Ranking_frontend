@@ -6,7 +6,9 @@ import { getRecordList } from "@/entities/record";
 import { addExtra, deleteExtra, deleteRecord, updateRecord, updateRecordInfo } from "@/features/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
+import { getErrorMessage as getRequestErrorMessage, shouldUseRequestErrorPage } from "@/shared";
 import { OverlayToast, PageHeader, RoundRecordEditPageSkeleton } from "@/widgets";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { ExtraAddModal } from "./components/ExtraAddModal.tsx";
 import { RecordContextMenu } from "./components/RecordContextMenu.tsx";
 import { RecordEditPanel } from "./components/RecordEditPanel.tsx";
@@ -75,12 +77,6 @@ const getNextExtraNum = (record: Record): number => {
 const normalizeTimeValue = (value: number) => {
   if (value < 0) return value;
   return Math.round(value * 100) / 100;
-};
-
-const getErrorMessage = (err: unknown) => {
-  if (err instanceof Error) return err.message;
-  if (typeof err === "string") return err;
-  return "기록 반영에 실패했습니다.";
 };
 
 const isSameTimeValue = (actual: number | null | undefined, expected: number | null) => {
@@ -221,7 +217,7 @@ export const RoundRecordEditPage = () => {
         }
       } catch (fetchError) {
         console.error("라운드 기록 조회 실패:", fetchError);
-        if (mounted) setError("기록 정보를 불러올 수 없습니다.");
+        if (mounted) setError(getRequestErrorMessage(fetchError, "기록 정보를 불러올 수 없습니다."));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -394,7 +390,7 @@ export const RoundRecordEditPage = () => {
       focusNameInput();
     } catch (saveError) {
       console.error("기록 업데이트 실패:", saveError);
-      setFormError(getErrorMessage(saveError));
+      setFormError(getRequestErrorMessage(saveError, "기록 반영에 실패했습니다."));
     } finally {
       setSaving(false);
     }
@@ -510,7 +506,7 @@ export const RoundRecordEditPage = () => {
       setFormStatus("선수 정보를 반영했습니다.");
     } catch (saveError) {
       console.error("기록 정보 업데이트 실패:", saveError);
-      setInfoError(getErrorMessage(saveError));
+      setInfoError(getRequestErrorMessage(saveError, "기록 반영에 실패했습니다."));
     } finally {
       setInfoSaving(false);
     }
@@ -545,7 +541,7 @@ export const RoundRecordEditPage = () => {
       }
     } catch (deleteError) {
       console.error("선수 삭제 실패:", deleteError);
-      setInfoError(getErrorMessage(deleteError));
+      setInfoError(getRequestErrorMessage(deleteError, "기록 반영에 실패했습니다."));
     } finally {
       setInfoDeleting(false);
     }
@@ -556,6 +552,9 @@ export const RoundRecordEditPage = () => {
   }
 
   if (error) {
+    if (shouldUseRequestErrorPage(error)) {
+      return <RequestErrorPage message={error} />;
+    }
     return <div className="round-page">{error}</div>;
   }
 

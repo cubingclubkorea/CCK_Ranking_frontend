@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useProfileData } from "@/features/profile";
+import { shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import {
   ProfileCompetitionsSection,
   ProfileIdentityCard,
@@ -14,6 +16,10 @@ export const ProfilePage = () => {
   const profile = useProfileData(cckId);
 
   if (profile.loading) return <ProfilePageSkeleton />;
+
+  if (profile.error && shouldUseRequestErrorPage(profile.error)) {
+    return <RequestErrorPage message={profile.error} />;
+  }
 
   if (profile.error) return <div className="round-page">{profile.error}</div>;
 

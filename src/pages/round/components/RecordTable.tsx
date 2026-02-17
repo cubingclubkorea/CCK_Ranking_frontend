@@ -160,7 +160,11 @@ export const RecordTable = ({
                     <span className="record-value-with-badge record-value-with-badge--floating">
                       <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</span>
                       {hasAllAttempts && averageBestTypeBadgeSrc ? (
-                        <img className="new-record-badge" src={averageBestTypeBadgeSrc} alt={String(record.averageBestType)} />
+                        <img
+                          className={`new-record-badge${record.averageBestType === "CCR" ? " new-record-badge--ccr" : ""}`}
+                          src={averageBestTypeBadgeSrc}
+                          alt={String(record.averageBestType)}
+                        />
                       ) : null}
                     </span>
                   </td>
@@ -169,7 +173,11 @@ export const RecordTable = ({
                   <span className="record-value-with-badge record-value-with-badge--floating">
                     <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</span>
                     {hasAllAttempts && singleBestTypeBadgeSrc ? (
-                      <img className="new-record-badge" src={singleBestTypeBadgeSrc} alt={String(record.singleBestType)} />
+                      <img
+                        className={`new-record-badge${record.singleBestType === "CCR" ? " new-record-badge--ccr" : ""}`}
+                        src={singleBestTypeBadgeSrc}
+                        alt={String(record.singleBestType)}
+                      />
                     ) : null}
                   </span>
                 </td>

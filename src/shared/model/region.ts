@@ -42,5 +42,5 @@ const resolveRegionKey = (value?: string | null) => {
 
 export const getRegionLogoSrc = (value?: string | null) => {
   const key = resolveRegionKey(value);
-  return key ? `/icon/state-logo/${key}.svg` : undefined;
+  return key ? `/logo/state-logo/${key}.svg` : undefined;
 };

@@ -27,7 +27,13 @@ export const RecentRecordList = ({ records, onSelect }: RecentRecordListProps) =
           }}
         >
           <div className="recent-record-badge-wrap">
-            {badgeSrc ? <img className="recent-record-badge-image" src={badgeSrc} alt={item.bestType} /> : null}
+            {badgeSrc ? (
+              <img
+                className={`recent-record-badge-image${item.bestType === "CCR" ? " recent-record-badge-image--ccr" : ""}`}
+                src={badgeSrc}
+                alt={item.bestType}
+              />
+            ) : null}
           </div>
           <div className="recent-record-content">
             <p className="recent-record-title">

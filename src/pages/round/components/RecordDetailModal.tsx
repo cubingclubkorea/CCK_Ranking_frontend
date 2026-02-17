@@ -156,7 +156,11 @@ export const RecordDetailModal = ({
                 <span className="record-value-with-badge record-value-with-badge--floating">
                   <span className="record-value-with-badge-text">{formatTimeValue(displayAverage)}</span>
                   {averageBestTypeBadgeSrc ? (
-                    <img className="new-record-badge" src={averageBestTypeBadgeSrc} alt={String(selected.record.averageBestType)} />
+                    <img
+                      className={`new-record-badge${selected.record.averageBestType === "CCR" ? " new-record-badge--ccr" : ""}`}
+                      src={averageBestTypeBadgeSrc}
+                      alt={String(selected.record.averageBestType)}
+                    />
                   ) : null}
                 </span>
               </div>
@@ -168,7 +172,11 @@ export const RecordDetailModal = ({
               <span className="record-value-with-badge record-value-with-badge--floating">
                 <span className="record-value-with-badge-text">{formatTimeValue(selected.record.single)}</span>
                 {singleBestTypeBadgeSrc ? (
-                  <img className="new-record-badge" src={singleBestTypeBadgeSrc} alt={String(selected.record.singleBestType)} />
+                  <img
+                    className={`new-record-badge${selected.record.singleBestType === "CCR" ? " new-record-badge--ccr" : ""}`}
+                    src={singleBestTypeBadgeSrc}
+                    alt={String(selected.record.singleBestType)}
+                  />
                 ) : null}
               </span>
             </div>

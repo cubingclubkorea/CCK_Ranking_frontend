@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { type RecentRecordItem, useRecentRecords } from "@/features/recentRecord";
 import { formatTimeValue } from "@/features/ranking";
+import { shouldUseRequestErrorPage } from "@/shared";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { PageHeader } from "@/widgets";
 import { RecentRecordList } from "./components/RecentRecordList";
 import { RecentRecordListSkeleton } from "./components/RecentRecordListSkeleton";
@@ -9,6 +11,10 @@ import { RecentRecordListSkeleton } from "./components/RecentRecordListSkeleton"
 export const RecordPage = () => {
   const { loading, error, records } = useRecentRecords();
   const [selected, setSelected] = useState<{ rank: number; record: RecentRecordItem["record"] } | null>(null);
+
+  if (!loading && error && shouldUseRequestErrorPage(error)) {
+    return <RequestErrorPage message={error} />;
+  }
 
   return (
     <div className="main-page recent-record-page">

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Record as RoundRecord } from "@/entities/record";
 import { formatTimeValue, toRecord, useRankingData } from "@/features/ranking";
+import { shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
 import { RankingControls } from "./components/RankingControls";
 import { RankingPanelSkeleton } from "./components/RankingPanelSkeleton";
@@ -44,6 +46,10 @@ export const RankingPage = () => {
         <RankingPanelSkeleton />
       </div>
     );
+  }
+
+  if (!rankingLoading && error && shouldUseRequestErrorPage(error)) {
+    return <RequestErrorPage message={error} />;
   }
 
   return (
