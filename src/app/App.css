@@ -1886,6 +1886,111 @@ body {
     grid-column: span 2;
 }
 
+.profile-skeleton-avatar {
+    width: 188px;
+    min-width: 188px;
+    height: 188px;
+    border-radius: 18px;
+}
+
+.profile-skeleton-name {
+    width: min(220px, 60%);
+    height: 40px;
+}
+
+.profile-skeleton-badge {
+    width: 120px;
+    height: 34px;
+    border-radius: 999px;
+}
+
+.profile-skeleton-name-en {
+    width: min(300px, 70%);
+    height: 22px;
+}
+
+.profile-skeleton-meta-key {
+    width: 58px;
+    height: 16px;
+}
+
+.profile-skeleton-meta-value {
+    width: min(120px, 90%);
+    height: 22px;
+}
+
+.profile-skeleton-section-title {
+    width: min(190px, 38%);
+    height: 34px;
+}
+
+.profile-skeleton-event-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+}
+
+.profile-skeleton-event-title {
+    width: min(160px, 78%);
+    height: 24px;
+}
+
+.profile-skeleton-event-row {
+    width: 100%;
+    height: 22px;
+}
+
+.profile-skeleton-competition-head {
+    width: min(180px, 45%);
+    height: 20px;
+}
+
+.profile-skeleton-competition-count {
+    width: 64px;
+    height: 24px;
+    border-radius: 999px;
+}
+
+.profile-skeleton-competition-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-skeleton-competition-title {
+    width: min(280px, 72%);
+    height: 18px;
+}
+
+.profile-skeleton-competition-subtitle {
+    width: min(360px, 90%);
+    height: 14px;
+}
+
+.profile-skeleton-competition-tag {
+    width: 72px;
+    height: 24px;
+    border-radius: 999px;
+}
+
+.profile-skeleton-stats-subtitle {
+    width: min(98px, 42%);
+    height: 20px;
+}
+
+.profile-skeleton-stat-title {
+    width: min(110px, 75%);
+    height: 16px;
+}
+
+.profile-skeleton-stat-value {
+    width: min(132px, 82%);
+    height: 36px;
+    margin-top: 7px;
+}
+
 .profile-role-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -2005,6 +2110,12 @@ body {
     }
 
     .profile-avatar-block {
+        width: 100%;
+        min-width: 0;
+        height: 92px;
+    }
+
+    .profile-skeleton-avatar {
         width: 100%;
         min-width: 0;
         height: 92px;
@@ -2612,7 +2723,7 @@ body {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url("../../public/logo/cck-logo.png");
+    background-image: url("logo/cck-logo.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: min(64%, 280px);

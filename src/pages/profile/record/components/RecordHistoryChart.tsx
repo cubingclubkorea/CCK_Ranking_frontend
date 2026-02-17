@@ -91,7 +91,7 @@ export const RecordHistoryChart = ({ points, themeMode, onSelectPoint }: RecordH
       },
       series: [
         {
-          name: "Single",
+          name: "최고",
           type: "line",
           smooth: 0.24,
           connectNulls: false,
@@ -106,7 +106,7 @@ export const RecordHistoryChart = ({ points, themeMode, onSelectPoint }: RecordH
           },
         },
         {
-          name: "Average",
+          name: "평균",
           type: "line",
           smooth: 0.24,
           connectNulls: false,

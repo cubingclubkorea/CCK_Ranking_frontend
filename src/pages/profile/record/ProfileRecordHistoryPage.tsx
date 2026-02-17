@@ -113,6 +113,13 @@ export const ProfileRecordHistoryPage = () => {
       };
     });
   }, [historyRows]);
+  const subtitle = useMemo(() => {
+    const displayName = historyRows[0]?.name?.trim();
+    if (displayName) {
+      return `${displayName} · ${cckId}`;
+    }
+    return cckId;
+  }, [cckId, historyRows]);
 
   if (loading) {
     return (
@@ -147,7 +154,7 @@ export const ProfileRecordHistoryPage = () => {
         containerClassName="comp-header"
         iconSrc="/icon/sidebar/person.svg"
         title={`${eventName} 기록 추이`}
-        subtitle={cckId}
+        subtitle={subtitle}
         actions={[
           {
             label: "선수 페이지",
@@ -165,7 +172,7 @@ export const ProfileRecordHistoryPage = () => {
       <section className="profile-section">
         <div className="profile-record-history-card">
           <div className="profile-record-history-head">
-            <h3 className="profile-main-section-title">대회별 추이</h3>
+            <h3 className="profile-main-section-title">대회별 기록 추이</h3>
             <span className="profile-record-history-meta">총 {trendPoints.length}개 기록</span>
           </div>
           {trendPoints.length > 0 ? (
