@@ -7,6 +7,7 @@ import { mapRegionName } from "@/shared";
 type ProfileData = {
   loading: boolean;
   error: string | null;
+  isMyProfile: boolean;
   eventRankings: PlayerEventRanking[];
   judgeCount: number;
   scramblerCount: number;
@@ -129,6 +130,7 @@ export const useProfileData = (cckId?: string) => {
   const data: ProfileData = {
     loading,
     error,
+    isMyProfile,
     eventRankings,
     judgeCount,
     scramblerCount,

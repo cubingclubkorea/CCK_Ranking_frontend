@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getPlayerRecordHistory, type GlobalSingleRankingRecord } from "@/entities/statistics";
+import {
+  getPlayerRanking,
+  getPlayerRecordHistory,
+  type GlobalSingleRankingRecord,
+  type PlayerEventRanking,
+} from "@/entities/statistics";
 import type { Record as RoundRecord } from "@/entities/record";
 import { formatTimeValue, toRecord } from "@/features/ranking";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
-import { resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
+import { getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RecordHistoryChart } from "./components/RecordHistoryChart";
 import { RecordHistoryTable } from "./components/RecordHistoryTable";
@@ -47,6 +52,7 @@ export const ProfileRecordHistoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [historyRows, setHistoryRows] = useState<GlobalSingleRankingRecord[]>([]);
+  const [eventRanking, setEventRanking] = useState<PlayerEventRanking | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<{ record: RoundRecord; rank: number } | null>(null);
   const [themeMode, setThemeMode] = useState<ThemeMode>(
     document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"
@@ -72,11 +78,14 @@ export const ProfileRecordHistoryPage = () => {
 
       setLoading(true);
       setError(null);
+      setEventRanking(null);
 
       try {
-        const rows = await getPlayerRecordHistory(cckId, eventName);
+        const [rows, rankings] = await Promise.all([getPlayerRecordHistory(cckId, eventName), getPlayerRanking(cckId)]);
         if (!mounted) return;
+
         setHistoryRows([...rows].sort((a, b) => a.idx - b.idx));
+        setEventRanking(rankings.find((row) => row.eventName === eventName) ?? null);
       } catch (fetchError) {
         if (!mounted) return;
         if (fetchError instanceof Error) {
@@ -96,6 +105,11 @@ export const ProfileRecordHistoryPage = () => {
       mounted = false;
     };
   }, [cckId, eventName]);
+
+  const rankLabel = (value?: number | null) => {
+    if (value === null || value === undefined || value <= 0) return "CCR -";
+    return `CCR #직${value}`;
+  };
 
   const trendPoints = useMemo<TrendPoint[]>(() => {
     return historyRows.map((row, index) => {
@@ -126,8 +140,8 @@ export const ProfileRecordHistoryPage = () => {
       <div className="main-page profile-page">
         <PageHeader
           containerClassName="comp-header"
-          iconSrc="/icon/sidebar/person.svg"
-          title={`${eventName || "종목"} 기록 추이`}
+          iconSrc={getEventIconSrc(eventName)}
+          title={`${eventName || "종목"} 기록`}
           subtitle={cckId}
         />
         <section className="profile-section">
@@ -152,8 +166,8 @@ export const ProfileRecordHistoryPage = () => {
     <div className="main-page profile-page">
       <PageHeader
         containerClassName="comp-header"
-        iconSrc="/icon/sidebar/person.svg"
-        title={`${eventName} 기록 추이`}
+        iconSrc={getEventIconSrc(eventName)}
+        title={`${eventName} 기록`}
         subtitle={subtitle}
         actions={[
           {
@@ -170,6 +184,24 @@ export const ProfileRecordHistoryPage = () => {
       />
 
       <section className="profile-section">
+        <div className="profile-record-current-card">
+          <div className="profile-record-history-head">
+            <h3 className="profile-main-section-title">현재 기록</h3>
+          </div>
+          <div className="profile-record-summary">
+            <article className="profile-record-summary-item">
+              <span className="profile-record-summary-label">최고</span>
+              <strong>{formatTimeValue(eventRanking?.bestSingle)}</strong>
+              <em>{rankLabel(eventRanking?.rankSingle)}</em>
+            </article>
+            <article className="profile-record-summary-item">
+              <span className="profile-record-summary-label">평균</span>
+              <strong>{formatTimeValue(eventRanking?.bestAverage)}</strong>
+              <em>{rankLabel(eventRanking?.rankAverage)}</em>
+            </article>
+          </div>
+        </div>
+
         <div className="profile-record-history-card">
           <div className="profile-record-history-head">
             <h3 className="profile-main-section-title">대회별 기록 추이</h3>
@@ -188,18 +220,17 @@ export const ProfileRecordHistoryPage = () => {
           ) : (
             <div className="round-list-empty">표시할 기록이 없습니다.</div>
           )}
+          {trendPoints.length > 0 ? (
+            <RecordHistoryTable
+              points={trendPoints}
+              onSelectPoint={(point) => {
+                const selected = toSelectedRecord(point, historyRows);
+                if (!selected) return;
+                setSelectedRecord(selected);
+              }}
+            />
+          ) : null}
         </div>
-
-        {trendPoints.length > 0 ? (
-          <RecordHistoryTable
-            points={trendPoints}
-            onSelectPoint={(point) => {
-              const selected = toSelectedRecord(point, historyRows);
-              if (!selected) return;
-              setSelectedRecord(selected);
-            }}
-          />
-        ) : null}
       </section>
 
       <RecordDetailModal

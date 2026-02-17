@@ -448,7 +448,7 @@ export const CompetitionManagePage = () => {
         subtitle="대회 편집"
         actions={[
           {
-            label: "목록으로",
+            label: "대회 목록",
             iconSrc: "/icon/button/back.svg",
             to: "/admin/competition",
           },

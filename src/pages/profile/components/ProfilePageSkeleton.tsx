@@ -6,15 +6,13 @@ export const ProfilePageSkeleton = () => (
       containerClassName="comp-header"
       iconSrc="/icon/sidebar/person.svg"
       title="선수 정보"
-      subtitle="Competitor Information"
+      subtitle="Competitor Profile  "
     />
 
     <section className="profile-identity-card" aria-hidden="true">
-      <div className="ui-skeleton profile-skeleton-avatar" />
       <div className="profile-identity-main">
         <div className="profile-identity-top">
           <div className="ui-skeleton profile-skeleton-name" />
-          <div className="ui-skeleton profile-skeleton-badge" />
         </div>
         <div className="ui-skeleton profile-skeleton-name-en" />
         <div className="profile-meta-grid">

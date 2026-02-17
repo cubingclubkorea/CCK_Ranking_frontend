@@ -18,6 +18,11 @@ const formatTime = (value?: number | null) => {
   return value.toFixed(2);
 };
 
+const formatCcrRank = (value?: number | null) => {
+  if (value === null || value === undefined || value <= 0) return "CCR -";
+  return `CCR #${value}`;
+};
+
 export const ProfileRankingSection = ({ cckId, eventRankings }: ProfileRankingSectionProps) => {
   const navigate = useNavigate();
 
@@ -48,14 +53,14 @@ export const ProfileRankingSection = ({ cckId, eventRankings }: ProfileRankingSe
               <strong className="profile-event-title">{item.eventName}</strong>
             </div>
             <div className="profile-event-row">
-              <span>싱글</span>
-              <span>{formatTime(item.bestSingle)}</span>
-              <em>#{item.rankSingle ?? "-"}</em>
+              <span className="profile-event-row-key">최고</span>
+              <span className="profile-event-row-value">{formatTime(item.bestSingle)}</span>
+              <em>{formatCcrRank(item.rankSingle)}</em>
             </div>
             <div className="profile-event-row">
-              <span>평균</span>
-              <span>{formatTime(item.bestAverage)}</span>
-              <em>#{item.rankAverage ?? "-"}</em>
+              <span className="profile-event-row-key">평균</span>
+              <span className="profile-event-row-value">{formatTime(item.bestAverage)}</span>
+              <em>{formatCcrRank(item.rankAverage)}</em>
             </div>
           </article>
         ))}

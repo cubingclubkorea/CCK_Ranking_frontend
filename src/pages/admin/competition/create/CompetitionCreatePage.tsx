@@ -201,7 +201,7 @@ export const CompetitionCreatePage = () => {
         subtitle="기본 정보와 종목별 참가비를 등록하세요."
         actions={[
           {
-            label: "목록으로",
+            label: "대회 목록",
             iconSrc: "/icon/button/back.svg",
             to: "/admin/competition",
           },

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 
 type PageHeaderAction = {
@@ -46,6 +46,7 @@ export const PageHeader = ({
   subtitleClassName = "page-title-meta",
   actions = [],
 }: PageHeaderProps) => {
+  const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(hasAdminRole());
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export const PageHeader = ({
       {visibleActions.length > 0 ? (
         <div className="page-actions">
           {visibleActions.map((action, index) => {
-            const className = action.className ?? "page-action-btn";
+            const className = "page-action-btn";
             const iconNode = action.iconSrc ? (
               <img
                 className={action.iconClassName ?? "page-action-icon"}
@@ -96,30 +97,25 @@ export const PageHeader = ({
             ) : null;
             const key = `${typeof action.label === "string" ? action.label : "action"}-${index}`;
 
-            if (action.to && !action.disabled) {
-              return (
-                <Link key={key} className={className} to={action.to}>
-                  {iconNode}
-                  {action.label}
-                </Link>
-              );
-            }
-
-            if (action.href && !action.disabled) {
-              return (
-                <a key={key} className={className} href={action.href}>
-                  {iconNode}
-                  {action.label}
-                </a>
-              );
-            }
-
             return (
               <button
                 key={key}
                 type="button"
                 className={className}
-                onClick={action.onClick}
+                onClick={() => {
+                  if (action.disabled) return;
+                  if (action.onClick) {
+                    action.onClick();
+                    return;
+                  }
+                  if (action.to) {
+                    navigate(action.to);
+                    return;
+                  }
+                  if (action.href) {
+                    window.location.href = action.href;
+                  }
+                }}
                 disabled={action.disabled}
               >
                 {iconNode}

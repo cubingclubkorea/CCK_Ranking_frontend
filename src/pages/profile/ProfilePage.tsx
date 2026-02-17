@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useProfileData } from "@/features/profile";
 import { shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
@@ -12,8 +13,29 @@ import {
 } from "./components";
 
 export const ProfilePage = () => {
+  const navigate = useNavigate();
   const { cckId } = useParams();
   const profile = useProfileData(cckId);
+  const profileActions = useMemo(
+    () =>
+      profile.isMyProfile
+        ? [
+            {
+              label: "프로필 수정",
+              iconSrc: "/icon/sidebar/pencil.svg",
+              iconClassName: "page-action-icon profile-page-action-icon--black",
+              onClick: () => navigate("/settings"),
+            },
+            {
+              label: "계정 설정",
+              iconSrc: "/icon/button/settings.svg",
+              iconClassName: "page-action-icon profile-page-action-icon--black",
+              onClick: () => navigate("/settings"),
+            },
+          ]
+        : [],
+    [navigate, profile.isMyProfile]
+  );
 
   if (profile.loading) return <ProfilePageSkeleton />;
 
@@ -29,7 +51,8 @@ export const ProfilePage = () => {
         containerClassName="comp-header"
         iconSrc="/icon/sidebar/person.svg"
         title="선수 정보"
-        subtitle="Competitor Information"
+        subtitle="Competitor Profile"
+        actions={profileActions}
       />
 
       <ProfileIdentityCard

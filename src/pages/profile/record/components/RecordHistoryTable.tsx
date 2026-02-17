@@ -14,7 +14,7 @@ export const RecordHistoryTable = ({ points, onSelectPoint }: RecordHistoryTable
           <th>#</th>
           <th>대회</th>
           <th>라운드</th>
-          <th>싱글</th>
+          <th>최고</th>
           <th>평균</th>
         </tr>
       </thead>
