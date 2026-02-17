@@ -5108,20 +5108,50 @@ body {
 }
 
 [data-theme="dark"] .recent-record-panel {
-    border-color: #d9dde7;
-    background: #ffffff;
+    border-color: #444c56;
+    background: #2d333b;
 }
 
 [data-theme="dark"] .recent-record-panel-meta {
-    color: #7d879a;
+    color: #8b949e;
+}
+
+[data-theme="dark"] .recent-record-panel-title {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .recent-record-item {
+    background: #2d333b;
+    border-color: #444c56;
+}
+
+[data-theme="dark"] .recent-record-item:hover {
+    background: #313943;
+    border-color: #545e6b;
 }
 
 [data-theme="dark"] .recent-record-title {
-    color: #202736;
+    color: #d3dbe7;
 }
 
 [data-theme="dark"] .recent-record-subtitle {
-    color: #6b7488;
+    color: #9aa5b7;
+}
+
+.recent-record-subtitle .region-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.2;
+}
+
+.recent-record-subtitle .region-logo {
+    width: 14px;
+    height: 14px;
+}
+
+.recent-record-subtitle .region-inline span {
+    color: inherit;
 }
 
 [data-theme="dark"] .profile-identity-card,
@@ -5154,6 +5184,10 @@ body {
 [data-theme="dark"] .profile-event-title,
 [data-theme="dark"] .profile-stat-card p {
     color: #cdd9e5;
+}
+
+[data-theme="dark"] .profile-event-icon {
+    filter: brightness(0) invert(0.9);
 }
 
 [data-theme="dark"] .profile-meta-key,
