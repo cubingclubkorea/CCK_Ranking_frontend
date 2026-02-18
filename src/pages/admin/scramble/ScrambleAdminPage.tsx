@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getAuthInfoByRfid } from "@/entities/authInfo";
 import { getCompetition } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
 import type { ScrambleResponse } from "@/entities/scramble";
@@ -35,6 +36,21 @@ export const ScrambleAdminPage = () => {
   const scramblerInputRef = useRef<HTMLInputElement | null>(null);
   const playerInputRef = useRef<HTMLInputElement | null>(null);
 
+  const enrichCardInfoByRfid = async (card: TaggedCard): Promise<TaggedCard> => {
+    try {
+      const authInfo = await getAuthInfoByRfid(card.uid);
+      const resolvedName = authInfo.name?.trim();
+      const resolvedCckId = authInfo.cckId?.trim();
+      return {
+        ...card,
+        name: resolvedName || card.name,
+        cckId: resolvedCckId || card.cckId,
+      };
+    } catch {
+      return card;
+    }
+  };
+
   useEffect(() => {
     if (!Number.isFinite(competitionId) || competitionId <= 0) {
       setPageError("대회 정보가 올바르지 않습니다.");
@@ -69,7 +85,7 @@ export const ScrambleAdminPage = () => {
     scramblerInputRef.current?.focus();
   }, [hasScrambler]);
 
-  const handleScramblerTag = () => {
+  const handleScramblerTag = async () => {
     const rawScramblerInput = scramblerInput;
     if (hasKoreanChar(rawScramblerInput)) {
       setNotice(null);
@@ -86,7 +102,9 @@ export const ScrambleAdminPage = () => {
       return;
     }
 
-    setScramblerCard(parsed);
+    const resolvedScrambler = await enrichCardInfoByRfid(parsed);
+
+    setScramblerCard(resolvedScrambler);
     setScramblerInput("");
     setNotice("스크램블러가 등록되었습니다.");
     setError(null);
@@ -123,18 +141,26 @@ export const ScrambleAdminPage = () => {
       setError("선수 카드를 인식하지 못했습니다.");
       return;
     }
-    
+
+    if (parsedPlayer.uid === scramblerCard.uid) {
+      setNotice(null);
+      setError("스크램블러와 선수는 동일할 수 없습니다.");
+      return;
+    }
+
+    const resolvedPlayer = await enrichCardInfoByRfid(parsedPlayer);
+
     setLoading(true);
     setError(null);
 
     try {
       const data = await updateScrambler({
         compIdx: competitionId,
-        playerUid: parsedPlayer.uid,
+        playerUid: resolvedPlayer.uid,
         scramblerUid: scramblerCard.uid,
       });
 
-      setPlayerCard(parsedPlayer);
+      setPlayerCard(resolvedPlayer);
       setResult(data);
     } catch (requestError) {
       setNotice(null);
@@ -228,7 +254,7 @@ export const ScrambleAdminPage = () => {
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
                         event.preventDefault();
-                        handleScramblerTag();
+                        void handleScramblerTag();
                       }
                     }}
                     onBlur={() => {

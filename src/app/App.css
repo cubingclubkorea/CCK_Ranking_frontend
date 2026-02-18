@@ -5113,6 +5113,7 @@ body {
 .scramble-admin-svg {
     width: 100%;
     min-height: 160px;
+    max-height: 280px;
     border: 1px solid #e3e9f7;
     border-radius: 10px;
     background: #ffffff;
@@ -5121,8 +5122,12 @@ body {
 }
 
 .scramble-admin-svg svg {
-    width: 100%;
+    width: auto;
+    max-width: 100%;
+    max-height: 260px;
     height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
 .scramble-admin-empty {
@@ -5149,8 +5154,9 @@ body {
     color: #1f2937;
     padding: 10px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 13px;
+    font-size: 18px;
     line-height: 1.45;
+    text-align: center;
     white-space: pre-wrap;
     word-break: break-word;
 }
@@ -5183,6 +5189,14 @@ body {
 
     .scramble-admin-btn {
         width: 100%;
+    }
+
+    .scramble-admin-svg {
+        max-height: 220px;
+    }
+
+    .scramble-admin-svg svg {
+        max-height: 200px;
     }
 }
 
