@@ -5161,6 +5161,60 @@ body {
     word-break: break-word;
 }
 
+.scramble-admin-skeleton-line {
+    display: inline-block;
+    width: 120px;
+    max-width: 100%;
+    height: 20px;
+    border-radius: 6px;
+    vertical-align: middle;
+}
+
+.scramble-admin-card-skeleton {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.scramble-admin-skeleton-card-title {
+    display: inline-block;
+    width: 96px;
+    height: 22px;
+    border-radius: 6px;
+}
+
+.scramble-admin-skeleton-subtitle {
+    display: inline-block;
+    width: 120px;
+    height: 16px;
+    border-radius: 6px;
+}
+
+.scramble-admin-skeleton-line--short {
+    width: 72px;
+}
+
+.scramble-admin-svg--skeleton {
+    padding: 12px;
+}
+
+.scramble-admin-skeleton-canvas {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+}
+
+.scramble-admin-text--skeleton {
+    padding: 12px;
+}
+
+.scramble-admin-skeleton-text {
+    width: 100%;
+    height: 28px;
+    border-radius: 8px;
+}
+
 @media (max-width: 1080px) {
     .scramble-admin-top-grid {
         grid-template-columns: minmax(0, 1fr);
