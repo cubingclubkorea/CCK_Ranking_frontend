@@ -108,7 +108,7 @@ export const ProfileRecordHistoryPage = () => {
 
   const rankLabel = (value?: number | null) => {
     if (value === null || value === undefined || value <= 0) return "CCR -";
-    return `CCR #직${value}`;
+    return `CCR #큐${value}`;
   };
 
   const trendPoints = useMemo<TrendPoint[]>(() => {

@@ -26,6 +26,8 @@ type UseRecentRecordsResult = {
   records: RecentRecordItem[];
 };
 
+export const RECENT_RECORD_DAYS = 30;
+
 const getErrorMessage = (error: unknown) => {
   if (error instanceof Error) return error.message;
   if (typeof error === "string") return error;
@@ -122,7 +124,7 @@ export const useRecentRecords = (): UseRecentRecordsResult => {
         });
 
         const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - 30);
+        cutoff.setDate(cutoff.getDate() - RECENT_RECORD_DAYS);
         const recentOnly = merged.filter((item) => {
           const compDateEnd = competitionDateMap.get(item.compIdx);
           if (!compDateEnd) return false;

@@ -406,6 +406,10 @@ body {
     filter: brightness(0) saturate(100%) !important;
 }
 
+[data-theme="dark"] .profile-page-action-icon--black {
+    filter: brightness(0) invert(1) !important;
+}
+
 /* ===== Header ===== */
 
 .header {
@@ -1317,6 +1321,7 @@ body {
     width: 70px;
     min-width: 70px;
     display: flex;
+    align-self: center;
     align-items: center;
     justify-content: center;
 }
@@ -1333,6 +1338,7 @@ body {
 }
 
 .recent-record-content {
+    flex: 1;
     min-width: 0;
 }
 
@@ -1352,6 +1358,11 @@ body {
     line-height: 1.25;
     font-weight: 600;
     overflow-wrap: anywhere;
+}
+
+.recent-record-subtitle-comp::before {
+    content: " · ";
+    white-space: pre;
 }
 
 .recent-record-skeleton-badge {
@@ -1396,81 +1407,106 @@ body {
 }
 
 .profile-identity-card--organizer {
-    background: #ffe7d8;
-    border-color: #f1c6a7;
-    box-shadow: 0 4px 14px rgba(191, 90, 28, 0.16);
+    background: linear-gradient(145deg, #1b2230 0%, #141b26 55%, #202838 100%);
+    border-color: #8b9ab0;
+    box-shadow: 0 8px 22px rgba(8, 12, 20, 0.32);
     animation: organizerCardPulse 2.8s ease-in-out infinite;
 }
 
 .profile-identity-card--competitor {
     border-width: 2px;
-    border-color: #2f8f64;
+    border-color: #111827;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
 .profile-identity-card--organizer::before {
+    content: none;
+}
+
+.profile-identity-card--organizer::after {
     content: "";
     position: absolute;
-    inset: -2px;
-    border-radius: 16px;
-    border: 2px solid rgba(191, 90, 28, 0.35);
-    box-shadow: 0 0 0 rgba(191, 90, 28, 0);
+    inset: 0;
+    border-radius: 14px;
+    background: radial-gradient(circle at 86% 14%, rgba(255, 255, 255, 0.16), transparent 38%),
+                radial-gradient(circle at 12% 86%, rgba(96, 165, 250, 0.18), transparent 42%);
     pointer-events: none;
-    animation: organizerBorderGlow 2.8s ease-in-out infinite;
+    mix-blend-mode: screen;
+    z-index: 0;
+    animation: organizerFxShimmer 3.4s ease-in-out infinite;
 }
 
 .profile-identity-organizer-mark {
     position: absolute;
     top: 16px;
     right: 18px;
+    padding: 0;
+    border-radius: 0;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
     font-size: 33px;
     line-height: 1;
     font-weight: 900;
     letter-spacing: 0.08em;
-    color: rgba(191, 90, 28, 0.25);
-    text-shadow: 0 0 0 rgba(191, 90, 28, 0);
+    text-shadow: none;
+    box-shadow: none;
     pointer-events: none;
     user-select: none;
+    z-index: 3;
     animation: organizerMarkGlow 2.8s ease-in-out infinite;
 }
 
 @keyframes organizerCardPulse {
     0%,
     100% {
-        box-shadow: 0 4px 14px rgba(191, 90, 28, 0.16);
+        box-shadow: 0 8px 22px rgba(8, 12, 20, 0.28);
     }
     50% {
-        box-shadow: 0 8px 22px rgba(191, 90, 28, 0.28);
+        box-shadow: 0 14px 30px rgba(8, 12, 20, 0.46);
     }
 }
 
 @keyframes organizerBorderGlow {
     0%,
     100% {
-        opacity: 0.65;
-        box-shadow: 0 0 0 rgba(191, 90, 28, 0);
+        opacity: 0.5;
+        box-shadow: 0 0 0 rgba(17, 24, 39, 0);
     }
     50% {
         opacity: 1;
-        box-shadow: 0 0 14px rgba(191, 90, 28, 0.42);
+        box-shadow: 0 0 16px rgba(17, 24, 39, 0.3);
     }
 }
 
 @keyframes organizerMarkGlow {
     0%,
     100% {
-        color: rgba(191, 90, 28, 0.25);
-        text-shadow: 0 0 0 rgba(191, 90, 28, 0);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
     }
     50% {
-        color: rgba(191, 90, 28, 0.5);
-        text-shadow: 0 0 14px rgba(191, 90, 28, 0.42);
+        box-shadow: 0 8px 16px rgba(15, 23, 42, 0.35);
+    }
+}
+
+@keyframes organizerFxShimmer {
+    0%,
+    100% {
+        opacity: 0.55;
+        transform: translate3d(0, 0, 0);
+    }
+    50% {
+        opacity: 1;
+        transform: translate3d(0, -2px, 0);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .profile-identity-card--organizer,
     .profile-identity-card--organizer::before,
-    .profile-identity-organizer-mark {
+    .profile-identity-card--organizer::after,
+    .profile-identity-organizer-mark,
+    .profile-identity-competitor-mark {
         animation: none;
     }
 }
@@ -1480,15 +1516,47 @@ body {
     top: 16px;
     right: 18px;
     padding: 0;
-    border-radius: 4px;
-    background: #ffffff;
-    color: #2f8f64;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #111827;
     font-size: 33px;
     line-height: 1;
     font-weight: 900;
     letter-spacing: 0.08em;
+    box-shadow: none;
     pointer-events: none;
     user-select: none;
+    animation: competitorMarkGlow 2.6s ease-in-out infinite;
+}
+
+@keyframes competitorMarkGlow {
+    0%,
+    100% {
+        text-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+    }
+    50% {
+        text-shadow: 0 0 12px rgba(15, 23, 42, 0.24);
+    }
+}
+
+.profile-identity-card--organizer .profile-name,
+.profile-identity-card--organizer .profile-name-en,
+.profile-identity-card--organizer .profile-meta-key,
+.profile-identity-card--organizer .profile-meta-value,
+.profile-identity-card--organizer .profile-region-value,
+.profile-identity-card--organizer .profile-region-value span {
+    color: #f8fafc;
+}
+
+.profile-identity-card--organizer .profile-role-info-btn {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.profile-identity-card--organizer .profile-role-info-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
 }
 
 .profile-organizer-info-wrap {
@@ -1504,6 +1572,8 @@ body {
     gap: 20px;
     min-width: 0;
     justify-content: center;
+    position: relative;
+    z-index: 2;
 }
 
 .profile-identity-top {
@@ -1557,12 +1627,12 @@ body {
 .profile-role-tip {
     position: absolute;
     left: 0;
-    top: calc(100% + 8px);
+    top: calc(100% + 12px);
     transform: none;
     z-index: 3;
     white-space: normal;
     width: max-content;
-    max-width: min(72vw, 320px);
+    max-width: min(72vw, 400px);
     border-radius: 10px;
     background: #e8e8ee;
     color: #343746;
@@ -1575,7 +1645,11 @@ body {
 
 .profile-role-tip--identity-card {
     left: auto;
-    right: 0;
+    right: -17px;
+}
+
+.profile-role-tip--identity-card::before {
+    right: 19px;
 }
 
 .profile-role-tip::before {
@@ -1589,6 +1663,10 @@ body {
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
     border-bottom: 8px solid #e8e8ee;
+}
+
+.profile-role-tip.profile-role-tip--identity-card::before {
+    right: 19px;
 }
 
 .profile-meta-grid {
@@ -2237,6 +2315,20 @@ body {
         font-size: 13px;
     }
 
+    .recent-record-skeleton-title,
+    .recent-record-skeleton-subtitle {
+        width: 100%;
+        max-width: none;
+    }
+
+    .recent-record-subtitle-comp {
+        display: block;
+    }
+
+    .recent-record-subtitle-comp::before {
+        content: "";
+    }
+
     .recent-record-item {
         padding: 10px 10px;
         gap: 8px;
@@ -2326,8 +2418,12 @@ body {
     }
 
     .profile-role-tip--identity-card {
-        right: 0;
+        right: -6px;
         left: auto;
+    }
+
+    .profile-role-tip--identity-card::before {
+        right: 10px;
     }
 
     .profile-section-title {
@@ -3261,6 +3357,26 @@ body {
     position: absolute;
     top: -6px;
     right: -12px;
+}
+
+.record-value-with-badge--modal {
+    position: static;
+    min-width: 0;
+    padding: 0;
+}
+
+.record-value-with-badge--modal .new-record-badge {
+    position: static;
+}
+
+.record-value-with-badge--inline {
+    position: static;
+    min-width: 0;
+    padding: 0;
+}
+
+.record-value-with-badge--inline .new-record-badge {
+    position: static;
 }
 
 .round-attempt-cell {
@@ -5491,16 +5607,46 @@ body {
 }
 
 [data-theme="dark"] .profile-identity-card--organizer {
-    background: #5a3f2f;
-    border-color: #7d5841;
+    background: linear-gradient(145deg, #bcc5d6 0%, #97a1b5 52%, #cad2e0 100%);
+    border-color: #8c95a8;
 }
 
 [data-theme="dark"] .profile-identity-card--competitor {
-    border-color: #2f8f64;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(1, 4, 9, 0.35);
 }
 
 [data-theme="dark"] .profile-identity-organizer-mark {
-    color: rgba(255, 193, 142, 0.28);
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #111827;
+}
+
+[data-theme="dark"] .profile-identity-card--organizer .profile-name,
+[data-theme="dark"] .profile-identity-card--organizer .profile-name-en,
+[data-theme="dark"] .profile-identity-card--organizer .profile-meta-key,
+[data-theme="dark"] .profile-identity-card--organizer .profile-meta-value,
+[data-theme="dark"] .profile-identity-card--organizer .profile-region-value,
+[data-theme="dark"] .profile-identity-card--organizer .profile-region-value span {
+    color: #111827;
+}
+
+[data-theme="dark"] .profile-identity-card--organizer .profile-role-info-btn {
+    border-color: rgba(17, 24, 39, 0.45);
+    background: rgba(255, 255, 255, 0.72);
+    color: rgba(17, 24, 39, 0.88);
+}
+
+[data-theme="dark"] .profile-identity-card--organizer .profile-role-info-btn:hover {
+    background: rgba(255, 255, 255, 0.94);
+}
+
+[data-theme="dark"] .profile-identity-competitor-mark {
+    border-color: transparent;
+    background: transparent;
+    color: #f8fafc;
+    box-shadow: none;
 }
 
 [data-theme="dark"] .profile-name,

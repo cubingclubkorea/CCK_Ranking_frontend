@@ -40,12 +40,12 @@ export const RecentRecordList = ({ records, onSelect }: RecentRecordListProps) =
               {item.eventName} {item.metric === "single" ? "최고" : "평균"} {item.value}
             </p>
             <p className="recent-record-subtitle">
-              {item.name} ({item.cckId}) ·{" "}
+              {item.name} ·{" "}
               <span className="region-inline">
                 {regionLogoSrc ? <img className="region-logo" src={regionLogoSrc} alt="" aria-hidden="true" /> : null}
                 <span>{regionLabel}</span>
-              </span>{" "}
-              · {item.compName}
+              </span>
+              <span className="recent-record-subtitle-comp">{item.compName}</span>
             </p>
           </div>
         </article>

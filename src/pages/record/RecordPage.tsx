@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type RecentRecordItem, useRecentRecords } from "@/features/recentRecord";
+import { RECENT_RECORD_DAYS, type RecentRecordItem, useRecentRecords } from "@/features/recentRecord";
 import { formatTimeValue } from "@/features/ranking";
 import { shouldUseRequestErrorPage } from "@/shared";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
@@ -28,7 +28,11 @@ export const RecordPage = () => {
       <section className="recent-record-panel">
         <div className="recent-record-panel-head">
           <h2 className="recent-record-panel-title">최근 신기록</h2>
-          {!loading ? <span className="recent-record-panel-meta">총 {records.length.toLocaleString()}개</span> : null}
+          {!loading ? (
+            <span className="recent-record-panel-meta">
+              최근 {RECENT_RECORD_DAYS}일 기준 · 총 {records.length.toLocaleString()}개
+            </span>
+          ) : null}
         </div>
 
         {loading ? <RecentRecordListSkeleton /> : null}

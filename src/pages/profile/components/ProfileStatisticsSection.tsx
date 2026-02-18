@@ -21,7 +21,7 @@ export const ProfileStatisticsSection = ({
     </div>
 
     <div className="profile-stats-subsection">
-      <h4 className="profile-stats-subtitle">기록 요약</h4>
+      <h4 className="profile-stats-subtitle">출전 내역</h4>
       <div className="profile-stats-grid">
         <article className="profile-stat-card">
           <h5>참가한 대회</h5>

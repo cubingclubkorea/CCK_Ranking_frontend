@@ -32,7 +32,7 @@ export const ProfileIdentityCard = ({
         </span>
       ) : (
         <span className="profile-identity-competitor-mark" aria-hidden="true">
-          COMPETITIOR
+          COMPETITOR
         </span>
       )}
       {isOrganizer ? (

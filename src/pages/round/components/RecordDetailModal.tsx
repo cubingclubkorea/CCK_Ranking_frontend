@@ -153,7 +153,7 @@ export const RecordDetailModal = ({
             <div className="record-modal-row">
               <div className="record-modal-label">평균</div>
               <div className="record-modal-value record-modal-score">
-                <span className="record-value-with-badge record-value-with-badge--floating">
+                <span className="record-value-with-badge record-value-with-badge--floating record-value-with-badge--modal">
                   <span className="record-value-with-badge-text">{formatTimeValue(displayAverage)}</span>
                   {averageBestTypeBadgeSrc ? (
                     <img
@@ -169,7 +169,7 @@ export const RecordDetailModal = ({
           <div className="record-modal-row">
             <div className="record-modal-label">최고</div>
             <div className="record-modal-value record-modal-score record-modal-highlight">
-              <span className="record-value-with-badge record-value-with-badge--floating">
+              <span className="record-value-with-badge record-value-with-badge--floating record-value-with-badge--modal">
                 <span className="record-value-with-badge-text">{formatTimeValue(selected.record.single)}</span>
                 {singleBestTypeBadgeSrc ? (
                   <img

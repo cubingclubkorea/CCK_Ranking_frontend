@@ -157,7 +157,7 @@ export const RecordTable = ({
                 </td>
                 {!singleMode && !bo3Mode ? (
                   <td className="round-score">
-                    <span className="record-value-with-badge record-value-with-badge--floating">
+                    <span className="record-value-with-badge record-value-with-badge--floating record-value-with-badge--inline">
                       <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</span>
                       {hasAllAttempts && averageBestTypeBadgeSrc ? (
                         <img
@@ -170,7 +170,7 @@ export const RecordTable = ({
                   </td>
                 ) : null}
                 <td className="round-score">
-                  <span className="record-value-with-badge record-value-with-badge--floating">
+                  <span className="record-value-with-badge record-value-with-badge--floating record-value-with-badge--inline">
                     <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</span>
                     {hasAllAttempts && singleBestTypeBadgeSrc ? (
                       <img

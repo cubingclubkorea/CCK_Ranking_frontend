@@ -65,7 +65,7 @@ export const ProfilePage = () => {
       />
 
       <ProfileRankingSection cckId={cckId ?? ""} eventRankings={profile.eventRankings} />
-      <ProfileCompetitionsSection />
+      {/*<ProfileCompetitionsSection />*/}
       <ProfileStatisticsSection
         judgeCount={profile.judgeCount}
         scramblerCount={profile.scramblerCount}
