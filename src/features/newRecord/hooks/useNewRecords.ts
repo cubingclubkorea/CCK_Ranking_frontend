@@ -4,7 +4,7 @@ import { getCompetition } from "@/entities/competition";
 import type { Record } from "@/entities/record";
 import { resolveAverageValue } from "@/shared";
 
-export type RecentRecordItem = {
+export type NewRecordItem = {
   id: string;
   bestType: "CCR" | "SR";
   eventName: string;
@@ -20,13 +20,13 @@ export type RecentRecordItem = {
   record: Record;
 };
 
-type UseRecentRecordsResult = {
+type UseNewRecordsResult = {
   loading: boolean;
   error: string | null;
-  records: RecentRecordItem[];
+  records: NewRecordItem[];
 };
 
-export const RECENT_RECORD_DAYS = 30;
+export const NEW_RECORD_DAYS = 30;
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof Error) return error.message;
@@ -36,15 +36,15 @@ const getErrorMessage = (error: unknown) => {
 
 const isBestType = (value: string | null): value is "CCR" | "SR" => value === "CCR" || value === "SR";
 
-export const useRecentRecords = (): UseRecentRecordsResult => {
+export const useNewRecords = (): UseNewRecordsResult => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [records, setRecords] = useState<RecentRecordItem[]>([]);
+  const [records, setRecords] = useState<NewRecordItem[]>([]);
 
   useEffect(() => {
     let mounted = true;
 
-    const fetchRecentRecords = async () => {
+    const fetchNewRecords = async () => {
       setLoading(true);
       setError(null);
 
@@ -61,7 +61,7 @@ export const useRecentRecords = (): UseRecentRecordsResult => {
 
         if (!mounted) return;
 
-        const merged: RecentRecordItem[] = [];
+        const merged: NewRecordItem[] = [];
 
         settled.forEach((result, index) => {
           if (result.status !== "fulfilled") return;
@@ -124,7 +124,7 @@ export const useRecentRecords = (): UseRecentRecordsResult => {
         });
 
         const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - RECENT_RECORD_DAYS);
+        cutoff.setDate(cutoff.getDate() - NEW_RECORD_DAYS);
         const recentOnly = merged.filter((item) => {
           const compDateEnd = competitionDateMap.get(item.compIdx);
           if (!compDateEnd) return false;
@@ -148,7 +148,7 @@ export const useRecentRecords = (): UseRecentRecordsResult => {
       }
     };
 
-    fetchRecentRecords();
+    fetchNewRecords();
     return () => {
       mounted = false;
     };

@@ -1,47 +1,47 @@
 import { useState } from "react";
-import { RECENT_RECORD_DAYS, type RecentRecordItem, useRecentRecords } from "@/features/recentRecord";
+import { NEW_RECORD_DAYS, type NewRecordItem, useNewRecords } from "@/features/newRecord";
 import { formatTimeValue } from "@/features/ranking";
 import { shouldUseRequestErrorPage } from "@/shared";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { PageHeader } from "@/widgets";
-import { RecentRecordList } from "./components/RecentRecordList";
-import { RecentRecordListSkeleton } from "./components/RecentRecordListSkeleton";
+import { NewRecordList } from "./components/NewRecordList";
+import { NewRecordListSkeleton } from "./components/NewRecordListSkeleton";
 
-export const RecordPage = () => {
-  const { loading, error, records } = useRecentRecords();
-  const [selected, setSelected] = useState<{ rank: number; record: RecentRecordItem["record"] } | null>(null);
+export const NewRecordPage = () => {
+  const { loading, error, records } = useNewRecords();
+  const [selected, setSelected] = useState<{ rank: number; record: NewRecordItem["record"] } | null>(null);
 
   if (!loading && error && shouldUseRequestErrorPage(error)) {
     return <RequestErrorPage message={error} />;
   }
 
   return (
-    <div className="main-page recent-record-page">
+    <div className="main-page new-record-page">
       <PageHeader
         containerClassName="comp-header"
         iconSrc="/icon/sidebar/record.svg"
         title="신기록"
-        subtitle="Recent Records"
+        subtitle="New Record"
       />
 
-      <section className="recent-record-panel">
-        <div className="recent-record-panel-head">
-          <h2 className="recent-record-panel-title">최근 신기록</h2>
+      <section className="new-record-panel">
+        <div className="new-record-panel-head">
+          <h2 className="new-record-panel-title">최근 신기록</h2>
           {!loading ? (
-            <span className="recent-record-panel-meta">
-              최근 {RECENT_RECORD_DAYS}일 기준 · 총 {records.length.toLocaleString()}개
+            <span className="new-record-panel-meta">
+              최근 {NEW_RECORD_DAYS}일 기준 · 총 {records.length.toLocaleString()}개
             </span>
           ) : null}
         </div>
 
-        {loading ? <RecentRecordListSkeleton /> : null}
+        {loading ? <NewRecordListSkeleton /> : null}
         {!loading && error ? <div className="round-list-empty">{error}</div> : null}
         {!loading && !error && records.length === 0 ? (
           <div className="round-list-empty">최근 신기록 데이터가 없습니다.</div>
         ) : null}
         {!loading && !error && records.length > 0 ? (
-          <RecentRecordList
+          <NewRecordList
             records={records}
             onSelect={(item) => {
               setSelected({

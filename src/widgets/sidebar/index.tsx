@@ -52,7 +52,7 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
           {/* 일반 메뉴 */}
           <div className="menu-group">
             <MenuItem text="대회 목록" icon={icons.list} to="/" onNavigate={isMobile ? onClose : undefined} />
-            <MenuItem text="신기록" icon={icons.record} to="/record" onNavigate={isMobile ? onClose : undefined} />
+            <MenuItem text="신기록" icon={icons.record} to="/new-record" onNavigate={isMobile ? onClose : undefined} />
             <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" onNavigate={isMobile ? onClose : undefined} />
             {isLoggedIn && <MenuItem text="나의 정보" icon={icons.person} to={myCckId ? `/profile/${encodeURIComponent(myCckId)}` : "/profile"} onNavigate={isMobile ? onClose : undefined} />}
             {isLoggedIn && <MenuItem text="기록 이전 신청" icon={icons.form} to="/transfer-record" onNavigate={isMobile ? onClose : undefined} />}

@@ -1260,13 +1260,13 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
-/* ===== Recent Record Page ===== */
+/* ===== New Record Page ===== */
 
-.recent-record-page {
+.new-record-page {
     gap: 26px;
 }
 
-.recent-record-panel {
+.new-record-panel {
     border: 1px solid #d9dde7;
     border-radius: 14px;
     background: #ffffff;
@@ -1274,33 +1274,33 @@ body {
     padding: 16px;
 }
 
-.recent-record-panel-head {
+.new-record-panel-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 8px;
 }
 
-.recent-record-panel-title {
+.new-record-panel-title {
     margin: 0;
     font-size: 19px;
     font-weight: 700;
     color: #1f2937;
 }
 
-.recent-record-panel-meta {
+.new-record-panel-meta {
     font-size: 13px;
     font-weight: 600;
     color: #7d879a;
 }
 
-.recent-record-list {
+.new-record-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.recent-record-item {
+.new-record-item {
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -1312,12 +1312,12 @@ body {
     transition: background-color 0.16s ease, border-color 0.16s ease;
 }
 
-.recent-record-item:hover {
+.new-record-item:hover {
     background: #f8fbff;
     border-color: #d3dced;
 }
 
-.recent-record-badge-wrap {
+.new-record-badge-wrap {
     width: 70px;
     min-width: 70px;
     display: flex;
@@ -1326,23 +1326,23 @@ body {
     justify-content: center;
 }
 
-.recent-record-badge-image {
+.new-record-badge-image {
     display: block;
     width: auto;
     height: 26px;
 }
 
-.recent-record-badge-image--ccr {
+.new-record-badge-image--ccr {
     width: 54px;
     height: 26px;
 }
 
-.recent-record-content {
+.new-record-content {
     flex: 1;
     min-width: 0;
 }
 
-.recent-record-title {
+.new-record-title {
     margin: 0;
     color: #202736;
     font-size: 19px;
@@ -1351,7 +1351,7 @@ body {
     overflow-wrap: anywhere;
 }
 
-.recent-record-subtitle {
+.new-record-subtitle {
     margin: 2px 0 0;
     color: #6b7488;
     font-size: 14px;
@@ -1360,26 +1360,26 @@ body {
     overflow-wrap: anywhere;
 }
 
-.recent-record-subtitle-comp::before {
+.new-record-subtitle-comp::before {
     content: " · ";
     white-space: pre;
 }
 
-.recent-record-skeleton-badge {
+.new-record-skeleton-badge {
     width: 70px;
     min-width: 70px;
     height: 26px;
     border-radius: 6px;
 }
 
-.recent-record-skeleton-title {
+.new-record-skeleton-title {
     width: 420px;
     max-width: min(75vw, 420px);
     height: 22px;
     border-radius: 6px;
 }
 
-.recent-record-skeleton-subtitle {
+.new-record-skeleton-subtitle {
     width: 520px;
     max-width: min(85vw, 520px);
     height: 16px;
@@ -2295,55 +2295,55 @@ body {
         width: 100%;
     }
 
-    .recent-record-panel {
+    .new-record-panel {
         padding: 12px;
     }
 
-    .recent-record-panel-title {
+    .new-record-panel-title {
         font-size: 17px;
     }
 
-    .recent-record-panel-meta {
+    .new-record-panel-meta {
         font-size: 12px;
     }
 
-    .recent-record-title {
+    .new-record-title {
         font-size: 15px;
     }
 
-    .recent-record-subtitle {
+    .new-record-subtitle {
         font-size: 13px;
     }
 
-    .recent-record-skeleton-title,
-    .recent-record-skeleton-subtitle {
+    .new-record-skeleton-title,
+    .new-record-skeleton-subtitle {
         width: 100%;
         max-width: none;
     }
 
-    .recent-record-subtitle-comp {
+    .new-record-subtitle-comp {
         display: block;
     }
 
-    .recent-record-subtitle-comp::before {
+    .new-record-subtitle-comp::before {
         content: "";
     }
 
-    .recent-record-item {
+    .new-record-item {
         padding: 10px 10px;
         gap: 8px;
     }
 
-    .recent-record-badge-wrap {
+    .new-record-badge-wrap {
         width: 58px;
         min-width: 58px;
     }
 
-    .recent-record-badge-image {
+    .new-record-badge-image {
         height: 22px;
     }
 
-    .recent-record-badge-image--ccr {
+    .new-record-badge-image--ccr {
         width: 46px;
         height: 22px;
     }
@@ -5614,50 +5614,50 @@ body {
     color: #c8d1dd;
 }
 
-[data-theme="dark"] .recent-record-panel {
+[data-theme="dark"] .new-record-panel {
     border-color: #444c56;
     background: #2d333b;
 }
 
-[data-theme="dark"] .recent-record-panel-meta {
+[data-theme="dark"] .new-record-panel-meta {
     color: #8b949e;
 }
 
-[data-theme="dark"] .recent-record-panel-title {
+[data-theme="dark"] .new-record-panel-title {
     color: #ffffff;
 }
 
-[data-theme="dark"] .recent-record-item {
+[data-theme="dark"] .new-record-item {
     background: #2d333b;
     border-color: #444c56;
 }
 
-[data-theme="dark"] .recent-record-item:hover {
+[data-theme="dark"] .new-record-item:hover {
     background: #313943;
     border-color: #545e6b;
 }
 
-[data-theme="dark"] .recent-record-title {
+[data-theme="dark"] .new-record-title {
     color: #d3dbe7;
 }
 
-[data-theme="dark"] .recent-record-subtitle {
+[data-theme="dark"] .new-record-subtitle {
     color: #9aa5b7;
 }
 
-.recent-record-subtitle .region-inline {
+.new-record-subtitle .region-inline {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     line-height: 1.2;
 }
 
-.recent-record-subtitle .region-logo {
+.new-record-subtitle .region-logo {
     width: 14px;
     height: 14px;
 }
 
-.recent-record-subtitle .region-inline span {
+.new-record-subtitle .region-inline span {
     color: inherit;
 }
 

@@ -39,12 +39,12 @@ export const ProfileRankingSection = ({ cckId, eventRankings }: ProfileRankingSe
             role="button"
             tabIndex={0}
             onClick={() =>
-              navigate(`/profile/${encodeURIComponent(cckId)}/record/${encodeURIComponent(item.eventName)}`)
+              navigate(`/profile/${encodeURIComponent(cckId)}/new-record/${encodeURIComponent(item.eventName)}`)
             }
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                navigate(`/profile/${encodeURIComponent(cckId)}/record/${encodeURIComponent(item.eventName)}`);
+                navigate(`/profile/${encodeURIComponent(cckId)}/new-record/${encodeURIComponent(item.eventName)}`);
               }
             }}
           >
