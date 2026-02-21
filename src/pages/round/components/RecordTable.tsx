@@ -2,10 +2,12 @@ import { useEffect, useRef } from "react";
 import type { Record } from "@/entities/record";
 import {
   getMainAttempts,
+  getWorstAttemptTrySet,
   getRequiredAttemptCount,
   isAo12AvgCalc,
   isBo3AvgCalc,
   isSingleAvgCalc,
+  getNewRecordBadgeSrc,
   resolveAverageValue,
 } from "@/shared";
 
@@ -72,7 +74,8 @@ export const RecordTable = ({
       .filter((time) => typeof time === "number");
     const positiveTimes = times.filter((time) => time >= 0);
     const bestValue = positiveTimes.length > 0 ? Math.min(...positiveTimes) : undefined;
-    return { bestValue };
+    const worstTrySet = getWorstAttemptTrySet(record.attempts, record.avgCalc, record.eventName);
+    return { bestValue, worstTrySet };
   };
 
   return (
@@ -82,8 +85,8 @@ export const RecordTable = ({
           <tr>
             <th>순위</th>
             <th>이름</th>
-            <th>최고</th>
             {!singleMode && !bo3Mode ? <th>평균</th> : null}
+            <th>최고</th>
             {showAttemptColumns && (
               <>
                 {attemptTries.map((attemptTry) => (
@@ -106,8 +109,10 @@ export const RecordTable = ({
             const prevIsAdvanceEligible = prevRecord ? prevHasAllAttempts && hasComputedAverage(prevRecord) : false;
             const prevIsAdvance = !!(advanceCount && prevRank !== null && prevRank <= advanceCount && prevIsAdvanceEligible);
             const isCutlineStart = !isAdvance && prevIsAdvance;
-            const { bestValue } = getHighlightValues(record);
+            const { bestValue, worstTrySet } = getHighlightValues(record);
             const displayAverage = resolveAverageValue(record.attempts, record.avgCalc, record.average);
+            const singleBestTypeBadgeSrc = getNewRecordBadgeSrc(record.singleBestType);
+            const averageBestTypeBadgeSrc = getNewRecordBadgeSrc(record.averageBestType);
             const mainAttempts = getMainAttempts(record.attempts, record.avgCalc);
             const isSelected = selectedRecordIdx === record.idx;
             return (
@@ -150,10 +155,32 @@ export const RecordTable = ({
                     {record.enName ? `${record.name} (${record.enName})` : record.name}
                   </div>
                 </td>
-                <td className="round-score">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</td>
                 {!singleMode && !bo3Mode ? (
-                  <td className="round-score">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</td>
+                  <td className="round-score">
+                    <span className="record-value-with-badge record-value-with-badge--floating record-value-with-badge--inline">
+                      <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</span>
+                      {hasAllAttempts && averageBestTypeBadgeSrc ? (
+                        <img
+                          className={`new-record-badge${record.averageBestType === "CCR" ? " new-record-badge--ccr" : ""}`}
+                          src={averageBestTypeBadgeSrc}
+                          alt={String(record.averageBestType)}
+                        />
+                      ) : null}
+                    </span>
+                  </td>
                 ) : null}
+                <td className="round-score">
+                  <span className="record-value-with-badge record-value-with-badge--floating record-value-with-badge--inline">
+                    <span className="record-value-with-badge-text">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</span>
+                    {hasAllAttempts && singleBestTypeBadgeSrc ? (
+                      <img
+                        className={`new-record-badge${record.singleBestType === "CCR" ? " new-record-badge--ccr" : ""}`}
+                        src={singleBestTypeBadgeSrc}
+                        alt={String(record.singleBestType)}
+                      />
+                    ) : null}
+                  </span>
+                </td>
                 {showAttemptColumns &&
                   attemptTries.map((attemptTry) => (
                     <td key={attemptTry} className="round-attempt-cell">
@@ -166,6 +193,8 @@ export const RecordTable = ({
                         let highlightClass = "";
                         if (time === bestValue) {
                           highlightClass = "attempt-best";
+                        } else if (worstTrySet.has(attemptTry)) {
+                          highlightClass = "attempt-worst";
                         }
                         return (
                           <span className={highlightClass || undefined}>{formatTimeValue(time)}</span>

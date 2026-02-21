@@ -3,7 +3,7 @@ import type { RecordDTO } from './dto/record.dto';
 import type { Record } from '../model/record';
 import { RecordMapper } from './mapper/recordMapper';
 
-const BASE_URL = '/record';
+const BASE_URL = '/new-record';
 
 /**
  * 라운드별 기록 목록 조회

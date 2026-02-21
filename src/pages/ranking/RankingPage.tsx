@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Record as RoundRecord } from "@/entities/record";
 import { formatTimeValue, toRecord, useRankingData } from "@/features/ranking";
+import { shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
 import { RankingControls } from "./components/RankingControls";
 import { RankingPanelSkeleton } from "./components/RankingPanelSkeleton";
@@ -31,6 +33,13 @@ export const RankingPage = () => {
   }, [metric, selectedEvent, selectedRegion]);
 
   const metricLabel = useMemo(() => (metric === "single" ? "최고" : "평균"), [metric]);
+  const rankingTitle = useMemo(() => {
+    const baseTitle = `${selectedEvent || "-"} · ${metricLabel}`;
+    if (selectedRegion === "전체 지역") {
+      return baseTitle;
+    }
+    return `${baseTitle} · ${selectedRegion}`;
+  }, [metricLabel, selectedEvent, selectedRegion]);
 
   if (eventLoading) {
     return (
@@ -44,6 +53,10 @@ export const RankingPage = () => {
         <RankingPanelSkeleton />
       </div>
     );
+  }
+
+  if (!rankingLoading && error && shouldUseRequestErrorPage(error)) {
+    return <RequestErrorPage message={error} />;
   }
 
   return (
@@ -77,7 +90,7 @@ export const RankingPage = () => {
           ) : (
             <>
               <h2 className="ranking-panel-title">
-                {selectedEvent || "-"} · {metricLabel}
+                {rankingTitle}
               </h2>
               <span className="ranking-panel-meta">
                 {rankingRows.length > 0 ? `총 ${rankingRows.length.toLocaleString()}명` : "데이터 없음"}

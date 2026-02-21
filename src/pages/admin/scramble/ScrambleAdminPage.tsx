@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getAuthInfoByRfid } from "@/entities/authInfo";
 import { getCompetition } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
 import type { ScrambleResponse } from "@/entities/scramble";
@@ -35,6 +36,21 @@ export const ScrambleAdminPage = () => {
   const scramblerInputRef = useRef<HTMLInputElement | null>(null);
   const playerInputRef = useRef<HTMLInputElement | null>(null);
 
+  const enrichCardInfoByRfid = async (card: TaggedCard): Promise<TaggedCard> => {
+    try {
+      const authInfo = await getAuthInfoByRfid(card.uid);
+      const resolvedName = authInfo.name?.trim();
+      const resolvedCckId = authInfo.cckId?.trim();
+      return {
+        ...card,
+        name: resolvedName || card.name,
+        cckId: resolvedCckId || card.cckId,
+      };
+    } catch {
+      return card;
+    }
+  };
+
   useEffect(() => {
     if (!Number.isFinite(competitionId) || competitionId <= 0) {
       setPageError("대회 정보가 올바르지 않습니다.");
@@ -69,7 +85,7 @@ export const ScrambleAdminPage = () => {
     scramblerInputRef.current?.focus();
   }, [hasScrambler]);
 
-  const handleScramblerTag = () => {
+  const handleScramblerTag = async () => {
     const rawScramblerInput = scramblerInput;
     if (hasKoreanChar(rawScramblerInput)) {
       setNotice(null);
@@ -86,10 +102,21 @@ export const ScrambleAdminPage = () => {
       return;
     }
 
-    setScramblerCard(parsed);
-    setScramblerInput("");
-    setNotice("스크램블러가 등록되었습니다.");
+    setLoading(true);
     setError(null);
+    try {
+      const resolvedScrambler = await enrichCardInfoByRfid(parsed);
+
+      setScramblerCard(resolvedScrambler);
+      setScramblerInput("");
+      setNotice("스크램블러가 등록되었습니다.");
+      setError(null);
+    } catch (requestError) {
+      setNotice(null);
+      setError(getErrorMessage(requestError));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleResetScrambler = () => {
@@ -123,18 +150,25 @@ export const ScrambleAdminPage = () => {
       setError("선수 카드를 인식하지 못했습니다.");
       return;
     }
-    
+
+    if (parsedPlayer.uid === scramblerCard.uid) {
+      setNotice(null);
+      setError("스크램블러와 선수는 동일할 수 없습니다.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
+      const resolvedPlayer = await enrichCardInfoByRfid(parsedPlayer);
       const data = await updateScrambler({
         compIdx: competitionId,
-        playerUid: parsedPlayer.uid,
+        playerUid: resolvedPlayer.uid,
         scramblerUid: scramblerCard.uid,
       });
 
-      setPlayerCard(parsedPlayer);
+      setPlayerCard(resolvedPlayer);
       setResult(data);
     } catch (requestError) {
       setNotice(null);
@@ -165,6 +199,7 @@ export const ScrambleAdminPage = () => {
     : notice
       ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
       : null;
+  const isPageLoading = loading || !competition;
 
   return (
     <div className="admin-page scramble-admin-page">
@@ -178,8 +213,10 @@ export const ScrambleAdminPage = () => {
       <PageHeader
         containerClassName="admin-header"
         iconSrc="/icon/button/cube.svg"
-        title={competition ? competition.compName : <div className="ui-skeleton ui-skeleton-title" aria-hidden="true" />}
-        subtitle="스크램블 모드"
+        title={isPageLoading ? <div className="ui-skeleton ui-skeleton-title" aria-hidden="true" /> : competition.compName}
+        subtitle={
+          isPageLoading ? <span className="ui-skeleton scramble-admin-skeleton-subtitle" aria-hidden="true" /> : "스크램블 모드"
+        }
         actions={[
           {
             label: "대회로 돌아가기",
@@ -199,10 +236,18 @@ export const ScrambleAdminPage = () => {
       <section className="scramble-admin-layout">
         <div className="scramble-admin-top-grid">
           <section className="scramble-admin-card scramble-admin-top-card">
-            <h2 className="scramble-admin-title">스크램블러</h2>
+            <h2 className="scramble-admin-title">
+              {isPageLoading ? <span className="ui-skeleton scramble-admin-skeleton-card-title" aria-hidden="true" /> : "스크램블러"}
+            </h2>
 
             <div className="scramble-admin-top-body">
-              {!hasScrambler ? (
+              {isPageLoading ? (
+                <div className="scramble-admin-card-skeleton" aria-hidden="true">
+                  <span className="ui-skeleton scramble-admin-skeleton-line" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line scramble-admin-skeleton-line--short" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line" />
+                </div>
+              ) : !hasScrambler ? (
                 <div
                   className="scramble-admin-tag-wait scramble-admin-tag-wait--active"
                   onClick={() => {
@@ -228,7 +273,9 @@ export const ScrambleAdminPage = () => {
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
                         event.preventDefault();
-                        handleScramblerTag();
+                        if (!loading) {
+                          void handleScramblerTag();
+                        }
                       }
                     }}
                     onBlur={() => {
@@ -274,10 +321,18 @@ export const ScrambleAdminPage = () => {
           </section>
 
           <section className="scramble-admin-card scramble-admin-top-card scramble-admin-player-card">
-            <h2 className="scramble-admin-title">선수</h2>
+            <h2 className="scramble-admin-title">
+              {isPageLoading ? <span className="ui-skeleton scramble-admin-skeleton-card-title" aria-hidden="true" /> : "선수"}
+            </h2>
 
             <div className="scramble-admin-player-split">
-              {hasScrambler ? (
+              {isPageLoading ? (
+                <div className="scramble-admin-card-skeleton" aria-hidden="true">
+                  <span className="ui-skeleton scramble-admin-skeleton-line" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line scramble-admin-skeleton-line--short" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line" />
+                </div>
+              ) : hasScrambler ? (
                 <div
                   className="scramble-admin-tag-wait scramble-admin-tag-wait--player scramble-admin-tag-wait--active"
                   onClick={() => {
@@ -325,42 +380,64 @@ export const ScrambleAdminPage = () => {
                 <div className="scramble-admin-empty scramble-admin-empty--split">스크램블러를 먼저 등록해주세요</div>
               )}
 
-              <div className="scramble-admin-player scramble-admin-player--compact">
-                <div className="scramble-admin-player-row">
-                  <span>선수명</span>
-                  <strong>{result?.name ?? playerCard?.name ?? "-"}</strong>
+              {isPageLoading ? (
+                <div className="scramble-admin-card-skeleton" aria-hidden="true">
+                  <span className="ui-skeleton scramble-admin-skeleton-line" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line scramble-admin-skeleton-line--short" />
+                  <span className="ui-skeleton scramble-admin-skeleton-line scramble-admin-skeleton-line--short" />
                 </div>
-                <div className="scramble-admin-player-row">
-                  <span>CCK ID</span>
-                  <strong>{result?.cckId ?? playerCard?.cckId ?? "-"}</strong>
+              ) : (
+                <div className="scramble-admin-player scramble-admin-player--compact">
+                  <div className="scramble-admin-player-row">
+                    <span>선수명</span>
+                    <strong>{result?.name ?? playerCard?.name ?? "-"}</strong>
+                  </div>
+                  <div className="scramble-admin-player-row">
+                    <span>CCK ID</span>
+                    <strong>{result?.cckId ?? playerCard?.cckId ?? "-"}</strong>
+                  </div>
+                  <div className="scramble-admin-player-row">
+                    <span>라운드</span>
+                    <strong>{result ? `${result.eventName} ${result.roundName}` : "-"}</strong>
+                  </div>
+                  <div className="scramble-admin-player-row">
+                    <span>그룹</span>
+                    <strong>{result?.roundGroup ?? "-"}</strong>
+                  </div>
+                  <div className="scramble-admin-player-row">
+                    <span>회차</span>
+                    <strong>{result?.seq ?? "-"}</strong>
+                  </div>
                 </div>
-                <div className="scramble-admin-player-row">
-                  <span>라운드</span>
-                  <strong>{result ? `${result.eventName} ${result.roundName}` : "-"}</strong>
-                </div>
-                <div className="scramble-admin-player-row">
-                  <span>그룹</span>
-                  <strong>{result?.roundGroup ?? "-"}</strong>
-                </div>
-                <div className="scramble-admin-player-row">
-                  <span>회차</span>
-                  <strong>{result?.seq ?? "-"}</strong>
-                </div>
-              </div>
+              )}
             </div>
           </section>
         </div>
 
         <section className="scramble-admin-card scramble-admin-bottom-card">
-          <h2 className="scramble-admin-title">스크램블</h2>
+          <h2 className="scramble-admin-title">
+            {isPageLoading ? <span className="ui-skeleton scramble-admin-skeleton-card-title" aria-hidden="true" /> : "스크램블"}
+          </h2>
 
-          {result?.svg ? (
+          {isPageLoading ? (
+            <div className="scramble-admin-svg scramble-admin-svg--skeleton">
+              <div className="ui-skeleton scramble-admin-skeleton-canvas" aria-hidden="true" />
+            </div>
+          ) : result?.svg ? (
             <div className="scramble-admin-svg" dangerouslySetInnerHTML={{ __html: result.svg }} />
           ) : (
             <div className="scramble-admin-empty">스크램블 이미지가 없습니다.</div>
           )}
 
-          <pre className="scramble-admin-text">{result?.scramble ?? "-"}</pre>
+          {isPageLoading ? (
+            <div className="scramble-admin-text scramble-admin-text--skeleton">
+              <div className="ui-skeleton scramble-admin-skeleton-text" aria-hidden="true" />
+            </div>
+          ) : (
+            <pre className="scramble-admin-text">{result?.scramble ?? "-"}</pre>
+          )}
         </section>
       </section>
     </div>

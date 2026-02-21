@@ -7,6 +7,9 @@ export { ApiDashboardCompetitionCUDTestPage } from './admin/apiDashboard/competi
 export { CompetitionPage } from './competition/CompetitionPage';
 export { RoundPage } from './round/RoundPage';
 export { RankingPage } from './ranking/RankingPage';
+export { NewRecordPage } from './new-record/NewRecordPage';
+export { ProfilePage } from './profile/ProfilePage';
+export { ProfileRecordHistoryPage } from './profile/record/ProfileRecordHistoryPage';
 export { ApiDashboardCubeEventTestPage } from './admin/apiDashboard/cubeEvent/ApiDashboardCubeEventTestPage';
 export { ApiDashboardRoundTestPage } from './admin/apiDashboard/round/ApiDashboardRoundTestPage';
 export { ApiDashboardRoundCUDTestPage } from './admin/apiDashboard/round/ApiDashboardRoundCUDTestPage';

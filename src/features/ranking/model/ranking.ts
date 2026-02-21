@@ -29,11 +29,14 @@ const EVENT_ORDER_CANDIDATES: string[][] = [
   ["4x4x4 BA5"],
   ["Pyraminx BA5"],
   ["Clock BA5"],
+  ["2x2x2 OH"],
   ["Magic"],
   ["FTO"],
+  ["15-Puzzle"],
   ["234 Relay"],
   ["Mini-Guildford"],
-  ["2인 1조"]
+  ["3x3x3 Team Solve"],
+  ["CoupleBLD"]
 ];
 
 export const getErrorMessage = (error: unknown) => {

@@ -4,7 +4,7 @@ type AttemptLike = {
   extra?: number | null;
 };
 
-export const normalizeAvgCalc = (avgCalc?: string | null) => (avgCalc ?? "").trim().toLowerCase();
+export const normalizeAvgCalc = (avgCalc?: string | null)  => (avgCalc ?? "").trim().toLowerCase();
 const normalizeEventName = (eventName?: string | null) => (eventName ?? "").trim().toLowerCase();
 
 export const isAo12AvgCalc = (avgCalc?: string | null) => normalizeAvgCalc(avgCalc) === "ao12";

@@ -7,6 +7,9 @@ import {
   CompetitionPage,
   RoundPage,
   RankingPage,
+  NewRecordPage,
+  ProfilePage,
+  ProfileRecordHistoryPage,
   ApiDashboardCubeEventTestPage,
   ApiDashboardRoundTestPage,
   ApiDashboardRoundCUDTestPage,
@@ -204,15 +207,23 @@ export const router = createBrowserRouter([
         element: <RoundPage />,
       },
       {
-        path: "record",
-        element: <ComingSoonPage />,
+        path: "new-record",
+        element: <NewRecordPage />,
       },
       {
         path: "ranking",
         element: <RankingPage />,
       },
       {
-        path: "profile",
+        path: "profile/:cckId",
+        element: <ProfilePage />,
+      },
+      {
+        path: "profile/:cckId/new-record/:event",
+        element: <ProfileRecordHistoryPage />,
+      },
+      {
+        path: "settings",
         element: <ComingSoonPage />,
       },
       {
@@ -328,7 +339,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "admin/api-dashboard/record",
+        path: "admin/api-dashboard/new-record",
         element: (
           <AdminRoute>
             <ApiDashboardRecordTestPage />
@@ -336,7 +347,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "admin/api-dashboard/record/cud",
+        path: "admin/api-dashboard/new-record/cud",
         element: (
           <AdminRoute>
             <ApiDashboardRecordCUDTestPage />

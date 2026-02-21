@@ -4,8 +4,9 @@ import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
-import { getEventIconSrc, resolveAverageValue } from "@/shared";
+import { getErrorMessage, getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader, RoundPageSkeleton } from "@/widgets";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { RecordTable } from "./components/RecordTable";
 import { RecordDetailModal } from "./components/RecordDetailModal";
 
@@ -86,7 +87,7 @@ export const RoundPage = () => {
         setRecords(recordData);
       } catch (fetchError) {
         console.error("라운드 랭킹 조회 실패:", fetchError);
-        if (mounted) setError("랭킹 정보를 불러올 수 없습니다.");
+        if (mounted) setError(getErrorMessage(fetchError, "랭킹 정보를 불러올 수 없습니다."));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -177,6 +178,9 @@ export const RoundPage = () => {
   }
 
   if (error) {
+    if (shouldUseRequestErrorPage(error)) {
+      return <RequestErrorPage message={error} />;
+    }
     return <div className="round-page">{error}</div>;
   }
 

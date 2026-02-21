@@ -1,7 +1,7 @@
 import { apiClient } from "@/shared/api/base";
 import type { RecordInfoUpdateDTO } from "./dto/recordInfoUpdate.dto";
 
-const BASE_URL = "/record";
+const BASE_URL = "/new-record";
 
 /**
  * 기록 기본 정보(PDX, 그룹) 업데이트

@@ -4,3 +4,4 @@ export * from './competition';
 export * from './cubeEvent';
 export * from './round';
 export * from './statistics';
+export * from './authInfo';

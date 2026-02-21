@@ -1,9 +1,12 @@
 import type { GlobalSingleRankingRecord } from "@/entities/statistics";
-import { formatTime, type RankingMetric } from "@/features/ranking";
+import { formatTimeValue, type RankingMetric } from "@/features/ranking";
 import {
   getMainAttempts,
+  getWorstAttemptTrySet,
+  getRegionLogoSrc,
   isAo12AvgCalc,
   isSingleAvgCalc,
+  mapRegionName,
   resolveAverageValue,
 } from "@/shared";
 
@@ -17,7 +20,7 @@ const renderAttemptValue = (time: number | null | undefined) => {
   if (time === null || time === undefined) return "-";
   if (time === -1) return "DNF";
   if (time === -2) return "DNS";
-  return formatTime(time);
+  return formatTimeValue(time);
 };
 
 export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) => {
@@ -58,7 +61,10 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
               .map((attempt) => attempt.time)
               .filter((time): time is number => typeof time === "number" && time >= 0)
               .reduce<number | undefined>((best, value) => (best === undefined || value < best ? value : best), undefined);
+            const worstTrySet = getWorstAttemptTrySet(row.attempts, row.avgCalc, row.eventName);
             const firstAttempt = mainAttempts.find((attempt) => attempt.attemptTry === 1);
+            const regionLabel = mapRegionName(row.state) ?? row.state ?? "-";
+            const regionLogoSrc = getRegionLogoSrc(row.state);
 
             return (
               <tr
@@ -71,9 +77,18 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
                   <div className="ranking-player-name">{row.name}</div>
                   <div className="ranking-player-id">{row.cckId}</div>
                 </td>
-                <td className="ranking-record-cell">{formatTime(displayRecord)}</td>
+                <td className="ranking-record-cell">
+                  {formatTimeValue(displayRecord)}
+                </td>
                 {singleMode ? <td>{renderAttemptValue(firstAttempt?.time)}</td> : null}
-                {!singleMode ? <td>{row.state || "-"}</td> : null}
+                {!singleMode ? (
+                  <td>
+                    <span className="region-inline">
+                      {regionLogoSrc ? <img className="region-logo" src={regionLogoSrc} alt="" aria-hidden="true" /> : null}
+                      <span>{regionLabel}</span>
+                    </span>
+                  </td>
+                ) : null}
                 {!singleMode ? <td className="ranking-comp-cell" title={row.compName}>{row.compName}</td> : null}
                 {showAttemptsColumn ? (
                   <td className="ranking-attempts-cell">
@@ -82,6 +97,8 @@ export const RankingTable = ({ rows, metric, onSelectRow }: RankingTableProps) =
                         let highlightClass = "";
                         if (typeof attempt.time === "number" && attempt.time === bestValue) {
                           highlightClass = "attempt-best";
+                        } else if (worstTrySet.has(attempt.attemptTry)) {
+                          highlightClass = "attempt-worst";
                         }
 
                         return (
