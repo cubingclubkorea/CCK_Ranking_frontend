@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAuthInfo } from "@/entities/authInfo";
+import { useAuthInfo } from "@/entities/authInfo";
 import { logout } from "@/features/auth";
 import { authChangeEvent, getAccessToken, getAuthUserProfile } from "@/features/auth/utils/tokenStorage";
 import { UserMenu } from "./UserMenu";
@@ -20,12 +20,12 @@ function Header({
 }) {
   const navigate = useNavigate();
   const [token, setToken] = useState(getAccessToken());
-  const [resolvedName, setResolvedName] = useState<string | null>(null);
+  const { authInfo } = useAuthInfo();
   const isLoggedIn = !!token;
   const profile = token ? getAuthUserProfile() : null;
   const isDark = theme === "dark";
   const profilePath = profile?.cckId ? `/profile/${encodeURIComponent(profile.cckId)}` : "/profile";
-  const displayName = resolvedName ?? profile?.name ?? "사용자";
+  const displayName = authInfo?.name?.trim() || profile?.name || "사용자";
 
   useEffect(() => {
     const syncAuthState = () => setToken(getAccessToken());
@@ -36,30 +36,6 @@ function Header({
       window.removeEventListener("storage", syncAuthState);
     };
   }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    const cckId = profile?.cckId?.trim();
-
-    setResolvedName(null);
-    if (!token || !cckId) return;
-
-    const fetchAuthInfo = async () => {
-      try {
-        const authInfo = await getAuthInfo(cckId);
-        if (!mounted) return;
-        const nextName = authInfo.name?.trim();
-        setResolvedName(nextName || null);
-      } catch {
-        if (mounted) setResolvedName(null);
-      }
-    };
-
-    fetchAuthInfo();
-    return () => {
-      mounted = false;
-    };
-  }, [profile?.cckId, token]);
 
   const handleLogout = async () => {
     try {

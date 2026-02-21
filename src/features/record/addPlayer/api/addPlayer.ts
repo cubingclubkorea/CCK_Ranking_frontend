@@ -1,7 +1,7 @@
 import { apiClient } from '@/shared/api/base';
 import type { PlayerAddDTO } from './dto/playerAdd.dto';
 
-const BASE_URL = '/new-record';
+const BASE_URL = '/record';
 
 /**
  * 플레이어 추가 (리스트)

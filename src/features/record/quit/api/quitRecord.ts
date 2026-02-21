@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api/base';
 
-const BASE_URL = '/new-record';
+const BASE_URL = '/record';
 
 /**
  * 여러 기록 기권 처리

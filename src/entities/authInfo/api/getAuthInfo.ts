@@ -2,8 +2,11 @@ import { ssoClient } from "@/shared";
 
 export type AuthInfoResponse = {
   name: string;
+  enName: string;
   state: string;
+  gender: string;
   cckId: string;
+  role: string;
 };
 
 export const getAuthInfo = async (cckId: string): Promise<AuthInfoResponse> => {

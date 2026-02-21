@@ -5153,8 +5153,9 @@ body {
     background: #ffffff;
     color: #1f2937;
     padding: 10px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 18px;
+    font-family: pretendard, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 25px;
+    font-weight: 600;
     line-height: 1.45;
     text-align: center;
     white-space: pre-wrap;

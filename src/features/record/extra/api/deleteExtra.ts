@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api/base';
 
-const BASE_URL = '/new-record';
+const BASE_URL = '/record';
 
 /**
  * 추가 시도 삭제

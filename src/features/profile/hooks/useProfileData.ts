@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPlayerCount, getPlayerRanking, getPlayerStaffCount, type PlayerEventRanking } from "@/entities/statistics";
-import { getAuthInfo } from "@/entities/authInfo";
+import { getAuthInfo, useAuthInfo } from "@/entities/authInfo";
 import { getAuthUserProfile, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 import { mapRegionName } from "@/shared";
 
@@ -43,9 +43,12 @@ export const useProfileData = (cckId?: string) => {
   const [completeCount, setCompleteCount] = useState(0);
   const [isOrganizer, setIsOrganizer] = useState(false);
   const [resolvedKoreanName, setResolvedKoreanName] = useState<string | null>(null);
+  const [resolvedEnglishName, setResolvedEnglishName] = useState<string | null>(null);
+  const [resolvedGender, setResolvedGender] = useState<string | null>(null);
   const [resolvedRegion, setResolvedRegion] = useState<string | null>(null);
 
   const authProfile = useMemo(() => getAuthUserProfile(), []);
+  const { authInfo: myAuthInfo } = useAuthInfo();
   const normalizedCckId = cckId?.trim() ?? "";
   const isMyProfile = !!normalizedCckId && normalizedCckId === (authProfile?.cckId ?? "");
 
@@ -94,10 +97,24 @@ export const useProfileData = (cckId?: string) => {
     };
   }, [authProfile?.role, isMyProfile, normalizedCckId]);
 
+  // 본인 프로필: context에서 가져오기
   useEffect(() => {
+    if (!isMyProfile || !myAuthInfo) return;
+    setResolvedKoreanName(myAuthInfo.name?.trim() || null);
+    setResolvedEnglishName(myAuthInfo.enName?.trim() || null);
+    setResolvedGender(myAuthInfo.gender?.trim() || null);
+    setResolvedRegion(myAuthInfo.state?.trim() || null);
+  }, [isMyProfile, myAuthInfo]);
+
+  // 타인 프로필: 별도 API 호출
+  useEffect(() => {
+    if (isMyProfile) return;
+
     let mounted = true;
 
     setResolvedKoreanName(null);
+    setResolvedEnglishName(null);
+    setResolvedGender(null);
     setResolvedRegion(null);
     if (!normalizedCckId) return;
 
@@ -105,13 +122,15 @@ export const useProfileData = (cckId?: string) => {
       try {
         const authInfo = await getAuthInfo(normalizedCckId);
         if (!mounted) return;
-        const nextName = authInfo.name?.trim();
-        const nextRegion = authInfo.state?.trim();
-        setResolvedKoreanName(nextName || null);
-        setResolvedRegion(nextRegion || null);
+        setResolvedKoreanName(authInfo.name?.trim() || null);
+        setResolvedEnglishName(authInfo.enName?.trim() || null);
+        setResolvedGender(authInfo.gender?.trim() || null);
+        setResolvedRegion(authInfo.state?.trim() || null);
       } catch {
         if (!mounted) return;
         setResolvedKoreanName(null);
+        setResolvedEnglishName(null);
+        setResolvedGender(null);
         setResolvedRegion(null);
       }
     };
@@ -120,11 +139,11 @@ export const useProfileData = (cckId?: string) => {
     return () => {
       mounted = false;
     };
-  }, [normalizedCckId]);
+  }, [isMyProfile, normalizedCckId]);
 
   const koreanName = normalizeName(resolvedKoreanName ?? (isMyProfile ? authProfile?.name : undefined));
-  const englishName = isMyProfile ? normalizeText(authProfile?.englishName ?? "User") : "User";
-  const gender = isMyProfile ? normalizeText(authProfile?.gender) : "-";
+  const englishName = normalizeText(resolvedEnglishName ?? (isMyProfile ? authProfile?.englishName : undefined) ?? "User");
+  const gender = normalizeText(resolvedGender ?? (isMyProfile ? authProfile?.gender : undefined));
   const region = normalizeText(mapRegionName(resolvedRegion ?? (isMyProfile ? authProfile?.region : undefined)) ?? undefined);
 
   const data: ProfileData = {

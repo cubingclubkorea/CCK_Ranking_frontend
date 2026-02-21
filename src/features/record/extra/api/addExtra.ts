@@ -1,7 +1,7 @@
 import { apiClient } from '@/shared/api/base';
 import type { ExtraDTO } from './dto/extra.dto';
 
-const BASE_URL = '/new-record';
+const BASE_URL = '/record';
 
 /**
  * 추가 시도 추가

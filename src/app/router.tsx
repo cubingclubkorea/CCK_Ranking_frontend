@@ -32,6 +32,7 @@ import { LOGIN_URL } from "@/shared/config";
 import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 import { Header, Sidebar } from "@/widgets";
 import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
+import { AuthInfoProvider } from "@/entities/authInfo";
 
 type ThemeMode = "light" | "dark";
 const THEME_STORAGE_KEY = "cck-ranking-theme";
@@ -141,28 +142,30 @@ const
   };
 
   return (
-    <div className="app-layout">
-      <Header
-        collapsed={sidebarCollapsed}
-        onToggle={handleSidebarToggle}
-        theme={theme}
-        isMobile={isMobileLayout}
-        mobileMenuOpen={mobileMenuOpen}
-      />
-      <Sidebar
-        collapsed={!isMobileLayout && sidebarCollapsed}
-        isMobile={isMobileLayout}
-        mobileOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        theme={theme}
-        onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
-      />
-      <main className={`content-area ${!isMobileLayout && sidebarCollapsed ? "collapsed" : ""} ${isMobileLayout && mobileMenuOpen ? "mobile-menu-open" : ""}`}>
-        <div className="content-inner">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+    <AuthInfoProvider>
+      <div className="app-layout">
+        <Header
+          collapsed={sidebarCollapsed}
+          onToggle={handleSidebarToggle}
+          theme={theme}
+          isMobile={isMobileLayout}
+          mobileMenuOpen={mobileMenuOpen}
+        />
+        <Sidebar
+          collapsed={!isMobileLayout && sidebarCollapsed}
+          isMobile={isMobileLayout}
+          mobileOpen={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+          theme={theme}
+          onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
+        />
+        <main className={`content-area ${!isMobileLayout && sidebarCollapsed ? "collapsed" : ""} ${isMobileLayout && mobileMenuOpen ? "mobile-menu-open" : ""}`}>
+          <div className="content-inner">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </AuthInfoProvider>
   );
 };
 

@@ -1,7 +1,7 @@
 import { apiClient } from '@/shared/api/base';
 import type { RecordUpdateDTO } from './dto/recordUpdate.dto';
 
-const BASE_URL = '/new-record';
+const BASE_URL = '/record';
 
 /**
  * 기록 업데이트
