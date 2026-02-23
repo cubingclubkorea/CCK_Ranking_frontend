@@ -13,6 +13,7 @@ export class SSOClient {
       withCredentials: true,
     });
 
+    // 요청 인터셉터: Access Token 자동 추가 (관리자 인증 API 포함)
     this.axiosInstance.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('access_token');
@@ -49,7 +50,7 @@ export class SSOClient {
 
   public async get<TResult = unknown>(
     endpoint: string,
-    queryParams?: Record<string, any>
+    queryParams?: Record<string, unknown>
   ): Promise<TResult> {
     const { data } = await this.axiosInstance.get<TResult>(endpoint, {
       params: queryParams,

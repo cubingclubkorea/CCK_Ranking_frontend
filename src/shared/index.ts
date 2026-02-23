@@ -5,4 +5,20 @@ export { apiClient } from './api/base';
 export { ssoClient } from './api/auth_base';
 export type { Page } from './model/page';
 export type { ErrorResponse } from './model/error';
+export { mapRegionName, REGION_FILTER_OPTIONS, getRegionLogoSrc } from './model/region';
+export {
+  getRequiredAttemptCount,
+  getMainAttempts,
+  calculateAverageByRule,
+  resolveAverageValue,
+  normalizeAvgCalc,
+  isAo12AvgCalc,
+  isBo3AvgCalc,
+  isSingleAvgCalc,
+  isBA5Format,
+  getWorstAttemptTrySet,
+} from './model/averageRule';
+export { getEventIconSrc } from './utils/eventIcon';
+export { getNewRecordBadgeSrc } from './utils/newRecord';
+export { classifyRequestError, getErrorMessage, shouldUseRequestErrorPage } from './utils/requestError';
 export * from './utils/apiHandler';

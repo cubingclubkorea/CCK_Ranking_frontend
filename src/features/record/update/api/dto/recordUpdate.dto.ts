@@ -1,4 +1,5 @@
 export interface RecordUpdateDTO {
-  idx: number;
-  times: number[];
+  idx?: number;
+  recordIdx?: number;
+  times: Array<number | null>;
 }

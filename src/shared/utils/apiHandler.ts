@@ -19,7 +19,7 @@ export const createApiHandler = <T = void>(
       setResult(successMessage);
       console.log(successMessage);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '알 수 없는 에러';
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
       console.error('에러:', err);
     } finally {

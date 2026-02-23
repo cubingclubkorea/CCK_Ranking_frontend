@@ -1,10 +1,16 @@
 const ACCESS_TOKEN_KEY = 'access_token';
+const AUTH_EVENT = 'auth-change';
+
+const notifyAuthChange = () => {
+  window.dispatchEvent(new Event(AUTH_EVENT));
+};
 
 /**
  * Access Token 저장
  */
 export const setAccessToken = (token: string): void => {
   localStorage.setItem(ACCESS_TOKEN_KEY, token);
+  notifyAuthChange();
 };
 
 /**
@@ -19,6 +25,7 @@ export const getAccessToken = (): string | null => {
  */
 export const removeAccessToken = (): void => {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
+  notifyAuthChange();
 };
 
 /**
@@ -26,4 +33,114 @@ export const removeAccessToken = (): void => {
  */
 export const hasAccessToken = (): boolean => {
   return !!getAccessToken();
+};
+
+export const authChangeEvent = AUTH_EVENT;
+
+type AccessTokenPayload = Record<string, unknown>;
+export type AuthUserProfile = {
+  name: string;
+  englishName?: string;
+  cckId: string;
+  gender?: string;
+  region?: string;
+  role?: string;
+};
+
+const decodeBase64Url = (value: string): string | null => {
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+  try {
+    const binary = atob(padded);
+    const percentEncoded = Array.from(binary)
+      .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
+      .join('');
+    return decodeURIComponent(percentEncoded);
+  } catch {
+    return null;
+  }
+};
+
+const getAccessTokenPayload = (): AccessTokenPayload | null => {
+  const token = getAccessToken();
+  if (!token) return null;
+
+  const tokenPart = token.includes('.') ? token.split('.')[1] : token;
+  const decoded = decodeBase64Url(tokenPart);
+  if (!decoded) return null;
+
+  try {
+    return JSON.parse(decoded) as AccessTokenPayload;
+  } catch {
+    return null;
+  }
+};
+
+const extractRoles = (payload: AccessTokenPayload): string[] => {
+  const raw =
+    payload.role ??
+    payload.roles ??
+    payload.authority ??
+    payload.authorities ??
+    payload.scope ??
+    payload.scopes;
+
+  if (Array.isArray(raw)) {
+    return raw.filter((role) => typeof role === 'string') as string[];
+  }
+
+  if (typeof raw === 'string') {
+    return raw.split(/[,\s]+/).filter(Boolean);
+  }
+
+  return [];
+};
+
+const pickString = (payload: AccessTokenPayload, keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = payload[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return undefined;
+};
+
+export const getAuthUserProfile = (): AuthUserProfile | null => {
+  const payload = getAccessTokenPayload();
+  if (!payload) return null;
+
+  const name = pickString(payload, ['name', 'nickname', 'preferred_username', 'username']) ?? '사용자';
+  const cckId = pickString(payload, ['cckId', 'memberId', 'id', 'sub']) ?? '';
+  const englishName = pickString(payload, ['englishName', 'enName', 'nameEn', 'name_en']);
+  const gender = pickString(payload, ['gender', 'sex']);
+  const region = pickString(payload, ['state', 'region', 'location']);
+  const role =
+    pickString(payload, ['role', 'userRole', 'memberRole', 'position']) ??
+    extractRoles(payload)[0];
+
+  return {
+    name,
+    englishName,
+    cckId: String(cckId),
+    gender,
+    region,
+    role,
+  };
+};
+
+const extractPosition = (payload: AccessTokenPayload): string | null => {
+  const raw = payload.position ?? payload.memberPosition ?? payload.userPosition;
+  return typeof raw === 'string' ? raw.toUpperCase() : null;
+};
+
+export const hasAdminRole = (): boolean => {
+  const payload = getAccessTokenPayload();
+  if (!payload) return false;
+
+  if (payload.admin === true || payload.isAdmin === true) return true;
+
+  const position = extractPosition(payload);
+  if (position === 'ADMIN' || position === 'ROOT') return true;
+
+  const roles = extractRoles(payload).map((role) => role.toUpperCase());
+  return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN') || roles.includes('ROOT') || roles.includes('ROLE_ROOT');
 };
