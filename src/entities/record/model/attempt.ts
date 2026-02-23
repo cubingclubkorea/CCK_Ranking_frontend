@@ -2,7 +2,7 @@ export interface Attempt {
   idx: number;
   recordIdx: number;
   attemptTry: number;
-  time: number;
+  time: number | null;
   scramblerName: string;
   scramblerCckId: string;
   judgeName: string;

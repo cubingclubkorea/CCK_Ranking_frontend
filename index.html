@@ -2,9 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/logo/cck-logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CCK Ranking</title>
+    <title>CCK Ranking</title> 
+    <script>
+      (function () {
+        var key = "cck-ranking-theme";
+        var theme = "light";
+        try {
+          var saved = window.localStorage.getItem(key);
+          if (saved === "light" || saved === "dark") {
+            theme = saved;
+          } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            theme = "dark";
+          }
+        } catch (_error) {
+          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            theme = "dark";
+          }
+        }
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
