@@ -4,8 +4,13 @@ export interface RecordDTO {
   idx: number;
   pdx: number;
   name: string;
+  enName?: string;
   state: string;
   cckId: string;
+  account?: {
+    name?: string;
+    enName?: string;
+  };
   roundIdx: number;
   roundName: string;
   roundGroup: string;
