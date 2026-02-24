@@ -247,7 +247,7 @@ export const RoundPage = () => {
             label: "프로젝터 모드",
             iconSrc: "/page-title/projector.svg",
             to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}/projector`,
-            adminOnly: false, // TODO: 테스트용 - 배포할 때 True로 바꿀 것 (중요!!)
+            adminOnly: true,
           },
           {
             label: "라운드 관리",
