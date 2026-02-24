@@ -263,6 +263,18 @@ body {
     left: 80px;
 }
 
+.content-area.content-area--projector {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: auto;
+    height: 100%;
+    overflow: hidden;
+    scrollbar-gutter: auto;
+    padding: 0;
+}
+
 .content-inner {
     min-height: 100%;
     display: flex;
@@ -272,6 +284,12 @@ body {
     max-width: none;
     margin: 0;
     padding: 20px 0 28px;
+}
+
+.content-inner.content-inner--projector {
+    min-height: 100%;
+    height: 100%;
+    padding: 0;
 }
 
 /* ===== Header Components ===== */
@@ -2807,6 +2825,13 @@ body {
     flex-wrap: wrap;
 }
 
+.round-admin-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .round-panel-title {
     display: flex;
     align-items: baseline;
@@ -2997,6 +3022,217 @@ body {
 
 .round-table-row-cutline td {
     border-top: 2px solid #ececf2;
+}
+
+.projector-mode-overlay {
+    --projector-bg: #f5f7fc;
+    --projector-header-bg: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
+    --projector-text: #1f2937;
+    --projector-muted: #667085;
+    --projector-border: #dce4f3;
+    --projector-table-head-bg: #ebeff8;
+    --projector-table-head-text: #4b5565;
+    --projector-row-odd: #ffffff;
+    --projector-row-even: #f8faff;
+    --projector-row-border: #e6ebf5;
+    --projector-btn-bg: #eef2ff;
+    --projector-btn-border: #cfd8ef;
+    --projector-btn-text: #2f3c56;
+    --projector-btn-hover: #e4ebff;
+    --projector-btn-danger-bg: #fff1f1;
+    --projector-btn-danger-border: #f3c9c9;
+    --projector-btn-danger-text: #8f2c2c;
+    --projector-btn-danger-hover: #ffe5e5;
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    background: var(--projector-bg);
+    color: var(--projector-text);
+    padding: 0 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.projector-mode-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--projector-header-bg);
+    border-bottom: 1px solid var(--projector-border);
+    padding: 10px 4px 12px;
+    margin-bottom: 8px;
+}
+
+.projector-mode-title-wrap {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    min-width: 0;
+}
+
+.projector-mode-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: stretch;
+    aspect-ratio: 1 / 1;
+    max-height: 118px;
+}
+
+.projector-mode-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.projector-mode-title-text {
+    min-width: 0;
+}
+
+.projector-mode-title-text h2 {
+    margin: 0;
+    font-size: clamp(30px, 3.2vw, 52px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+}
+
+.projector-mode-title-text p {
+    margin: 6px 0 0;
+    color: var(--projector-muted);
+    font-size: clamp(16px, 1.6vw, 24px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.projector-mode-divider {
+    opacity: 0.7;
+}
+
+.projector-mode-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.projector-mode-btn {
+    border: 1px solid var(--projector-btn-border);
+    background: var(--projector-btn-bg);
+    color: var(--projector-btn-text);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.projector-mode-btn:hover {
+    background: var(--projector-btn-hover);
+}
+
+.projector-mode-btn--danger {
+    border-color: var(--projector-btn-danger-border);
+    background: var(--projector-btn-danger-bg);
+    color: var(--projector-btn-danger-text);
+}
+
+.projector-mode-btn--danger:hover {
+    background: var(--projector-btn-danger-hover);
+}
+
+.projector-mode-table {
+    min-height: 0;
+    flex: 1;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.projector-mode-table thead th {
+    height: 52px;
+    background: var(--projector-table-head-bg);
+    color: var(--projector-table-head-text);
+    font-size: clamp(18px, 1.5vw, 24px);
+    font-weight: 700;
+    text-align: left;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--projector-row-border);
+}
+
+.projector-mode-table tbody td {
+    height: var(--projector-row-height, 56px);
+    font-size: clamp(18px, 1.42vw, 26px);
+    color: var(--projector-text);
+    padding: 0 14px;
+    border-top: 1px solid var(--projector-row-border);
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.projector-mode-table tbody tr:nth-child(odd) td {
+    background: var(--projector-row-odd);
+}
+
+.projector-mode-table tbody tr:nth-child(even) td {
+    background: var(--projector-row-even);
+}
+
+.projector-mode-row--empty td {
+    color: transparent;
+}
+
+.projector-mode-table th:first-child,
+.projector-mode-table td:first-child {
+    width: 66px;
+    text-align: center;
+}
+
+.projector-mode-name {
+    width: 33%;
+    font-weight: 600;
+}
+
+.projector-mode-score {
+    font-weight: 700;
+}
+
+.projector-mode-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    color: var(--projector-muted);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 8px 2px 0;
+}
+
+[data-theme="dark"] .projector-mode-overlay {
+    --projector-bg: #11131a;
+    --projector-header-bg: linear-gradient(180deg, #171a23 0%, #11131a 100%);
+    --projector-text: #f1f4fa;
+    --projector-muted: #a9b1c2;
+    --projector-border: #242a37;
+    --projector-table-head-bg: #202533;
+    --projector-table-head-text: #d6dce8;
+    --projector-row-odd: #171b26;
+    --projector-row-even: #131722;
+    --projector-row-border: #242a37;
+    --projector-btn-bg: #23293a;
+    --projector-btn-border: #30374b;
+    --projector-btn-text: #e9edf8;
+    --projector-btn-hover: #2b3348;
+    --projector-btn-danger-bg: #3a2427;
+    --projector-btn-danger-border: #573337;
+    --projector-btn-danger-text: #ffd6d8;
+    --projector-btn-danger-hover: #4b2c30;
 }
 
 .record-modal-backdrop {

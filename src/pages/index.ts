@@ -22,6 +22,7 @@ export { CompetitionAdminPage } from '@/pages/admin/competition/main/Competition
 export { CompetitionCreatePage } from './admin/competition/create/CompetitionCreatePage';
 export { CompetitionManagePage } from './admin/competition/manage/CompetitionManagePage';
 export { RoundRecordEditPage } from '@/pages/admin/roundRecord/RoundRecordEditPage';
+export { RoundProjectorPage } from '@/pages/admin/roundRecord/RoundProjectorPage';
 export { EventAdminPage } from './admin/event/EventAdminPage';
 export { ScrambleAdminPage } from './admin/scramble/ScrambleAdminPage';
 
