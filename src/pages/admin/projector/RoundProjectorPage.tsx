@@ -9,6 +9,7 @@ import {
   getEventIconSrc,
   getMainAttempts,
   getRequiredAttemptCount,
+  getWorstAttemptTrySet,
   isAo12AvgCalc,
   isBo3AvgCalc,
   isSingleAvgCalc,
@@ -69,6 +70,11 @@ const resolveProjectorMetrics = (headerHeight: number, tableHeadHeight: number):
   const availableRowsHeight = Math.max(0, window.innerHeight - headerHeight - tableHeadHeight - tableGap);
   const rowsPerPage = Math.max(PROJECTOR_MIN_ROWS, Math.floor(availableRowsHeight / rowHeight));
   return { rowsPerPage, rowHeight };
+};
+
+const resolveRevealDelay = (rowIndex: number) => {
+  const rowDelay = rowIndex * 0.055;
+  return `${rowDelay.toFixed(3)}s`;
 };
 
 export const RoundProjectorPage = () => {
@@ -148,26 +154,10 @@ export const RoundProjectorPage = () => {
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
 
-    const requestFullscreen = async () => {
-      if (document.fullscreenElement) return;
-      try {
-        await document.documentElement.requestFullscreen();
-      } catch (fullscreenError) {
-        console.error("프로젝터 전체화면 진입 실패:", fullscreenError);
-      }
-    };
-
-    void requestFullscreen();
-
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("resize", onResize);
       window.removeEventListener("keydown", onKeyDown);
-      if (document.fullscreenElement) {
-        void document.exitFullscreen().catch((fullscreenError) => {
-          console.error("프로젝터 전체화면 종료 실패:", fullscreenError);
-        });
-      }
     };
   }, [compIdx, navigate, roundIdx, syncProjectorMetrics]);
 
@@ -195,6 +185,8 @@ export const RoundProjectorPage = () => {
     ? 1
     : sortedRecords.reduce((max, record) => Math.max(max, getRequiredAttemptCount(record.avgCalc)), 1);
   const attemptTries = Array.from({ length: attemptCount }, (_, index) => index + 1);
+  const hasComputedAverage = (record: Record) =>
+    typeof resolveAverageValue(record.attempts, record.avgCalc, record.average) === "number";
 
   const totalPages = Math.max(1, Math.ceil(sortedRecords.length / projectorMetrics.rowsPerPage));
   const startIndex = projectorPage * projectorMetrics.rowsPerPage;
@@ -242,9 +234,8 @@ export const RoundProjectorPage = () => {
     >
       <div className="projector-mode-header" ref={projectorHeaderRef}>
         <div className="projector-mode-title-wrap">
-          <span className="projector-mode-icon-wrap" aria-hidden="true">
+          <div className="page-title-icon" aria-hidden="true">
             <img
-              className="projector-mode-icon"
               src={getEventIconSrc(round.cubeEventName)}
               alt=""
               loading="lazy"
@@ -258,7 +249,7 @@ export const RoundProjectorPage = () => {
                 target.src = "/icon/events/Question.svg";
               }}
             />
-          </span>
+          </div>
           <div className="projector-mode-title-text">
             <h2>{`${round.cubeEventName} ${round.roundName}`}</h2>
             <p>
@@ -282,59 +273,134 @@ export const RoundProjectorPage = () => {
           </button>
           <button
             type="button"
-            className="projector-mode-btn projector-mode-btn--danger"
+            className="projector-mode-btn projector-mode-btn--danger projector-mode-btn--icon"
+            aria-label="종료"
             onClick={() => navigate(`/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}`)}
           >
-            종료
+            <img className="projector-mode-btn-icon" src="/icon/modal/close.svg" alt="" aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      <table className="projector-mode-table">
-        <thead ref={projectorTableHeadRef}>
-          <tr>
-            <th>#</th>
-            <th>이름</th>
-            {showAverageColumn ? <th>평균</th> : null}
-            <th>최고</th>
-            {showAttemptColumns ? attemptTries.map((attemptTry) => <th key={attemptTry}>{attemptTry}</th>) : null}
-          </tr>
-        </thead>
-        <tbody>
-          {pageRecords.map((record, index) => {
-            const rank = record.ranking ?? startIndex + index + 1;
+      <div className="projector-mode-table-wrap">
+        <table className="projector-mode-table">
+          <thead ref={projectorTableHeadRef}>
+            <tr>
+              <th>#</th>
+              <th>이름</th>
+              {showAverageColumn ? <th>평균</th> : null}
+              <th>최고</th>
+              {showAttemptColumns ? attemptTries.map((attemptTry) => <th key={attemptTry}>{attemptTry}</th>) : null}
+            </tr>
+          </thead>
+          <tbody key={`page-${projectorPage}`}>
+            {pageRecords.map((record, index) => {
+              const globalIndex = startIndex + index;
+              const rank = record.ranking ?? globalIndex + 1;
+              const prevRecord = globalIndex > 0 ? sortedRecords[globalIndex - 1] : null;
+              const prevRank = prevRecord ? (prevRecord.ranking ?? globalIndex) : null;
+              const prevAttempts = prevRecord ? getMainAttempts(prevRecord.attempts, prevRecord.avgCalc) : [];
+              const prevHasAllAttempts = prevAttempts.every((attempt) => attempt.time !== undefined && attempt.time !== null);
+              const prevIsRanked = prevRecord
+                ? prevHasAllAttempts && (singleMode ? typeof prevRecord.single === "number" : hasComputedAverage(prevRecord))
+                : false;
+              const prevIsAdvance = !!(round.advance && prevRank !== null && prevRank <= round.advance && prevIsRanked);
             const attempts = getMainAttempts(record.attempts, record.avgCalc);
             const hasAllAttempts = attempts.every((attempt) => attempt.time !== undefined && attempt.time !== null);
+              const isRanked = hasAllAttempts && (singleMode ? typeof record.single === "number" : hasComputedAverage(record));
+              const isAdvance = !!(round.advance && rank <= round.advance && isRanked);
+              const isCutlineStart = !isAdvance && prevIsAdvance;
             const displayAverage = resolveAverageValue(record.attempts, record.avgCalc, record.average);
+            const nameText = record.enName ? `${record.name} (${record.enName})` : record.name;
+              const times = attempts
+                .map((attempt) => attempt.time)
+                .filter((time) => typeof time === "number");
+              const positiveTimes = times.filter((time) => time >= 0);
+              const bestValue = positiveTimes.length > 0 ? Math.min(...positiveTimes) : undefined;
+              const worstTrySet = getWorstAttemptTrySet(record.attempts, record.avgCalc, record.eventName);
 
-            return (
-              <tr key={record.idx} className="projector-mode-row">
-                <td>{hasAllAttempts ? rank : "-"}</td>
+              return (
+                <tr
+                  key={record.idx}
+                  className={[
+                    "projector-mode-row",
+                    isAdvance ? "round-table-row-advance" : "",
+                    isCutlineStart ? "round-table-row-cutline" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                <td>
+                  <span
+                    className="projector-mode-cell-text"
+                    style={{ "--projector-reveal-delay": resolveRevealDelay(index) } as CSSProperties}
+                  >
+                      {isRanked ? rank : "-"}
+                  </span>
+                </td>
                 <td className="projector-mode-name">
-                  {record.enName ? `${record.name} (${record.enName})` : record.name}
+                  <span
+                    className="projector-mode-cell-text"
+                    style={{ "--projector-reveal-delay": resolveRevealDelay(index) } as CSSProperties}
+                  >
+                    {nameText}
+                  </span>
                 </td>
                 {showAverageColumn ? (
-                  <td className="projector-mode-score">{hasAllAttempts ? formatTimeValue(displayAverage) : "-"}</td>
+                  <td className="projector-mode-score">
+                    <span
+                      className="projector-mode-cell-text"
+                      style={{ "--projector-reveal-delay": resolveRevealDelay(index) } as CSSProperties}
+                    >
+                      {hasAllAttempts ? formatTimeValue(displayAverage) : "-"}
+                    </span>
+                  </td>
                 ) : null}
-                <td className="projector-mode-score">{hasAllAttempts ? formatTimeValue(record.single) : "-"}</td>
-                {showAttemptColumns
-                  ? attemptTries.map((attemptTry) => {
-                      const attempt = attempts.find((item) => item.attemptTry === attemptTry);
-                      return <td key={attemptTry}>{formatTimeValue(attempt?.time)}</td>;
-                    })
-                  : null}
+                <td className="projector-mode-score">
+                  <span
+                    className="projector-mode-cell-text"
+                    style={{ "--projector-reveal-delay": resolveRevealDelay(index) } as CSSProperties}
+                  >
+                    {hasAllAttempts ? formatTimeValue(record.single) : "-"}
+                  </span>
+                </td>
+                  {showAttemptColumns
+                    ? attemptTries.map((attemptTry) => {
+                        const attempt = attempts.find((item) => item.attemptTry === attemptTry);
+                        const time = attempt?.time;
+                        let attemptClassName = "projector-mode-cell-text";
+                        if (typeof time === "number") {
+                          if (time === bestValue) {
+                            attemptClassName = "projector-mode-cell-text attempt-best";
+                          } else if (worstTrySet.has(attemptTry)) {
+                            attemptClassName = "projector-mode-cell-text attempt-worst";
+                          }
+                        }
+                        return (
+                          <td key={attemptTry}>
+                            <span
+                              className={attemptClassName}
+                              style={{ "--projector-reveal-delay": resolveRevealDelay(index) } as CSSProperties}
+                            >
+                              {formatTimeValue(time)}
+                            </span>
+                          </td>
+                        );
+                      })
+                    : null}
+                </tr>
+              );
+            })}
+            {Array.from({ length: emptyRows }, (_, index) => (
+              <tr key={`empty-${index}`} className="projector-mode-row projector-mode-row--empty">
+                <td colSpan={columnCount} aria-hidden="true">
+                  &nbsp;
+                </td>
               </tr>
-            );
-          })}
-          {Array.from({ length: emptyRows }, (_, index) => (
-            <tr key={`empty-${index}`} className="projector-mode-row projector-mode-row--empty">
-              <td colSpan={columnCount} aria-hidden="true">
-                &nbsp;
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="projector-mode-footer">
         <span>{`${projectorPage + 1} / ${totalPages}`}</span>

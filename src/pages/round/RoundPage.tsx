@@ -244,6 +244,18 @@ export const RoundPage = () => {
         }
         actions={[
           {
+            label: "프로젝터 모드",
+            iconSrc: "/page-title/projector.svg",
+            to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}/projector`,
+            adminOnly: false, // TODO: 테스트용 - 배포할 때 True로 바꿀 것 (중요!!)
+          },
+          {
+            label: "라운드 관리",
+            iconSrc: "/icon/button/hammer.svg",
+            to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}`,
+            adminOnly: true,
+          },
+          {
             label: "라운드 목록",
             iconSrc: "/icon/button/back.svg",
             to: `/competition/${Number(backTarget)}`,
@@ -258,24 +270,6 @@ export const RoundPage = () => {
 
       <section className="round-panel">
         <div className="round-panel-top">
-          <div className="round-admin-actions">
-            <button
-              type="button"
-              className="record-edit-btn record-edit-btn--primary"
-              onClick={() => navigate(`/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}/projector`)}
-            >
-              프로젝터 모드
-            </button>
-            {isAdmin ? (
-              <button
-                type="button"
-                className="record-edit-btn record-edit-btn--primary"
-                onClick={() => navigate(`/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}`)}
-              >
-                라운드 관리
-              </button>
-            ) : null}
-          </div>
           <div className="round-search-wrap">
             <label className="round-search">
               <span className="round-search-icon" aria-hidden="true">
