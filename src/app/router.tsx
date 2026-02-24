@@ -275,7 +275,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin/competition/:compIdx/round/:roundIdx/projector",
-        element: <RoundProjectorPage />,
+        element: <RoundProjectorPage />, // TODO : OAuth 연동 후 AdminRouter 처리할 것
       },
       {
         path: "admin/competition/:compIdx/scramble",

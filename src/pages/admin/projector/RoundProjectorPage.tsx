@@ -9,10 +9,12 @@ import {
   getEventIconSrc,
   getMainAttempts,
   getRequiredAttemptCount,
+  getRegionLogoSrc,
   getWorstAttemptTrySet,
   isAo12AvgCalc,
   isBo3AvgCalc,
   isSingleAvgCalc,
+  mapRegionName,
   resolveAverageValue,
   shouldUseRequestErrorPage,
 } from "@/shared";
@@ -21,6 +23,8 @@ import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 
 const PROJECTOR_PAGE_DURATION_MS = 10000;
 const PROJECTOR_MIN_ROWS = 5;
+const PROJECTOR_MIN_DURATION_SEC = 3;
+const PROJECTOR_MAX_DURATION_SEC = 60;
 
 type ProjectorMetrics = {
   rowsPerPage: number;
@@ -64,10 +68,13 @@ const formatTimeValue = (value?: number | null) => {
   return value.toFixed(2);
 };
 
-const resolveProjectorMetrics = (headerHeight: number, tableHeadHeight: number): ProjectorMetrics => {
+const resolveProjectorMetrics = (tableWrapHeight: number, tableHeadHeight: number, headerHeight: number): ProjectorMetrics => {
   const rowHeight = window.innerWidth <= 1200 ? 50 : 56;
-  const tableGap = 44;
-  const availableRowsHeight = Math.max(0, window.innerHeight - headerHeight - tableHeadHeight - tableGap);
+  const fallbackGap = 44;
+  const fallbackRowsHeight = Math.max(0, window.innerHeight - headerHeight - tableHeadHeight - fallbackGap);
+  const availableRowsHeight = tableWrapHeight > 0
+    ? Math.max(0, tableWrapHeight - tableHeadHeight)
+    : fallbackRowsHeight;
   const rowsPerPage = Math.max(PROJECTOR_MIN_ROWS, Math.floor(availableRowsHeight / rowHeight));
   return { rowsPerPage, rowHeight };
 };
@@ -75,6 +82,11 @@ const resolveProjectorMetrics = (headerHeight: number, tableHeadHeight: number):
 const resolveRevealDelay = (rowIndex: number) => {
   const rowDelay = rowIndex * 0.055;
   return `${rowDelay.toFixed(3)}s`;
+};
+
+const normalizeDurationSec = (value: number) => {
+  if (!Number.isFinite(value)) return PROJECTOR_PAGE_DURATION_MS / 1000;
+  return Math.min(PROJECTOR_MAX_DURATION_SEC, Math.max(PROJECTOR_MIN_DURATION_SEC, Math.round(value)));
 };
 
 export const RoundProjectorPage = () => {
@@ -86,8 +98,13 @@ export const RoundProjectorPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [projectorPaused, setProjectorPaused] = useState(false);
   const [projectorPage, setProjectorPage] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(Boolean(document.fullscreenElement));
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pageDurationSec, setPageDurationSec] = useState(PROJECTOR_PAGE_DURATION_MS / 1000);
+  const [draftPageDurationSec, setDraftPageDurationSec] = useState(PROJECTOR_PAGE_DURATION_MS / 1000);
   const [projectorMetrics, setProjectorMetrics] = useState<ProjectorMetrics>({ rowsPerPage: 12, rowHeight: 56 });
   const projectorHeaderRef = useRef<HTMLDivElement | null>(null);
+  const projectorTableWrapRef = useRef<HTMLDivElement | null>(null);
   const projectorTableHeadRef = useRef<HTMLTableSectionElement | null>(null);
 
   useEffect(() => {
@@ -130,36 +147,72 @@ export const RoundProjectorPage = () => {
 
   const syncProjectorMetrics = useCallback(() => {
     const headerHeight = projectorHeaderRef.current?.getBoundingClientRect().height ?? 120;
+    const tableWrapHeight = projectorTableWrapRef.current?.getBoundingClientRect().height ?? 0;
     const tableHeadHeight = projectorTableHeadRef.current?.getBoundingClientRect().height ?? 52;
-    setProjectorMetrics(resolveProjectorMetrics(headerHeight, tableHeadHeight));
+    setProjectorMetrics(resolveProjectorMetrics(tableWrapHeight, tableHeadHeight, headerHeight));
   }, []);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const onResize = () => {
-      syncProjectorMetrics();
-    };
+    const onResize = () => syncProjectorMetrics();
+    const onFullscreenChange = () => syncProjectorMetrics();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      if (settingsOpen) {
+        event.preventDefault();
+        setSettingsOpen(false);
+        return;
+      }
+      if (document.fullscreenElement) {
+        return;
+      }
       event.preventDefault();
-      navigate(`/admin/competition/${Number(compIdx)}/round/${Number(roundIdx)}`);
+      navigate(`/competition/${Number(compIdx)}/round/${Number(roundIdx)}`);
     };
 
-    window.setTimeout(() => {
+    const resizeObserver = new ResizeObserver(() => {
       syncProjectorMetrics();
-    }, 0);
+    });
+    if (projectorHeaderRef.current) {
+      resizeObserver.observe(projectorHeaderRef.current);
+    }
+    if (projectorTableWrapRef.current) {
+      resizeObserver.observe(projectorTableWrapRef.current);
+    }
+    if (projectorTableHeadRef.current) {
+      resizeObserver.observe(projectorTableHeadRef.current);
+    }
+
+    window.setTimeout(syncProjectorMetrics, 0);
+    window.setTimeout(syncProjectorMetrics, 180);
+    if ("fonts" in document) {
+      void (document as Document & { fonts: FontFaceSet }).fonts.ready.then(() => {
+        syncProjectorMetrics();
+      });
+    }
     window.addEventListener("resize", onResize);
+    document.addEventListener("fullscreenchange", onFullscreenChange);
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      resizeObserver.disconnect();
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [compIdx, navigate, roundIdx, syncProjectorMetrics]);
+  }, [compIdx, navigate, roundIdx, settingsOpen, syncProjectorMetrics]);
+
+  useEffect(() => {
+    const onFullscreenChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+  }, []);
 
   const sortedRecords = useMemo(() => {
     return [...records].sort((a, b) => {
@@ -191,18 +244,18 @@ export const RoundProjectorPage = () => {
   const totalPages = Math.max(1, Math.ceil(sortedRecords.length / projectorMetrics.rowsPerPage));
   const startIndex = projectorPage * projectorMetrics.rowsPerPage;
   const pageRecords = sortedRecords.slice(startIndex, startIndex + projectorMetrics.rowsPerPage);
-  const columnCount = 3 + (showAverageColumn ? 1 : 0) + (showAttemptColumns ? attemptCount : 0);
+  const columnCount = 4 + (showAverageColumn ? 1 : 0) + (showAttemptColumns ? attemptCount : 0);
   const emptyRows = Math.max(0, projectorMetrics.rowsPerPage - pageRecords.length);
 
   useEffect(() => {
     if (projectorPaused || totalPages <= 1) return;
     const timer = window.setInterval(() => {
       setProjectorPage((prev) => (prev + 1) % totalPages);
-    }, PROJECTOR_PAGE_DURATION_MS);
+    }, pageDurationSec * 1000);
     return () => {
       window.clearInterval(timer);
     };
-  }, [projectorPaused, totalPages]);
+  }, [pageDurationSec, projectorPaused, totalPages]);
 
   useEffect(() => {
     if (projectorPage < totalPages) return;
@@ -226,6 +279,24 @@ export const RoundProjectorPage = () => {
 
   const backTarget = compIdx ?? String(round.compIdx);
   const roundDateTime = formatRoundDateTime(round.eventStart, round.eventEnd);
+  const applyProjectorSettings = () => {
+    const normalized = normalizeDurationSec(draftPageDurationSec);
+    setPageDurationSec(normalized);
+    setDraftPageDurationSec(normalized);
+    setSettingsOpen(false);
+  };
+
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+        return;
+      }
+      await document.documentElement.requestFullscreen();
+    } catch (fullscreenError) {
+      console.error("프로젝터 전체화면 토글 실패:", fullscreenError);
+    }
+  };
 
   return (
     <div
@@ -233,7 +304,7 @@ export const RoundProjectorPage = () => {
       style={{ "--projector-row-height": `${projectorMetrics.rowHeight}px` } as CSSProperties}
     >
       <div className="projector-mode-header" ref={projectorHeaderRef}>
-        <div className="projector-mode-title-wrap">
+        <div className="projector-mode-title-wrap page-title-area round-title-area">
           <div className="page-title-icon" aria-hidden="true">
             <img
               src={getEventIconSrc(round.cubeEventName)}
@@ -250,9 +321,9 @@ export const RoundProjectorPage = () => {
               }}
             />
           </div>
-          <div className="projector-mode-title-text">
-            <h2>{`${round.cubeEventName} ${round.roundName}`}</h2>
-            <p>
+          <div className="projector-mode-title-text round-title-text">
+            <h1 className="page-title projector-mode-title">{`${round.cubeEventName} ${round.roundName}`}</h1>
+            <div className="page-title-meta projector-mode-title-meta">
               <span>{round.compName}</span>
               {roundDateTime ? (
                 <>
@@ -260,34 +331,67 @@ export const RoundProjectorPage = () => {
                   <span>{roundDateTime}</span>
                 </>
               ) : null}
-            </p>
+            </div>
           </div>
         </div>
         <div className="projector-mode-controls">
           <button
             type="button"
-            className="projector-mode-btn"
+            className="projector-mode-control-icon-btn"
+            aria-label={projectorPaused ? "재생" : "일시정지"}
             onClick={() => setProjectorPaused((prev) => !prev)}
           >
-            {projectorPaused ? "재생" : "일시정지"}
+            <img
+              className="projector-mode-control-icon"
+              src={projectorPaused ? "/icon/button/play.svg" : "/icon/button/pause.svg"}
+              alt=""
+              aria-hidden="true"
+            />
           </button>
           <button
             type="button"
-            className="projector-mode-btn projector-mode-btn--danger projector-mode-btn--icon"
-            aria-label="종료"
-            onClick={() => navigate(`/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}`)}
+            className="projector-mode-control-icon-btn"
+            aria-label={isFullscreen ? "전체화면 종료" : "전체화면"}
+            onClick={() => {
+              void toggleFullscreen();
+            }}
           >
-            <img className="projector-mode-btn-icon" src="/icon/modal/close.svg" alt="" aria-hidden="true" />
+            <img
+              className="projector-mode-control-icon"
+              src={isFullscreen ? "/icon/button/fullscreen-exit.svg" : "/icon/button/fullscreen.svg"}
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
+          <button
+            type="button"
+            className="projector-mode-control-icon-btn"
+            aria-label="설정"
+            onClick={() => {
+              setDraftPageDurationSec(pageDurationSec);
+              setSettingsOpen(true);
+            }}
+          >
+            <img className="projector-mode-control-icon" src="/icon/button/settings.svg" alt="" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="projector-mode-control-icon-btn"
+            aria-label="종료"
+            onClick={() => navigate(`/competition/${Number(backTarget)}/round/${Number(round.idx)}`)}
+          >
+            <img className="projector-mode-control-icon" src="/icon/modal/close.svg" alt="" aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      <div className="projector-mode-table-wrap">
+      <div className="projector-mode-table-wrap" ref={projectorTableWrapRef}>
         <table className="projector-mode-table">
           <thead ref={projectorTableHeadRef}>
             <tr>
               <th>#</th>
               <th>이름</th>
+              <th>지역</th>
               {showAverageColumn ? <th>평균</th> : null}
               <th>최고</th>
               {showAttemptColumns ? attemptTries.map((attemptTry) => <th key={attemptTry}>{attemptTry}</th>) : null}
@@ -310,8 +414,10 @@ export const RoundProjectorPage = () => {
               const isRanked = hasAllAttempts && (singleMode ? typeof record.single === "number" : hasComputedAverage(record));
               const isAdvance = !!(round.advance && rank <= round.advance && isRanked);
               const isCutlineStart = !isAdvance && prevIsAdvance;
-            const displayAverage = resolveAverageValue(record.attempts, record.avgCalc, record.average);
-            const nameText = record.enName ? `${record.name} (${record.enName})` : record.name;
+              const displayAverage = resolveAverageValue(record.attempts, record.avgCalc, record.average);
+              const nameText = record.enName ? `${record.name} (${record.enName})` : record.name;
+              const regionLabel = mapRegionName(record.state) ?? record.state ?? "-";
+              const regionLogoSrc = getRegionLogoSrc(record.state);
               const times = attempts
                 .map((attempt) => attempt.time)
                 .filter((time) => typeof time === "number");
@@ -344,6 +450,15 @@ export const RoundProjectorPage = () => {
                     style={{ "--projector-reveal-delay": resolveRevealDelay(index) } as CSSProperties}
                   >
                     {nameText}
+                  </span>
+                </td>
+                <td className="projector-mode-region-cell">
+                  <span
+                    className="projector-mode-cell-text projector-mode-region-inline"
+                    style={{ "--projector-reveal-delay": resolveRevealDelay(index) } as CSSProperties}
+                  >
+                    {regionLogoSrc ? <img className="projector-mode-region-logo" src={regionLogoSrc} alt="" aria-hidden="true" /> : null}
+                    <span>{regionLabel}</span>
                   </span>
                 </td>
                 {showAverageColumn ? (
@@ -405,6 +520,60 @@ export const RoundProjectorPage = () => {
       <div className="projector-mode-footer">
         <span>{`${projectorPage + 1} / ${totalPages}`}</span>
       </div>
+
+      {settingsOpen ? (
+        <div className="projector-settings-backdrop" role="presentation" onClick={() => setSettingsOpen(false)}>
+          <div
+            className="projector-settings-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="프로젝터 설정"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="projector-settings-header">
+              <h3>프로젝터 설정</h3>
+              <button
+                type="button"
+                className="projector-settings-close"
+                aria-label="설정 닫기"
+                onClick={() => setSettingsOpen(false)}
+              >
+                <img src="/icon/modal/close.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+
+            <label className="projector-settings-field">
+              <span>페이지 전환 속도</span>
+              <div className="projector-settings-input-row">
+                <input
+                  type="range"
+                  min={PROJECTOR_MIN_DURATION_SEC}
+                  max={PROJECTOR_MAX_DURATION_SEC}
+                  value={draftPageDurationSec}
+                  onChange={(event) => setDraftPageDurationSec(normalizeDurationSec(Number(event.target.value)))}
+                />
+                <input
+                  type="number"
+                  min={PROJECTOR_MIN_DURATION_SEC}
+                  max={PROJECTOR_MAX_DURATION_SEC}
+                  value={draftPageDurationSec}
+                  onChange={(event) => setDraftPageDurationSec(normalizeDurationSec(Number(event.target.value)))}
+                />
+                <strong>초</strong>
+              </div>
+            </label>
+
+            <div className="projector-settings-actions">
+              <button type="button" className="projector-settings-btn" onClick={() => setSettingsOpen(false)}>
+                취소
+              </button>
+              <button type="button" className="projector-settings-btn projector-settings-btn--primary" onClick={applyProjectorSettings}>
+                적용
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
