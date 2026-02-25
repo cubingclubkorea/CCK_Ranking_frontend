@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { Record as RoundRecord } from "@/entities/record";
-import { formatTimeValue, toRecord, useRankingData } from "@/features/ranking";
-import { shouldUseRequestErrorPage } from "@/shared";
+import { formatTimeValue, toRecord, type RankingMetric, useRankingData } from "@/features/ranking";
+import { mapRegionKeyToLabel, resolveRegionKey, shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
@@ -11,6 +12,9 @@ import { RankingTable } from "./components/RankingTable";
 import { RankingTableSkeleton } from "./components/RankingTableSkeleton";
 
 export const RankingPage = () => {
+  const { event: rawEventParam, metric: rawMetricParam } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const {
     eventLoading,
     rankingLoading,
@@ -24,13 +28,127 @@ export const RankingPage = () => {
     selectedRegion,
     setSelectedRegion,
     regionOptions,
+    rankingSize,
+    setRankingSize,
+    rankingSizeOptions,
     rankingRows,
   } = useRankingData();
   const [selectedRecord, setSelectedRecord] = useState<{ record: RoundRecord; rank: number } | null>(null);
+  const defaultRegion = "전체 지역";
+  const defaultShow = 50;
+
+  const eventParam = useMemo(() => {
+    if (!rawEventParam) return "";
+    try {
+      return decodeURIComponent(rawEventParam).replace(/_/g, " ");
+    } catch {
+      return rawEventParam.replace(/_/g, " ");
+    }
+  }, [rawEventParam]);
+
+  const metricParam = useMemo<RankingMetric | null>(() => {
+    if (rawMetricParam === "single" || rawMetricParam === "average") {
+      return rawMetricParam;
+    }
+    return null;
+  }, [rawMetricParam]);
+
+  const stateParam = searchParams.get("state");
+  const showParam = Number(searchParams.get("show"));
+  const stateLabelParam = useMemo(
+    () => (stateParam ? mapRegionKeyToLabel(stateParam) : null),
+    [stateParam]
+  );
 
   useEffect(() => {
     setSelectedRecord(null);
-  }, [metric, selectedEvent, selectedRegion]);
+  }, [metric, selectedEvent, selectedRegion, rankingSize]);
+
+  useEffect(() => {
+    if (visibleEventNames.length === 0) return;
+    const nextEvent =
+      eventParam && visibleEventNames.includes(eventParam) ? eventParam : visibleEventNames[0];
+    if (selectedEvent !== nextEvent) {
+      setSelectedEvent(nextEvent);
+    }
+  }, [eventParam, selectedEvent, setSelectedEvent, visibleEventNames]);
+
+  useEffect(() => {
+    const nextMetric = metricParam ?? "single";
+    if (metric !== nextMetric) {
+      setMetric(nextMetric);
+    }
+  }, [metric, metricParam, setMetric]);
+
+  useEffect(() => {
+    const nextRegion =
+      stateLabelParam && regionOptions.includes(stateLabelParam)
+        ? stateLabelParam
+        : stateParam && regionOptions.includes(stateParam)
+          ? stateParam
+          : defaultRegion;
+    if (selectedRegion !== nextRegion) {
+      setSelectedRegion(nextRegion);
+    }
+  }, [regionOptions, selectedRegion, setSelectedRegion, stateLabelParam, stateParam]);
+
+  useEffect(() => {
+    const nextSize = rankingSizeOptions.includes(showParam) ? showParam : defaultShow;
+    if (rankingSize !== nextSize) {
+      setRankingSize(nextSize);
+    }
+  }, [rankingSize, rankingSizeOptions, setRankingSize, showParam]);
+
+  const toRankingUrl = (
+    nextEvent: string,
+    nextMetric: RankingMetric,
+    nextRegion: string,
+    nextSize: number
+  ) => {
+    const eventSlug = nextEvent.replace(/\s+/g, "_");
+    const nextPath = `/ranking/${encodeURIComponent(eventSlug)}/${nextMetric}`;
+    const nextParams = new URLSearchParams();
+    if (nextRegion !== defaultRegion) {
+      const regionKey = resolveRegionKey(nextRegion);
+      if (regionKey) {
+        nextParams.set("state", regionKey);
+      }
+    }
+    if (nextSize !== defaultShow) {
+      nextParams.set("show", String(nextSize));
+    }
+    const nextSearch = nextParams.toString();
+    return nextSearch ? `${nextPath}?${nextSearch}` : nextPath;
+  };
+
+  useEffect(() => {
+    if (!selectedEvent) return;
+    if (!rawEventParam || !rawMetricParam) {
+      navigate(toRankingUrl(selectedEvent, metric, selectedRegion, rankingSize), { replace: true });
+    }
+  }, [metric, navigate, rankingSize, rawEventParam, rawMetricParam, selectedEvent, selectedRegion]);
+
+  const handleSelectEvent = (eventName: string) => {
+    navigate(toRankingUrl(eventName, metric, selectedRegion, rankingSize), { replace: true });
+  };
+
+  const handleSelectMetric = (nextMetric: RankingMetric) => {
+    if (!selectedEvent) return;
+    if (nextMetric === "average" && !averageEnabled) {
+      return;
+    }
+    navigate(toRankingUrl(selectedEvent, nextMetric, selectedRegion, rankingSize), { replace: true });
+  };
+
+  const handleSelectRegion = (region: string) => {
+    if (!selectedEvent) return;
+    navigate(toRankingUrl(selectedEvent, metric, region, rankingSize), { replace: true });
+  };
+
+  const handleSelectSize = (size: number) => {
+    if (!selectedEvent) return;
+    navigate(toRankingUrl(selectedEvent, metric, selectedRegion, size), { replace: true });
+  };
 
   const metricLabel = useMemo(() => (metric === "single" ? "최고" : "평균"), [metric]);
   const rankingTitle = useMemo(() => {
@@ -72,13 +190,16 @@ export const RankingPage = () => {
         <RankingControls
           events={visibleEventNames}
           selectedEvent={selectedEvent}
-          onSelectEvent={setSelectedEvent}
+          onSelectEvent={handleSelectEvent}
           metric={metric}
-          onSelectMetric={setMetric}
+          onSelectMetric={handleSelectMetric}
           averageDisabled={!averageEnabled}
           regionOptions={regionOptions}
           selectedRegion={selectedRegion}
-          onSelectRegion={setSelectedRegion}
+          onSelectRegion={handleSelectRegion}
+          sizeOptions={rankingSizeOptions}
+          selectedSize={rankingSize}
+          onSelectSize={handleSelectSize}
         />
 
         <div className="ranking-panel-head">

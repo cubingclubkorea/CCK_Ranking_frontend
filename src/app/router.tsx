@@ -222,7 +222,7 @@ export const router = createBrowserRouter([
         element: <NewRecordPage />,
       },
       {
-        path: "ranking",
+        path: "ranking/:event?/:metric?",
         element: <RankingPage />,
       },
       {
