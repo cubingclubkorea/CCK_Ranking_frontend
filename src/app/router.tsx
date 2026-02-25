@@ -226,6 +226,10 @@ export const router = createBrowserRouter([
         element: <RankingPage />,
       },
       {
+        path: "ranking/:event/:metric",
+        element: <RankingPage />,
+      },
+      {
         path: "profile/:cckId",
         element: <ProfilePage />,
       },

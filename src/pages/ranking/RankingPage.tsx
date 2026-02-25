@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { Record as RoundRecord } from "@/entities/record";
-import { formatTimeValue, toRecord, useRankingData } from "@/features/ranking";
+import { formatTimeValue, toRecord, type RankingMetric, useRankingData } from "@/features/ranking";
 import { shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
@@ -11,6 +12,10 @@ import { RankingTable } from "./components/RankingTable";
 import { RankingTableSkeleton } from "./components/RankingTableSkeleton";
 
 export const RankingPage = () => {
+  const { event: rawEventParam, metric: rawMetricParam } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const {
     eventLoading,
     rankingLoading,
@@ -30,10 +35,82 @@ export const RankingPage = () => {
     rankingRows,
   } = useRankingData();
   const [selectedRecord, setSelectedRecord] = useState<{ record: RoundRecord; rank: number } | null>(null);
+  const defaultRegion = "전체 지역";
+  const defaultShow = 50;
+
+  const eventParam = useMemo(() => {
+    if (!rawEventParam) return "";
+    try {
+      return decodeURIComponent(rawEventParam);
+    } catch {
+      return rawEventParam;
+    }
+  }, [rawEventParam]);
+
+  const metricParam = useMemo<RankingMetric | null>(() => {
+    if (rawMetricParam === "single" || rawMetricParam === "average") {
+      return rawMetricParam;
+    }
+    return null;
+  }, [rawMetricParam]);
+
+  const stateParam = searchParams.get("state");
+  const showParam = Number(searchParams.get("show"));
 
   useEffect(() => {
     setSelectedRecord(null);
   }, [metric, selectedEvent, selectedRegion, rankingSize]);
+
+  useEffect(() => {
+    if (visibleEventNames.length === 0) return;
+    const nextEvent =
+      eventParam && visibleEventNames.includes(eventParam) ? eventParam : visibleEventNames[0];
+    if (selectedEvent !== nextEvent) {
+      setSelectedEvent(nextEvent);
+    }
+  }, [eventParam, selectedEvent, setSelectedEvent, visibleEventNames]);
+
+  useEffect(() => {
+    const nextMetric = metricParam ?? "single";
+    if (metric !== nextMetric) {
+      setMetric(nextMetric);
+    }
+  }, [metric, metricParam, setMetric]);
+
+  useEffect(() => {
+    const nextRegion =
+      stateParam && regionOptions.includes(stateParam) ? stateParam : defaultRegion;
+    if (selectedRegion !== nextRegion) {
+      setSelectedRegion(nextRegion);
+    }
+  }, [regionOptions, selectedRegion, setSelectedRegion, stateParam]);
+
+  useEffect(() => {
+    const nextSize = rankingSizeOptions.includes(showParam) ? showParam : defaultShow;
+    if (rankingSize !== nextSize) {
+      setRankingSize(nextSize);
+    }
+  }, [rankingSize, rankingSizeOptions, setRankingSize, showParam]);
+
+  useEffect(() => {
+    if (!selectedEvent) return;
+
+    const nextPath = `/ranking/${encodeURIComponent(selectedEvent)}/${metric}`;
+    const nextParams = new URLSearchParams();
+    if (selectedRegion !== defaultRegion) {
+      nextParams.set("state", selectedRegion);
+    }
+    if (rankingSize !== defaultShow) {
+      nextParams.set("show", String(rankingSize));
+    }
+    const nextSearch = nextParams.toString();
+    const nextUrl = nextSearch ? `${nextPath}?${nextSearch}` : nextPath;
+    const currentUrl = `${location.pathname}${location.search}`;
+
+    if (currentUrl !== nextUrl) {
+      navigate(nextUrl, { replace: true });
+    }
+  }, [defaultRegion, defaultShow, location.pathname, location.search, metric, navigate, rankingSize, selectedEvent, selectedRegion]);
 
   const metricLabel = useMemo(() => (metric === "single" ? "최고" : "평균"), [metric]);
   const rankingTitle = useMemo(() => {
