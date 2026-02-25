@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { Record as RoundRecord } from "@/entities/record";
 import { formatTimeValue, toRecord, type RankingMetric, useRankingData } from "@/features/ranking";
-import { shouldUseRequestErrorPage } from "@/shared";
+import { mapRegionKeyToLabel, resolveRegionKey, shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
@@ -15,7 +15,6 @@ export const RankingPage = () => {
   const { event: rawEventParam, metric: rawMetricParam } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const {
     eventLoading,
     rankingLoading,
@@ -41,9 +40,9 @@ export const RankingPage = () => {
   const eventParam = useMemo(() => {
     if (!rawEventParam) return "";
     try {
-      return decodeURIComponent(rawEventParam);
+      return decodeURIComponent(rawEventParam).replace(/_/g, " ");
     } catch {
-      return rawEventParam;
+      return rawEventParam.replace(/_/g, " ");
     }
   }, [rawEventParam]);
 
@@ -56,6 +55,10 @@ export const RankingPage = () => {
 
   const stateParam = searchParams.get("state");
   const showParam = Number(searchParams.get("show"));
+  const stateLabelParam = useMemo(
+    () => (stateParam ? mapRegionKeyToLabel(stateParam) : null),
+    [stateParam]
+  );
 
   useEffect(() => {
     setSelectedRecord(null);
@@ -79,11 +82,15 @@ export const RankingPage = () => {
 
   useEffect(() => {
     const nextRegion =
-      stateParam && regionOptions.includes(stateParam) ? stateParam : defaultRegion;
+      stateLabelParam && regionOptions.includes(stateLabelParam)
+        ? stateLabelParam
+        : stateParam && regionOptions.includes(stateParam)
+          ? stateParam
+          : defaultRegion;
     if (selectedRegion !== nextRegion) {
       setSelectedRegion(nextRegion);
     }
-  }, [regionOptions, selectedRegion, setSelectedRegion, stateParam]);
+  }, [regionOptions, selectedRegion, setSelectedRegion, stateLabelParam, stateParam]);
 
   useEffect(() => {
     const nextSize = rankingSizeOptions.includes(showParam) ? showParam : defaultShow;
@@ -92,25 +99,56 @@ export const RankingPage = () => {
     }
   }, [rankingSize, rankingSizeOptions, setRankingSize, showParam]);
 
-  useEffect(() => {
-    if (!selectedEvent) return;
-
-    const nextPath = `/ranking/${encodeURIComponent(selectedEvent)}/${metric}`;
+  const toRankingUrl = (
+    nextEvent: string,
+    nextMetric: RankingMetric,
+    nextRegion: string,
+    nextSize: number
+  ) => {
+    const eventSlug = nextEvent.replace(/\s+/g, "_");
+    const nextPath = `/ranking/${encodeURIComponent(eventSlug)}/${nextMetric}`;
     const nextParams = new URLSearchParams();
-    if (selectedRegion !== defaultRegion) {
-      nextParams.set("state", selectedRegion);
+    if (nextRegion !== defaultRegion) {
+      const regionKey = resolveRegionKey(nextRegion);
+      if (regionKey) {
+        nextParams.set("state", regionKey);
+      }
     }
-    if (rankingSize !== defaultShow) {
-      nextParams.set("show", String(rankingSize));
+    if (nextSize !== defaultShow) {
+      nextParams.set("show", String(nextSize));
     }
     const nextSearch = nextParams.toString();
-    const nextUrl = nextSearch ? `${nextPath}?${nextSearch}` : nextPath;
-    const currentUrl = `${location.pathname}${location.search}`;
+    return nextSearch ? `${nextPath}?${nextSearch}` : nextPath;
+  };
 
-    if (currentUrl !== nextUrl) {
-      navigate(nextUrl, { replace: true });
+  useEffect(() => {
+    if (!selectedEvent) return;
+    if (!rawEventParam || !rawMetricParam) {
+      navigate(toRankingUrl(selectedEvent, metric, selectedRegion, rankingSize), { replace: true });
     }
-  }, [defaultRegion, defaultShow, location.pathname, location.search, metric, navigate, rankingSize, selectedEvent, selectedRegion]);
+  }, [metric, navigate, rankingSize, rawEventParam, rawMetricParam, selectedEvent, selectedRegion]);
+
+  const handleSelectEvent = (eventName: string) => {
+    navigate(toRankingUrl(eventName, metric, selectedRegion, rankingSize), { replace: true });
+  };
+
+  const handleSelectMetric = (nextMetric: RankingMetric) => {
+    if (!selectedEvent) return;
+    if (nextMetric === "average" && !averageEnabled) {
+      return;
+    }
+    navigate(toRankingUrl(selectedEvent, nextMetric, selectedRegion, rankingSize), { replace: true });
+  };
+
+  const handleSelectRegion = (region: string) => {
+    if (!selectedEvent) return;
+    navigate(toRankingUrl(selectedEvent, metric, region, rankingSize), { replace: true });
+  };
+
+  const handleSelectSize = (size: number) => {
+    if (!selectedEvent) return;
+    navigate(toRankingUrl(selectedEvent, metric, selectedRegion, size), { replace: true });
+  };
 
   const metricLabel = useMemo(() => (metric === "single" ? "최고" : "평균"), [metric]);
   const rankingTitle = useMemo(() => {
@@ -152,16 +190,16 @@ export const RankingPage = () => {
         <RankingControls
           events={visibleEventNames}
           selectedEvent={selectedEvent}
-          onSelectEvent={setSelectedEvent}
+          onSelectEvent={handleSelectEvent}
           metric={metric}
-          onSelectMetric={setMetric}
+          onSelectMetric={handleSelectMetric}
           averageDisabled={!averageEnabled}
           regionOptions={regionOptions}
           selectedRegion={selectedRegion}
-          onSelectRegion={setSelectedRegion}
+          onSelectRegion={handleSelectRegion}
           sizeOptions={rankingSizeOptions}
           selectedSize={rankingSize}
-          onSelectSize={setRankingSize}
+          onSelectSize={handleSelectSize}
         />
 
         <div className="ranking-panel-head">

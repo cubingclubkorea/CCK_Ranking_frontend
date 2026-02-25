@@ -1413,6 +1413,54 @@ body {
     gap: 40px;
 }
 
+.profile-legacy-banner {
+    border: 1px solid #f1d6a8;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fff7e9 0%, #fff3dc 100%);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-legacy-banner-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #5b3a09;
+}
+
+.profile-legacy-banner-text {
+    margin: 0;
+    color: #6a4816;
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 500;
+}
+
+.profile-legacy-banner-footnote {
+    margin: 0;
+    color: #7a5520;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.profile-legacy-inline-link {
+    border: 0;
+    background: transparent;
+    color: #7a4600;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.profile-legacy-inline-link:hover {
+    text-decoration: underline;
+}
+
 .profile-identity-card {
     display: flex;
     position: relative;
@@ -2371,6 +2419,18 @@ body {
     .profile-identity-card {
         flex-direction: column;
         min-height: 0;
+    }
+
+    .profile-legacy-banner {
+        padding: 14px 14px;
+    }
+
+    .profile-legacy-banner-title {
+        font-size: 16px;
+    }
+
+    .profile-legacy-banner-text {
+        font-size: 13px;
     }
 
     .profile-identity-organizer-mark {
@@ -6128,6 +6188,7 @@ body {
 }
 
 [data-theme="dark"] .profile-identity-card,
+[data-theme="dark"] .profile-legacy-banner,
 [data-theme="dark"] .profile-event-card,
 [data-theme="dark"] .profile-record-history-card,
 [data-theme="dark"] .profile-record-current-card,
@@ -6185,11 +6246,30 @@ body {
 
 [data-theme="dark"] .profile-name,
 [data-theme="dark"] .profile-name-en,
+[data-theme="dark"] .profile-legacy-banner-title,
 [data-theme="dark"] .profile-section-title,
 [data-theme="dark"] .profile-main-section-title,
 [data-theme="dark"] .profile-event-title,
 [data-theme="dark"] .profile-stat-card p {
     color: #cdd9e5;
+}
+
+[data-theme="dark"] .profile-legacy-banner {
+    border-color: #6e552d;
+    background: linear-gradient(135deg, #3b2f20 0%, #2f2518 100%);
+}
+
+[data-theme="dark"] .profile-legacy-banner-text,
+[data-theme="dark"] .profile-legacy-banner-footnote {
+    color: #e8d7be;
+}
+
+[data-theme="dark"] .profile-legacy-inline-link {
+    color: #f0c06d;
+}
+
+[data-theme="dark"] .profile-legacy-inline-link:hover {
+    text-decoration: underline;
 }
 
 [data-theme="dark"] .profile-event-icon {
