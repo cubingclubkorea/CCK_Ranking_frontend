@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCubeEventList } from "@/entities/cubeEvent";
 import { type GlobalSingleRankingRecord } from "@/entities/statistics";
-import { isBo3AvgCalc, isSingleAvgCalc, mapRegionName, REGION_FILTER_OPTIONS } from "@/shared";
+import { isBo3AvgCalc, isSingleAvgCalc, REGION_FILTER_OPTIONS, resolveRegionKey } from "@/shared";
 import { getRankingRecords } from "../api/getRankingRecords";
 import {
   getErrorMessage,
@@ -82,8 +82,8 @@ export const useRankingData = () => {
   }, [averageEnabled, metric]);
 
   const cacheKey = useMemo(
-    () => `${metric}:${selectedEvent}:${rankingSize}` as MetricEventKey,
-    [metric, selectedEvent, rankingSize]
+    () => `${metric}:${selectedEvent}:${selectedRegion}:${rankingSize}` as MetricEventKey,
+    [metric, selectedEvent, selectedRegion, rankingSize]
   );
 
   useEffect(() => {
@@ -109,7 +109,13 @@ export const useRankingData = () => {
       setError(null);
 
       try {
-        const rows = await getRankingRecords(metric, selectedEvent, rankingSize);
+        const selectedRegionKey =
+          selectedRegion === "전체 지역" ? undefined : resolveRegionKey(selectedRegion);
+        if (selectedRegion !== "전체 지역" && !selectedRegionKey) {
+          throw new Error("선택한 지역 정보를 확인할 수 없습니다.");
+        }
+
+        const rows = await getRankingRecords(metric, selectedEvent, rankingSize, selectedRegionKey);
         if (!mounted) return;
         setRankingCache((prev) => ({
           ...prev,
@@ -128,23 +134,13 @@ export const useRankingData = () => {
     return () => {
       mounted = false;
     };
-  }, [averageEnabled, cacheKey, metric, rankingCache, rankingSize, selectedEvent]);
+  }, [averageEnabled, cacheKey, metric, rankingCache, rankingSize, selectedEvent, selectedRegion]);
 
   const rankingRows = selectedEvent ? rankingCache[cacheKey] ?? [] : [];
   const regionOptions = useMemo(
     () => ["전체 지역", ...REGION_FILTER_OPTIONS],
     []
   );
-  const filteredRankingRows = useMemo(() => {
-    if (selectedRegion === "전체 지역") {
-      return rankingRows;
-    }
-    return rankingRows.filter((row) => {
-      const mappedRegion = mapRegionName(row.state);
-      return mappedRegion === selectedRegion;
-    });
-  }, [rankingRows, selectedRegion]);
-
   const handleSetMetric = (nextMetric: RankingMetric) => {
     if (nextMetric === "average" && !averageEnabled) return;
     setMetric(nextMetric);
@@ -166,6 +162,6 @@ export const useRankingData = () => {
     rankingSize,
     setRankingSize,
     rankingSizeOptions: [...rankingSizeOptions],
-    rankingRows: filteredRankingRows,
+    rankingRows,
   };
 };
