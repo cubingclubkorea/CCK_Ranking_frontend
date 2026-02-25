@@ -8,10 +8,11 @@ export type RankingRecordMetric = "single" | "average";
 
 export const getRankingRecords = async (
   metric: RankingRecordMetric,
-  eventName: string
+  eventName: string,
+  size = 50
 ): Promise<GlobalSingleRankingRecord[]> => {
   if (metric === "single") {
-    return getGlobalSingleRanking(eventName);
+    return getGlobalSingleRanking(eventName, size);
   }
-  return getGlobalAverageRanking(eventName);
+  return getGlobalAverageRanking(eventName, size);
 };

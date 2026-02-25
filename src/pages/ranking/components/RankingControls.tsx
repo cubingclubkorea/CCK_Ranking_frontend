@@ -11,6 +11,9 @@ type RankingControlsProps = {
   regionOptions: string[];
   selectedRegion: string;
   onSelectRegion: (region: string) => void;
+  sizeOptions: number[];
+  selectedSize: number;
+  onSelectSize: (size: number) => void;
 };
 
 export const RankingControls = ({
@@ -23,6 +26,9 @@ export const RankingControls = ({
   regionOptions,
   selectedRegion,
   onSelectRegion,
+  sizeOptions,
+  selectedSize,
+  onSelectSize,
 }: RankingControlsProps) => (
   <div className="ranking-controls">
     <div className="ranking-control-block">
@@ -89,6 +95,21 @@ export const RankingControls = ({
           {regionOptions.map((region) => (
             <option key={region} value={region}>
               {region}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="ranking-control-block">
+        <div className="ranking-control-title">개수</div>
+        <select
+          className="ranking-region-select"
+          value={selectedSize}
+          onChange={(event) => onSelectSize(Number(event.target.value))}
+          aria-label="랭킹 개수 선택"
+        >
+          {sizeOptions.map((size) => (
+            <option key={size} value={size}>
+              {size}
             </option>
           ))}
         </select>

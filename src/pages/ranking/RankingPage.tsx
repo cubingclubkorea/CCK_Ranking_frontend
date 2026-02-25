@@ -24,13 +24,16 @@ export const RankingPage = () => {
     selectedRegion,
     setSelectedRegion,
     regionOptions,
+    rankingSize,
+    setRankingSize,
+    rankingSizeOptions,
     rankingRows,
   } = useRankingData();
   const [selectedRecord, setSelectedRecord] = useState<{ record: RoundRecord; rank: number } | null>(null);
 
   useEffect(() => {
     setSelectedRecord(null);
-  }, [metric, selectedEvent, selectedRegion]);
+  }, [metric, selectedEvent, selectedRegion, rankingSize]);
 
   const metricLabel = useMemo(() => (metric === "single" ? "최고" : "평균"), [metric]);
   const rankingTitle = useMemo(() => {
@@ -79,6 +82,9 @@ export const RankingPage = () => {
           regionOptions={regionOptions}
           selectedRegion={selectedRegion}
           onSelectRegion={setSelectedRegion}
+          sizeOptions={rankingSizeOptions}
+          selectedSize={rankingSize}
+          onSelectSize={setRankingSize}
         />
 
         <div className="ranking-panel-head">

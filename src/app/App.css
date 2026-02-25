@@ -1176,7 +1176,7 @@ body {
 }
 
 .ranking-col-comp {
-    width: 180px;
+    width: auto;
 }
 
 .ranking-table--single .ranking-col-comp {
@@ -1184,7 +1184,7 @@ body {
 }
 
 .ranking-col-attempts {
-    width: auto;
+    width: 220px;
 }
 
 .ranking-table--single-avgcalc {
@@ -1256,8 +1256,10 @@ body {
 }
 
 .ranking-comp-cell {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    line-height: 1.35;
 }
 
 .ranking-attempts-cell {

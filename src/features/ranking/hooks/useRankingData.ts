@@ -12,11 +12,13 @@ import {
 } from "../model/ranking";
 
 export const useRankingData = () => {
+  const rankingSizeOptions = [10, 30, 50, 100, 150] as const;
   const [orderedEventNames, setOrderedEventNames] = useState<string[]>([]);
   const [eventAvgCalcMap, setEventAvgCalcMap] = useState<Record<string, string>>({});
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [metric, setMetric] = useState<RankingMetric>("single");
   const [selectedRegion, setSelectedRegion] = useState("전체 지역");
+  const [rankingSize, setRankingSize] = useState<number>(50);
   const [eventLoading, setEventLoading] = useState(true);
   const [rankingLoading, setRankingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,8 +82,8 @@ export const useRankingData = () => {
   }, [averageEnabled, metric]);
 
   const cacheKey = useMemo(
-    () => `${metric}:${selectedEvent}` as MetricEventKey,
-    [metric, selectedEvent]
+    () => `${metric}:${selectedEvent}:${rankingSize}` as MetricEventKey,
+    [metric, selectedEvent, rankingSize]
   );
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export const useRankingData = () => {
       setError(null);
 
       try {
-        const rows = await getRankingRecords(metric, selectedEvent);
+        const rows = await getRankingRecords(metric, selectedEvent, rankingSize);
         if (!mounted) return;
         setRankingCache((prev) => ({
           ...prev,
@@ -126,7 +128,7 @@ export const useRankingData = () => {
     return () => {
       mounted = false;
     };
-  }, [averageEnabled, cacheKey, metric, rankingCache, selectedEvent]);
+  }, [averageEnabled, cacheKey, metric, rankingCache, rankingSize, selectedEvent]);
 
   const rankingRows = selectedEvent ? rankingCache[cacheKey] ?? [] : [];
   const regionOptions = useMemo(
@@ -161,6 +163,9 @@ export const useRankingData = () => {
     selectedRegion,
     setSelectedRegion,
     regionOptions,
+    rankingSize,
+    setRankingSize,
+    rankingSizeOptions: [...rankingSizeOptions],
     rankingRows: filteredRankingRows,
   };
 };
