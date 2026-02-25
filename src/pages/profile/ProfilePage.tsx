@@ -5,7 +5,6 @@ import { shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import {
-  ProfileCompetitionsSection,
   ProfileIdentityCard,
   ProfilePageSkeleton,
   ProfileRankingSection,

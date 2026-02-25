@@ -263,6 +263,18 @@ body {
     left: 80px;
 }
 
+.content-area.content-area--projector {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: auto;
+    height: 100%;
+    overflow: hidden;
+    scrollbar-gutter: auto;
+    padding: 0;
+}
+
 .content-inner {
     min-height: 100%;
     display: flex;
@@ -272,6 +284,12 @@ body {
     max-width: none;
     margin: 0;
     padding: 20px 0 28px;
+}
+
+.content-inner.content-inner--projector {
+    min-height: 100%;
+    height: 100%;
+    padding: 0;
 }
 
 /* ===== Header Components ===== */
@@ -2807,6 +2825,13 @@ body {
     flex-wrap: wrap;
 }
 
+.round-admin-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .round-panel-title {
     display: flex;
     align-items: baseline;
@@ -2997,6 +3022,444 @@ body {
 
 .round-table-row-cutline td {
     border-top: 2px solid #ececf2;
+}
+
+.projector-mode-overlay {
+    --projector-bg: #f5f7fc;
+    --projector-header-bg: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
+    --projector-text: #1f2937;
+    --projector-muted: #667085;
+    --projector-border: #dce4f3;
+    --projector-table-head-bg: #ebeff8;
+    --projector-table-head-text: #4b5565;
+    --projector-row-odd: #ffffff;
+    --projector-row-even: #f8faff;
+    --projector-row-border: #e6ebf5;
+    --projector-btn-bg: #eef2ff;
+    --projector-btn-border: #cfd8ef;
+    --projector-btn-text: #2f3c56;
+    --projector-btn-hover: #e4ebff;
+    --projector-btn-danger-bg: #fff1f1;
+    --projector-btn-danger-border: #f3c9c9;
+    --projector-btn-danger-text: #8f2c2c;
+    --projector-btn-danger-hover: #ffe5e5;
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    background: var(--projector-bg);
+    color: var(--projector-text);
+    padding: 10px 18px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.projector-mode-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--projector-header-bg);
+    border-bottom: none;
+    padding: 10px 6px 12px;
+    margin-bottom: 8px;
+}
+
+.projector-mode-title-wrap {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 12px;
+    min-width: 0;
+}
+
+.projector-mode-title-text {
+    min-width: 0;
+}
+
+.projector-mode-title {
+    font-size: clamp(28px, 2.5vw, 40px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+}
+
+.projector-mode-title-meta {
+    font-size: clamp(14px, 1.2vw, 19px);
+    color: var(--projector-muted);
+}
+
+.projector-mode-divider {
+    opacity: 0.7;
+}
+
+.projector-mode-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.projector-mode-control-icon-btn {
+    border: none;
+    background: transparent;
+    color: var(--projector-btn-text);
+    padding: 3px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.82;
+    border-radius: 6px;
+}
+
+.projector-mode-control-icon-btn:hover {
+    opacity: 1;
+}
+
+.projector-mode-control-icon {
+    width: 21px;
+    height: 21px;
+    display: block;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%);
+}
+
+.projector-mode-table {
+    min-height: 0;
+    flex: 1;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.projector-mode-table-wrap {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    border: 1px solid var(--projector-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.projector-mode-table thead th {
+    height: 52px;
+    background: var(--projector-table-head-bg);
+    color: var(--projector-table-head-text);
+    font-size: clamp(18px, 1.5vw, 24px);
+    font-weight: 700;
+    text-align: left;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--projector-row-border);
+}
+
+.projector-mode-table tbody td {
+    height: var(--projector-row-height, 56px);
+    font-size: clamp(18px, 1.42vw, 26px);
+    color: var(--projector-text);
+    padding: 0 14px;
+    border-top: 1px solid var(--projector-row-border);
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.projector-mode-cell-text {
+    display: inline-block;
+    opacity: 0;
+    filter: brightness(1.85);
+    animation: projector-cell-reveal 520ms cubic-bezier(0.2, 0.9, 0.24, 1) forwards;
+    animation-delay: var(--projector-reveal-delay, 0s);
+}
+
+@keyframes projector-cell-reveal {
+    0% {
+        opacity: 0;
+        filter: brightness(2.1);
+    }
+    55% {
+        opacity: 1;
+        filter: brightness(1.45);
+    }
+    100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+}
+
+.projector-mode-table tbody tr:nth-child(odd) td {
+    background: var(--projector-row-odd);
+}
+
+.projector-mode-table tbody tr:nth-child(even) td {
+    background: var(--projector-row-even);
+}
+
+.projector-mode-table tbody tr.round-table-row-advance td {
+    background: #e9f7ef;
+}
+
+.projector-mode-table tbody tr.round-table-row-advance td:first-child .projector-mode-cell-text {
+    color: #1e8756;
+    font-weight: 700;
+}
+
+.projector-mode-table tbody tr.round-table-row-advance + tr.round-table-row-cutline td {
+    border-top: 2px solid #ececf2;
+}
+
+.projector-mode-row--empty td {
+    color: transparent;
+}
+
+.projector-mode-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 12px;
+}
+
+.projector-mode-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
+}
+
+.projector-mode-table th:first-child,
+.projector-mode-table td:first-child {
+    width: 66px;
+    text-align: center;
+}
+
+.projector-mode-name {
+    width: auto;
+    font-weight: 600;
+}
+
+.projector-mode-region-cell {
+    width: auto;
+}
+
+.projector-mode-table th:nth-child(2),
+.projector-mode-table td:nth-child(2) {
+    width: 10%;
+}
+
+.projector-mode-table th:nth-child(3),
+.projector-mode-table td:nth-child(3) {
+    width: 14%;
+}
+
+.projector-mode-region-logo {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+.projector-mode-region-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.projector-mode-score {
+    font-weight: 700;
+}
+
+.projector-mode-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    color: var(--projector-muted);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 8px 2px 0;
+}
+
+[data-theme="dark"] .projector-mode-control-icon {
+    filter: brightness(0) invert(0.8);
+}
+
+.projector-settings-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 13000;
+    background: rgba(8, 11, 18, 0.46);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.projector-settings-modal {
+    width: min(440px, 100%);
+    border: 1px solid #dce4f3;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 16px 34px rgba(14, 22, 40, 0.2);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.projector-settings-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.projector-settings-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1f2937;
+}
+
+.projector-settings-close {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.projector-settings-close img {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) saturate(100%);
+}
+
+.projector-settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #475467;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.projector-settings-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.projector-settings-input-row input[type="range"] {
+    flex: 1;
+}
+
+.projector-settings-input-row input[type="number"] {
+    width: 72px;
+    border: 1px solid #cfd8ef;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.projector-settings-input-row strong {
+    color: #344054;
+    font-size: 13px;
+}
+
+.projector-settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.projector-settings-btn {
+    border: 1px solid #d0d7e9;
+    background: #f8faff;
+    color: #334155;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.projector-settings-btn--primary {
+    border-color: #9ab0dd;
+    background: #e9f0ff;
+    color: #163a7a;
+}
+
+[data-theme="dark"] .projector-mode-overlay {
+    --projector-bg: #11131a;
+    --projector-header-bg: linear-gradient(180deg, #171a23 0%, #11131a 100%);
+    --projector-text: #f1f4fa;
+    --projector-muted: #a9b1c2;
+    --projector-border: #242a37;
+    --projector-table-head-bg: #202533;
+    --projector-table-head-text: #d6dce8;
+    --projector-row-odd: #171b26;
+    --projector-row-even: #131722;
+    --projector-row-border: #242a37;
+    --projector-btn-bg: #23293a;
+    --projector-btn-border: #30374b;
+    --projector-btn-text: #e9edf8;
+    --projector-btn-hover: #2b3348;
+    --projector-btn-danger-bg: #3a2427;
+    --projector-btn-danger-border: #573337;
+    --projector-btn-danger-text: #ffd6d8;
+    --projector-btn-danger-hover: #4b2c30;
+}
+
+[data-theme="dark"] .projector-mode-table tbody tr.round-table-row-advance td {
+    background: #2a3a2f;
+}
+
+[data-theme="dark"] .projector-mode-table tbody tr.round-table-row-advance td:first-child .projector-mode-cell-text {
+    color: #9fcca7;
+}
+
+[data-theme="dark"] .projector-mode-table tbody tr.round-table-row-advance + tr.round-table-row-cutline td {
+    border-top-color: #3a3a3a;
+}
+
+[data-theme="dark"] .projector-settings-modal {
+    border-color: #2d3547;
+    background: #141a26;
+}
+
+[data-theme="dark"] .projector-settings-header h3 {
+    color: #e6edf7;
+}
+
+[data-theme="dark"] .projector-settings-field {
+    color: #a5b0c2;
+}
+
+[data-theme="dark"] .projector-settings-close img {
+    filter: brightness(0) invert(0.75);
+}
+
+[data-theme="dark"] .projector-settings-input-row input[type="number"] {
+    border-color: #3a4358;
+    background: #202838;
+    color: #e2e8f5;
+}
+
+[data-theme="dark"] .projector-settings-input-row strong {
+    color: #c4cfdf;
+}
+
+[data-theme="dark"] .projector-settings-btn {
+    border-color: #3a4358;
+    background: #222b3c;
+    color: #d8e0ef;
+}
+
+[data-theme="dark"] .projector-settings-btn--primary {
+    border-color: #4a5f89;
+    background: #273a5e;
+    color: #e9f1ff;
 }
 
 .record-modal-backdrop {
