@@ -371,7 +371,7 @@ export const EventAdminPage = () => {
                         return;
                       }
                       target.dataset.fallback = "true";
-                      target.src = "/icon/events/Question.svg";
+                      target.src = `${import.meta.env.VITE_EVENT_ICON_BASE_URL}/Question.svg`;
                     }}
                   />
                 </div>
