@@ -18,13 +18,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal.tsx";
 
-const formatDate = (date: Date) => {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, "0");
-  const day = `${date.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 const getDayRange = (start: Date, end: Date): number[] => {
   const items: number[] = [];
   const current = new Date(start.getFullYear(), start.getMonth(), start.getDate());
@@ -459,20 +452,7 @@ export const CompetitionStatisticsPage = () => {
     return `${((dnfCount.dnfCount / dnfCount.totalCount) * 100).toFixed(2)}%`;
   }, [dnfCount]);
 
-  const headerTitle = competition ? `${competition.compName} 통계` : "대회 통계";
-  const headerSubtitle = competition ? (
-    <>
-      <span>{formatDate(competition.compDateStart)}</span>
-      {competition.location ? (
-        <>
-          <span className="page-title-meta-divider">·</span>
-          <span>{competition.location}</span>
-        </>
-      ) : null}
-    </>
-  ) : (
-    <span>대회 ID {compIdx ?? "-"}</span>
-  );
+  const headerTitle = competition ? competition.compName : "대회";
   const competitionPath = competition ? `/competition/${competition.idx}` : "/competition";
   const visibleBreakEntries = breakExpanded ? breakEntries : breakEntries.slice(0, breakPreviewCount);
   const canToggleBreakEntries = breakEntries.length > breakPreviewCount;
@@ -487,7 +467,7 @@ export const CompetitionStatisticsPage = () => {
         containerClassName="comp-header"
         iconSrc="/icon/button/statistics.svg"
         title={headerTitle}
-        subtitle={headerSubtitle}
+        subtitle="대회 통계"
         actions={[
           {
             label: "대회 페이지",

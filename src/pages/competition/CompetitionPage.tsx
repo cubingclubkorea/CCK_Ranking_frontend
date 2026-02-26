@@ -226,7 +226,7 @@ export const CompetitionPage = () => {
             adminOnly: true,
           },
           {
-            label: "통계",
+            label: "대회 통계",
             iconSrc: "/icon/button/statistics.svg",
             to: `/competition/${competition.idx}/statistics`,
           },

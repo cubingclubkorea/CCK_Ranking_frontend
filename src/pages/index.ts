@@ -7,6 +7,7 @@ export { ApiDashboardCompetitionCUDTestPage } from './admin/apiDashboard/competi
 export { CompetitionPage } from './competition/CompetitionPage';
 export { CompetitionStatisticsPage } from './competition/statistics/CompetitionStatisticsPage.tsx';
 export { RoundPage } from '@/pages/round/RoundPage';
+export { RoundStatisticsPage } from '@/pages/round/statistics/RoundStatisticsPage.tsx';
 export { RankingPage } from './ranking/RankingPage';
 export { NewRecordPage } from './new-record/NewRecordPage';
 export { ProfilePage } from './profile/ProfilePage';

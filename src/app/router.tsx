@@ -7,6 +7,7 @@ import {
   CompetitionPage,
   CompetitionStatisticsPage,
   RoundPage,
+  RoundStatisticsPage,
   RankingPage,
   NewRecordPage,
   ProfilePage,
@@ -221,6 +222,10 @@ export const router = createBrowserRouter([
       {
         path: "competition/:compIdx/round/:roundIdx",
         element: <RoundPage />,
+      },
+      {
+        path: "competition/:compIdx/round/:roundIdx/statistics",
+        element: <RoundStatisticsPage />,
       },
       {
         path: "new-record",
