@@ -5,11 +5,11 @@ import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { getErrorMessage, getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
-import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
+import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage.ts";
 import { PageHeader, RoundPageSkeleton } from "@/widgets";
-import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
-import { RecordTable } from "./components/RecordTable";
-import { RecordDetailModal } from "./components/RecordDetailModal";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage.tsx";
+import { RecordTable } from "./components/RecordTable.tsx";
+import { RecordDetailModal } from "./components/RecordDetailModal.tsx";
 
 const COMPACT_RECORD_QUERY = "(max-width: 980px), (max-aspect-ratio: 5/4)";
 const isValidDate = (value?: Date): value is Date => value instanceof Date && !Number.isNaN(value.getTime());

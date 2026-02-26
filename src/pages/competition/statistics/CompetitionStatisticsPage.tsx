@@ -16,7 +16,7 @@ import { getNewRecordBadgeSrc } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { RecordDetailModal } from "../round/components/RecordDetailModal";
+import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal.tsx";
 
 const formatDate = (date: Date) => {
   const year = date.getFullYear();
@@ -153,6 +153,81 @@ const StaffRankingSection = ({ title, rows, emptyMessage }: StaffRankingSectionP
   );
 };
 
+const CompetitionStatisticsPageSkeleton = () => (
+  <div className="main-page ui-skeleton-page">
+    <div className="comp-header ui-skeleton-comp-header">
+      <div className="ui-skeleton-comp-head-left">
+        <div className="ui-skeleton ui-skeleton-comp-title" />
+        <div className="ui-skeleton ui-skeleton-comp-meta" />
+      </div>
+      <div className="ui-skeleton-comp-head-actions">
+        <div className="ui-skeleton ui-skeleton-action-btn" />
+        <div className="ui-skeleton ui-skeleton-action-btn" />
+      </div>
+    </div>
+
+    <div className="comp-content comp-stat-content" aria-hidden="true">
+      <section className="comp-stat-panel">
+        <div className="comp-stat-panel-head">
+          <div className="ui-skeleton comp-stat-skeleton-title" />
+        </div>
+        <div className="comp-stat-card-grid">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <article className="profile-stat-card" key={`comp-stat-summary-skeleton-${index}`}>
+              <div className="ui-skeleton comp-stat-skeleton-label" />
+              <div className="ui-skeleton comp-stat-skeleton-value" />
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="comp-stat-panel">
+        <div className="comp-stat-panel-head comp-stat-panel-head--between">
+          <div className="ui-skeleton comp-stat-skeleton-title" />
+          <div className="ui-skeleton comp-stat-skeleton-toggle" />
+        </div>
+        <div className="new-record-list comp-break-list">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <article className="new-record-item comp-break-item" key={`comp-stat-break-skeleton-${index}`}>
+              <div className="ui-skeleton new-record-skeleton-badge" />
+              <div className="new-record-content">
+                <div className="ui-skeleton new-record-skeleton-title" />
+                <div className="ui-skeleton comp-stat-skeleton-record" />
+                <div className="ui-skeleton new-record-skeleton-subtitle" />
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <div className="comp-stat-staff-grid">
+        {Array.from({ length: 2 }).map((_, panelIndex) => (
+          <section className="comp-stat-panel" key={`comp-stat-staff-skeleton-panel-${panelIndex}`}>
+            <div className="comp-stat-panel-head">
+              <div className="ui-skeleton comp-stat-skeleton-title" />
+            </div>
+            <div className="comp-stat-ranking-list">
+              {Array.from({ length: 4 }).map((__, rowIndex) => (
+                <article className="comp-stat-ranking-item" key={`comp-stat-staff-skeleton-${panelIndex}-${rowIndex}`}>
+                  <div className="comp-stat-ranking-row">
+                    <div className="ui-skeleton comp-stat-skeleton-rank" />
+                    <div className="comp-stat-ranking-user">
+                      <div className="ui-skeleton comp-stat-skeleton-user" />
+                      <div className="ui-skeleton comp-stat-skeleton-user-sub" />
+                    </div>
+                    <div className="ui-skeleton comp-stat-skeleton-count" />
+                  </div>
+                  <div className="ui-skeleton comp-stat-skeleton-bar" />
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 export const CompetitionStatisticsPage = () => {
   const { compIdx } = useParams();
   const compId = Number(compIdx);
@@ -222,7 +297,7 @@ export const CompetitionStatisticsPage = () => {
         const entries = majorBreaks
           .flatMap((item) => {
             const mapped: CompBreakEntry[] = [];
-            if (isMajorBreakType(item.averageBestType)) {
+            if (isMajorBreakType(item.averageBestType) && item.average !== null) {
               const record: Record = {
                 idx: item.idx,
                 pdx: item.pdx ?? 0,
@@ -272,7 +347,7 @@ export const CompetitionStatisticsPage = () => {
                 record,
               });
             }
-            if (isMajorBreakType(item.singleBestType)) {
+            if (isMajorBreakType(item.singleBestType) && item.single !== null) {
               const record: Record = {
                 idx: item.idx,
                 pdx: item.pdx ?? 0,
@@ -402,6 +477,10 @@ export const CompetitionStatisticsPage = () => {
   const visibleBreakEntries = breakExpanded ? breakEntries : breakEntries.slice(0, breakPreviewCount);
   const canToggleBreakEntries = breakEntries.length > breakPreviewCount;
 
+  if (loading) {
+    return <CompetitionStatisticsPageSkeleton />;
+  }
+
   return (
     <div className="main-page">
       <PageHeader
@@ -424,7 +503,6 @@ export const CompetitionStatisticsPage = () => {
       />
 
       <div className="comp-content comp-stat-content">
-        {loading ? <div className="round-list-empty">통계를 불러오는 중입니다.</div> : null}
         {error ? <div className="round-list-empty">{error}</div> : null}
         {partialError && !error ? <div className="round-list-empty">{partialError}</div> : null}
         {!competition && !loading ? (

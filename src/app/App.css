@@ -2751,6 +2751,69 @@ body {
     background: #eef2fd;
 }
 
+.comp-stat-skeleton-title {
+    width: 180px;
+    height: 20px;
+    border-radius: 8px;
+}
+
+.comp-stat-skeleton-toggle {
+    width: 64px;
+    height: 28px;
+    border-radius: 10px;
+}
+
+.comp-stat-skeleton-label {
+    width: 110px;
+    height: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.comp-stat-skeleton-value {
+    width: 82px;
+    height: 26px;
+    border-radius: 8px;
+}
+
+.comp-stat-skeleton-record {
+    width: 120px;
+    height: 18px;
+    border-radius: 8px;
+    margin: 6px 0 0;
+}
+
+.comp-stat-skeleton-rank {
+    width: 28px;
+    height: 14px;
+    border-radius: 6px;
+}
+
+.comp-stat-skeleton-user {
+    width: 80px;
+    height: 14px;
+    border-radius: 6px;
+}
+
+.comp-stat-skeleton-user-sub {
+    width: 110px;
+    height: 12px;
+    border-radius: 6px;
+    margin-top: 4px;
+}
+
+.comp-stat-skeleton-count {
+    width: 52px;
+    height: 14px;
+    border-radius: 6px;
+}
+
+.comp-stat-skeleton-bar {
+    width: 100%;
+    height: 7px;
+    border-radius: 999px;
+}
+
 .comp-stat-card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -2812,6 +2875,13 @@ body {
 
 .comp-break-item .new-record-content {
     width: 100%;
+    min-width: 0;
+}
+
+.comp-break-item .new-record-skeleton-title,
+.comp-break-item .new-record-skeleton-subtitle {
+    width: 100%;
+    max-width: 100%;
 }
 
 .comp-break-record {

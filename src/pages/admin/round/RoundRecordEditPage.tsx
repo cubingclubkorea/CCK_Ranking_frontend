@@ -8,7 +8,7 @@ import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { getErrorMessage as getRequestErrorMessage, shouldUseRequestErrorPage } from "@/shared";
 import { OverlayToast, PageHeader, RoundRecordEditPageSkeleton } from "@/widgets";
-import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage.tsx";
 import { ExtraAddModal } from "./components/ExtraAddModal.tsx";
 import { RecordContextMenu } from "./components/RecordContextMenu.tsx";
 import { RecordEditPanel } from "./components/RecordEditPanel.tsx";
