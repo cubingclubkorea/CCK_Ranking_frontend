@@ -5,11 +5,10 @@ import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { getErrorMessage, getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
-import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 import { PageHeader, RoundPageSkeleton } from "@/widgets";
-import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
-import { RecordTable } from "./components/RecordTable";
-import { RecordDetailModal } from "./components/RecordDetailModal";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage.tsx";
+import { RecordTable } from "./components/RecordTable.tsx";
+import { RecordDetailModal } from "./components/RecordDetailModal.tsx";
 
 const COMPACT_RECORD_QUERY = "(max-width: 980px), (max-aspect-ratio: 5/4)";
 const isValidDate = (value?: Date): value is Date => value instanceof Date && !Number.isNaN(value.getTime());
@@ -61,10 +60,7 @@ export const RoundPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<{ record: Record; rank: number } | null>(null);
   const [compactRecordView, setCompactRecordView] = useState(() => window.matchMedia(COMPACT_RECORD_QUERY).matches);
-  const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
-
-  console.log(isAdmin);
 
   useEffect(() => {
     let mounted = true;
@@ -110,16 +106,6 @@ export const RoundPage = () => {
     setCompactRecordView(mediaQuery.matches);
     mediaQuery.addEventListener("change", syncCompactMode);
     return () => mediaQuery.removeEventListener("change", syncCompactMode);
-  }, []);
-
-  useEffect(() => {
-    const syncAuthState = () => setIsAdmin(hasAdminRole());
-    window.addEventListener(authChangeEvent, syncAuthState);
-    window.addEventListener("storage", syncAuthState);
-    return () => {
-      window.removeEventListener(authChangeEvent, syncAuthState);
-      window.removeEventListener("storage", syncAuthState);
-    };
   }, []);
 
   const sortedRecords = useMemo(() => {
@@ -204,7 +190,6 @@ export const RoundPage = () => {
 
   const backTarget = compIdx ?? String(round.compIdx);
   const roundDateTime = formatRoundDateTime(round.eventStart, round.eventEnd);
-
   return (
     <div className="main-page">
       <PageHeader
@@ -247,6 +232,7 @@ export const RoundPage = () => {
           {
             label: "프로젝터 모드",
             iconSrc: "/page-title/projector.svg",
+            className: "page-action-btn--projector",
             to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}/projector`,
             adminOnly: true,
           },
@@ -257,9 +243,14 @@ export const RoundPage = () => {
             adminOnly: true,
           },
           {
-            label: "라운드 목록",
+            label: "대회 페이지",
             iconSrc: "/icon/button/back.svg",
             to: `/competition/${Number(backTarget)}`,
+          },
+          {
+            label: "라운드 통계",
+            iconSrc: "/icon/button/statistics.svg",
+            to: `/competition/${Number(backTarget)}/round/${Number(round.idx)}/statistics`,
           },
           {
             label: "랭킹 홈",

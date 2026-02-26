@@ -1,6 +1,6 @@
 import { useEffect, useRef, type KeyboardEvent } from "react";
 import type { Record } from "@/entities/record";
-import type { Attempt } from "@/entities/record/model/attempt";
+import type { Attempt } from "@/entities/record/model/attempt.ts";
 
 type RecordEditPanelProps = {
   nameQuery: string;

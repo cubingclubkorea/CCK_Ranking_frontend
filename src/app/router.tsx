@@ -5,7 +5,9 @@ import {
   ApiDashboardCompetitionTestPage,
   ApiDashboardCompetitionCUDTestPage,
   CompetitionPage,
+  CompetitionStatisticsPage,
   RoundPage,
+  RoundStatisticsPage,
   RankingPage,
   NewRecordPage,
   ProfilePage,
@@ -214,8 +216,16 @@ export const router = createBrowserRouter([
         element: <CompetitionPage />,
       },
       {
+        path: "competition/:compIdx/statistics",
+        element: <CompetitionStatisticsPage />,
+      },
+      {
         path: "competition/:compIdx/round/:roundIdx",
         element: <RoundPage />,
+      },
+      {
+        path: "competition/:compIdx/round/:roundIdx/statistics",
+        element: <RoundStatisticsPage />,
       },
       {
         path: "new-record",
