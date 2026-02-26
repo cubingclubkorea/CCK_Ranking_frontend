@@ -1,6 +1,6 @@
 import {
+  getCompBreakList,
   getCompExtraList,
-  getCompBreakCount,
   getCompetition,
   getDnfCountByComp,
   getJudgeCount,
@@ -12,6 +12,7 @@ import {
 } from "@/entities";
 import { getRecordList } from "@/entities/record";
 import { getRoundByDayCount, type Round } from "@/entities/round";
+import { getNewRecordBadgeSrc } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -78,6 +79,29 @@ type StaffRankingSectionProps = {
   emptyMessage: string;
 };
 
+const isMajorBreakType = (value: unknown): value is "SR" | "CCR" => value === "SR" || value === "CCR";
+
+type CompBreakEntry = {
+  id: string;
+  bestType: "SR" | "CCR";
+  eventName: string;
+  metric: "평균" | "최고";
+  value: number | null;
+  name: string;
+  roundName: string;
+};
+
+const formatRecordValue = (value: number | null) => {
+  if (value === null) return "-";
+  if (value < 0) return "DNF";
+  if (value >= 60) {
+    const minutes = Math.floor(value / 60);
+    const seconds = value - minutes * 60;
+    return `${minutes}:${seconds.toFixed(2).padStart(5, "0")}`;
+  }
+  return value.toFixed(2);
+};
+
 const StaffRankingSection = ({ title, rows, emptyMessage }: StaffRankingSectionProps) => {
   const maxCount = rows[0]?.count ?? 0;
 
@@ -119,6 +143,7 @@ export const CompetitionStatisticsPage = () => {
   const compId = Number(compIdx);
   const [competition, setCompetition] = useState<Competition | null>(null);
   const [extraList, setExtraList] = useState<CompExtraItem[]>([]);
+  const [breakEntries, setBreakEntries] = useState<CompBreakEntry[]>([]);
   const [judgeCountList, setJudgeCountList] = useState<CompStaffCountItem[]>([]);
   const [scramblerCountList, setScramblerCountList] = useState<CompStaffCountItem[]>([]);
   const [dnfCount, setDnfCount] = useState<CompDnfCount>({ dnfCount: 0, successCount: 0, totalCount: 0 });
@@ -166,11 +191,49 @@ export const CompetitionStatisticsPage = () => {
 
         const [participantCountResult, breakCountResult] = await Promise.allSettled([
           computeCompetitionParticipantCount(competitionData),
-          getCompBreakCount(compId),
+          getCompBreakList(compId),
         ]);
         if (!mounted) return;
         setParticipantCount(participantCountResult.status === "fulfilled" ? participantCountResult.value : 0);
-        setRenewedRecordCount(breakCountResult.status === "fulfilled" ? breakCountResult.value : 0);
+        const majorBreaks =
+          breakCountResult.status === "fulfilled"
+            ? breakCountResult.value.filter(
+                (item) => isMajorBreakType(item.singleBestType) || isMajorBreakType(item.averageBestType)
+              )
+            : [];
+        const entries = majorBreaks
+          .flatMap((item) => {
+            const mapped: CompBreakEntry[] = [];
+            if (isMajorBreakType(item.averageBestType)) {
+              mapped.push({
+                id: `${item.idx}-average-${item.averageBestType}`,
+                bestType: item.averageBestType,
+                eventName: item.eventName,
+                metric: "평균",
+                value: item.average,
+                name: item.name,
+                roundName: item.roundName,
+              });
+            }
+            if (isMajorBreakType(item.singleBestType)) {
+              mapped.push({
+                id: `${item.idx}-single-${item.singleBestType}`,
+                bestType: item.singleBestType,
+                eventName: item.eventName,
+                metric: "최고",
+                value: item.single,
+                name: item.name,
+                roundName: item.roundName,
+              });
+            }
+            return mapped;
+          })
+          .sort((a, b) => {
+            if (a.bestType !== b.bestType) return a.bestType === "CCR" ? -1 : 1;
+            return b.id.localeCompare(a.id);
+          });
+        setBreakEntries(entries);
+        setRenewedRecordCount(entries.length);
 
         const hasFailedStatApi =
           extrasResult.status === "rejected" ||
@@ -283,10 +346,43 @@ export const CompetitionStatisticsPage = () => {
           </div>
         </section>
 
+        <section className="comp-stat-panel">
+          <div className="comp-stat-panel-head">
+            <h2>깨진 신기록</h2>
+          </div>
+          {breakEntries.length === 0 ? (
+            <div className="round-list-empty">표시할 CCR/SR 신기록이 없습니다.</div>
+          ) : (
+            <div className="new-record-list comp-break-list">
+              {breakEntries.map((item) => {
+                const badgeSrc = getNewRecordBadgeSrc(item.bestType);
+                return (
+                  <article className="new-record-item comp-break-item" key={item.id}>
+                    <div className="new-record-badge-wrap">
+                      {badgeSrc ? (
+                        <img
+                          className={`new-record-badge-image${item.bestType === "CCR" ? " new-record-badge-image--ccr" : ""}`}
+                          src={badgeSrc}
+                          alt={item.bestType}
+                        />
+                      ) : null}
+                    </div>
+                    <div className="new-record-content">
+                      <p className="new-record-title">{item.eventName}</p>
+                      <p className="comp-break-record">{`${item.metric} ${formatRecordValue(item.value)}`}</p>
+                      <p className="new-record-subtitle">{`${item.name} · ${item.roundName}`}</p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
         <div className="comp-stat-staff-grid">
-          <StaffRankingSection title="심판 횟수 순위" rows={judgeCountList} emptyMessage="심판 데이터가 없습니다." />
+          <StaffRankingSection title="심판 횟수" rows={judgeCountList} emptyMessage="심판 데이터가 없습니다." />
           <StaffRankingSection
-            title="스크램블러 횟수 순위"
+            title="스크램블러 횟수"
             rows={scramblerCountList}
             emptyMessage="스크램블러 데이터가 없습니다."
           />

@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/api/base";
-import type { CompDnfCount, CompExtraItem, CompStaffCountItem } from "../model/competitionStatistics";
+import type { CompBreakBestType, CompBreakItem, CompDnfCount, CompExtraItem, CompStaffCountItem } from "../model/competitionStatistics";
 
 const parseNumber = (value: unknown): number => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -59,6 +59,31 @@ const parseDnfCount = (value: unknown): CompDnfCount => {
   };
 };
 
+const parseBreakBestType = (value: unknown): CompBreakBestType => {
+  if (value === "PR" || value === "SR" || value === "CCR") return value;
+  return null;
+};
+
+const parseBreakList = (rows: unknown): CompBreakItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((row) => {
+    const source = (row ?? {}) as Record<string, unknown>;
+    return {
+      idx: parseNumber(source.idx),
+      name: parseNullableString(source.name) ?? "-",
+      cckId: parseNullableString(source.cckId) ?? "-",
+      state: parseNullableString(source.state),
+      compName: parseNullableString(source.compName) ?? "-",
+      eventName: parseNullableString(source.eventName) ?? "-",
+      roundName: parseNullableString(source.roundName) ?? "-",
+      single: typeof source.single === "number" && Number.isFinite(source.single) ? source.single : null,
+      average: typeof source.average === "number" && Number.isFinite(source.average) ? source.average : null,
+      singleBestType: parseBreakBestType(source.singleBestType),
+      averageBestType: parseBreakBestType(source.averageBestType),
+    };
+  });
+};
+
 const callWithFallback = async <T>(endpoints: string[]): Promise<T> => {
   let lastError: unknown;
   for (const endpoint of endpoints) {
@@ -112,22 +137,26 @@ export const getDnfCountByComp = async (compIdx: number): Promise<CompDnfCount> 
 };
 
 export const getCompBreakCount = async (compIdx: number): Promise<number> => {
+  const rows = await getCompBreakList(compIdx);
+  return rows.length;
+};
+
+export const getCompBreakList = async (compIdx: number): Promise<CompBreakItem[]> => {
   const payload = await callWithFallback<unknown>([
     `/comp/${compIdx}/break`,
     `/competition/${compIdx}/break`,
   ]);
 
   if (Array.isArray(payload)) {
-    return payload.length;
+    return parseBreakList(payload);
   }
 
   if (payload && typeof payload === "object") {
     const source = payload as Record<string, unknown>;
     if (Array.isArray(source.content)) {
-      return source.content.length;
+      return parseBreakList(source.content);
     }
-    return parseNumber(source.count ?? source.totalCount ?? source.total ?? 0);
   }
 
-  return 0;
+  return [];
 };
