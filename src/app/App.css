@@ -3558,7 +3558,7 @@ body {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url("logo/cck-logo.png");
+    background-image: url("/logo/cck-logo.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: min(64%, 280px);

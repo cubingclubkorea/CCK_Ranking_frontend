@@ -8,7 +8,6 @@ import {
   type MetricEventKey,
   type RankingMetric,
   sortEventNames,
-  sortRanking,
 } from "../model/ranking";
 
 export const useRankingData = () => {
@@ -119,7 +118,7 @@ export const useRankingData = () => {
         if (!mounted) return;
         setRankingCache((prev) => ({
           ...prev,
-          [cacheKey]: sortRanking(rows, metric),
+          [cacheKey]: rows,
         }));
       } catch (err) {
         if (!mounted) return;

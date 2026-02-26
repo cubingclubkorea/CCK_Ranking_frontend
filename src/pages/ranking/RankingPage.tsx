@@ -93,7 +93,9 @@ export const RankingPage = () => {
   }, [regionOptions, selectedRegion, setSelectedRegion, stateLabelParam, stateParam]);
 
   useEffect(() => {
-    const nextSize = rankingSizeOptions.includes(showParam) ? showParam : defaultShow;
+    const nextSize = (rankingSizeOptions as readonly number[]).includes(showParam) 
+      ? (showParam as 10 | 30 | 50 | 100 | 150)
+      : (defaultShow as 10 | 30 | 50 | 100 | 150);
     if (rankingSize !== nextSize) {
       setRankingSize(nextSize);
     }

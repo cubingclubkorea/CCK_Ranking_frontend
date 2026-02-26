@@ -8,7 +8,6 @@ export {
   getAttemptValue,
   getErrorMessage,
   sortEventNames,
-  sortRanking,
   toRecord,
 } from "./model/ranking";
 export type { MetricEventKey, RankingMetric } from "./model/ranking";
