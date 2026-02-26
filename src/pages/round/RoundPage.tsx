@@ -246,6 +246,7 @@ export const RoundPage = () => {
           {
             label: "프로젝터 모드",
             iconSrc: "/page-title/projector.svg",
+            className: "page-action-btn--projector",
             to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}/projector`,
             adminOnly: true,
           },
@@ -256,7 +257,7 @@ export const RoundPage = () => {
             adminOnly: true,
           },
           {
-            label: "라운드 목록",
+            label: "대회 페이지",
             iconSrc: "/icon/button/back.svg",
             to: `/competition/${Number(backTarget)}`,
           },

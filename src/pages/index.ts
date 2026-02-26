@@ -5,6 +5,7 @@ export { ApiDashboardPage } from './admin/apiDashboard/ApiDashboardPage.tsx';
 export { ApiDashboardCompetitionTestPage } from './admin/apiDashboard/competition/ApiDashboardCompetitionTestPage';
 export { ApiDashboardCompetitionCUDTestPage } from './admin/apiDashboard/competition/ApiDashboardCompetitionCUDTestPage';
 export { CompetitionPage } from './competition/CompetitionPage';
+export { CompetitionStatisticsPage } from './competition/CompetitionStatisticsPage';
 export { RoundPage } from './round/RoundPage';
 export { RankingPage } from './ranking/RankingPage';
 export { NewRecordPage } from './new-record/NewRecordPage';

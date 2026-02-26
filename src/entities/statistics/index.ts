@@ -7,4 +7,5 @@ export * from "./api/getPlayerRanking";
 export * from "./api/getPlayerStaffCount";
 export * from "./api/getPlayerCount";
 export * from "./api/getPlayerRecordHistory";
+export * from "./api/getCompetitionStatistics";
 export type { PlayerEventRanking, PlayerStaffCountResponse, PlayerCountResponse } from "./model/playerStats";
