@@ -214,11 +214,6 @@ export const CompetitionPage = () => {
         }
         actions={[
           {
-            label: "통계",
-            iconSrc: "/icon/button/statistics.svg",
-            to: `/competition/${competition.idx}/statistics`,
-          },
-          {
             label: "스크램블",
             iconSrc: "/icon/button/cube.svg",
             to: `/admin/competition/${competition.idx}/scramble`,
@@ -229,6 +224,11 @@ export const CompetitionPage = () => {
             iconSrc: "/icon/button/hammer.svg",
             to: `/admin/competition/${competition.idx}`,
             adminOnly: true,
+          },
+          {
+            label: "통계",
+            iconSrc: "/icon/button/statistics.svg",
+            to: `/competition/${competition.idx}/statistics`,
           },
           {
             label: "대회 정보",

@@ -408,20 +408,6 @@ body {
     color: #d4d4d4;
 }
 
-[data-theme="dark"] .page-action-btn.page-action-btn--projector,
-[data-theme="dark"] .page-action-btn.page-action-btn--projector:link,
-[data-theme="dark"] .page-action-btn.page-action-btn--projector:visited {
-    background: #ffffff;
-    border-color: #ffffff;
-    color: #0f172a;
-}
-
-[data-theme="dark"] .page-action-btn.page-action-btn--projector:hover {
-    background: #f5f7fb;
-    border-color: #f5f7fb;
-    color: #0f172a;
-}
-
 .page-action-icon {
     width: 18px;
     height: 18px;
@@ -432,6 +418,10 @@ body {
 
 .page-action-icon--logo {
     filter: grayscale(1) brightness(0);
+}
+
+[data-theme="dark"] .page-action-btn.page-action-btn--projector .page-action-icon {
+    filter: brightness(0) invert(1);
 }
 
 .profile-page-action-icon--black {
@@ -6253,6 +6243,7 @@ body {
 [data-theme="dark"] .round-card,
 [data-theme="dark"] .round-panel,
 [data-theme="dark"] .ranking-panel,
+[data-theme="dark"] .scramble-admin-card,
 [data-theme="dark"] .record-table-panel,
 [data-theme="dark"] .admin-count,
 [data-theme="dark"] .dashboard-card,
@@ -6315,6 +6306,36 @@ body {
     background: #2d333b;
     border-color: #444c56;
     color: #8b949e;
+}
+
+[data-theme="dark"] .scramble-admin-title {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .scramble-admin-helper {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .scramble-admin-tag-wait {
+    background: #232323;
+    border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .scramble-admin-tag-wait--active {
+    border-color: #6b84b5;
+    box-shadow:
+            0 0 0 1px rgba(107, 132, 181, 0.55),
+            0 0 0 0 rgba(107, 132, 181, 0.3);
+}
+
+[data-theme="dark"] .scramble-admin-profile,
+[data-theme="dark"] .scramble-admin-player,
+[data-theme="dark"] .scramble-admin-result,
+[data-theme="dark"] .scramble-admin-svg,
+[data-theme="dark"] .scramble-admin-empty,
+[data-theme="dark"] .scramble-admin-text {
+    background: #232323;
+    border-color: #3a3a3a;
 }
 
 [data-theme="dark"] .round-search,
@@ -7047,16 +7068,6 @@ body {
     color: #d4d4d4;
 }
 
-[data-theme="dark"] .page-action-btn.page-action-btn--projector {
-    background: #ffffff;
-    border-color: #ffffff;
-    color: #0f172a;
-}
-
-[data-theme="dark"] .page-action-btn.page-action-btn--projector .page-action-icon {
-    filter: brightness(0) saturate(100%);
-}
-
 [data-theme="dark"] .card-list,
 [data-theme="dark"] .round-card,
 [data-theme="dark"] .round-panel,
@@ -7505,4 +7516,76 @@ body {
         font-size: 0.6em;
         line-height: 1.15;
     }
+}
+
+/* Scramble dark mode final override (ranking-like palette) */
+[data-theme="dark"] .scramble-admin-card {
+    background: #252525;
+    border-color: #353535;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .scramble-admin-profile,
+[data-theme="dark"] .scramble-admin-player,
+[data-theme="dark"] .scramble-admin-result,
+[data-theme="dark"] .scramble-admin-svg,
+[data-theme="dark"] .scramble-admin-empty,
+[data-theme="dark"] .scramble-admin-text {
+    background: #232323;
+    border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .scramble-admin-title,
+[data-theme="dark"] .scramble-admin-result-head strong,
+[data-theme="dark"] .scramble-admin-profile-row strong,
+[data-theme="dark"] .scramble-admin-player-row strong {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .scramble-admin-helper,
+[data-theme="dark"] .scramble-admin-subtitle,
+[data-theme="dark"] .scramble-admin-result-head span,
+[data-theme="dark"] .scramble-admin-tag-wait-text {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .scramble-admin-tag-wait {
+    background: #202020;
+    border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .scramble-admin-tag-wait--active {
+    border-color: #5f7fad;
+    box-shadow:
+            0 0 0 1px rgba(95, 127, 173, 0.55),
+            0 0 0 0 rgba(95, 127, 173, 0.28);
+}
+
+[data-theme="dark"] .scramble-admin-input {
+    background: #202020;
+    border-color: #3a3a3a;
+    color: #e6e6e6;
+}
+
+[data-theme="dark"] .scramble-admin-input:focus {
+    border-color: #5f7fad;
+    box-shadow: 0 0 0 3px rgba(95, 127, 173, 0.2);
+    background: #242424;
+}
+
+[data-theme="dark"] .scramble-admin-btn {
+    background: #4f6fa6;
+    border-color: #5f7fad;
+    color: #f2f5fb;
+}
+
+[data-theme="dark"] .scramble-admin-btn:hover {
+    background: #5d7fb8;
+    border-color: #6f91cc;
+}
+
+[data-theme="dark"] .scramble-admin-btn--subtle {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+    color: #d4d4d4;
 }
