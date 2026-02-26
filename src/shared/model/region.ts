@@ -34,11 +34,14 @@ export const REGION_FILTER_OPTIONS = Array.from(
 export const mapRegionName = (value?: string | null) =>
   value ? (REGION_LABELS[value] ?? value) : value;
 
-const resolveRegionKey = (value?: string | null) => {
+export const resolveRegionKey = (value?: string | null) => {
   if (!value) return undefined;
   if (REGION_LABELS[value]) return value;
   return REGION_KEYS_BY_LABEL[value];
 };
+
+export const mapRegionKeyToLabel = (value?: string | null) =>
+  value ? (REGION_LABELS[value] ?? undefined) : undefined;
 
 export const getRegionLogoSrc = (value?: string | null) => {
   const key = resolveRegionKey(value);

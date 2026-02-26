@@ -5,7 +5,13 @@ export { apiClient } from './api/base';
 export { ssoClient } from './api/auth_base';
 export type { Page } from './model/page';
 export type { ErrorResponse } from './model/error';
-export { mapRegionName, REGION_FILTER_OPTIONS, getRegionLogoSrc } from './model/region';
+export {
+  mapRegionName,
+  REGION_FILTER_OPTIONS,
+  getRegionLogoSrc,
+  resolveRegionKey,
+  mapRegionKeyToLabel,
+} from './model/region';
 export {
   getRequiredAttemptCount,
   getMainAttempts,

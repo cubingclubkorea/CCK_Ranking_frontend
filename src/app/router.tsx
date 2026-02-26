@@ -20,6 +20,7 @@ import {
   CompetitionCreatePage,
   CompetitionManagePage,
   RoundRecordEditPage,
+  RoundProjectorPage,
   EventAdminPage,
   ScrambleAdminPage,
   ConfirmPage,
@@ -69,6 +70,7 @@ const
     // eslint-disable-next-line react-refresh/only-export-components
     AppLayout = () => {
   const location = useLocation();
+  const isProjectorRoute = /\/admin\/competition\/[^/]+\/round\/[^/]+\/projector$/.test(location.pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobileLayout, setIsMobileLayout] = useState(getInitialMobileLayout);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -144,23 +146,29 @@ const
   return (
     <AuthInfoProvider>
       <div className="app-layout">
-        <Header
-          collapsed={sidebarCollapsed}
-          onToggle={handleSidebarToggle}
-          theme={theme}
-          isMobile={isMobileLayout}
-          mobileMenuOpen={mobileMenuOpen}
-        />
-        <Sidebar
-          collapsed={!isMobileLayout && sidebarCollapsed}
-          isMobile={isMobileLayout}
-          mobileOpen={mobileMenuOpen}
-          onClose={() => setMobileMenuOpen(false)}
-          theme={theme}
-          onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
-        />
-        <main className={`content-area ${!isMobileLayout && sidebarCollapsed ? "collapsed" : ""} ${isMobileLayout && mobileMenuOpen ? "mobile-menu-open" : ""}`}>
-          <div className="content-inner">
+        {isProjectorRoute ? null : (
+          <>
+            <Header
+              collapsed={sidebarCollapsed}
+              onToggle={handleSidebarToggle}
+              theme={theme}
+              isMobile={isMobileLayout}
+              mobileMenuOpen={mobileMenuOpen}
+            />
+            <Sidebar
+              collapsed={!isMobileLayout && sidebarCollapsed}
+              isMobile={isMobileLayout}
+              mobileOpen={mobileMenuOpen}
+              onClose={() => setMobileMenuOpen(false)}
+              theme={theme}
+              onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
+            />
+          </>
+        )}
+        <main
+          className={`content-area ${isProjectorRoute ? "content-area--projector" : ""} ${!isProjectorRoute && !isMobileLayout && sidebarCollapsed ? "collapsed" : ""} ${!isProjectorRoute && isMobileLayout && mobileMenuOpen ? "mobile-menu-open" : ""}`}
+        >
+          <div className={`content-inner ${isProjectorRoute ? "content-inner--projector" : ""}`}>
             <Outlet />
           </div>
         </main>
@@ -214,7 +222,7 @@ export const router = createBrowserRouter([
         element: <NewRecordPage />,
       },
       {
-        path: "ranking",
+        path: "ranking/:event?/:metric?",
         element: <RankingPage />,
       },
       {
@@ -262,6 +270,14 @@ export const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <RoundRecordEditPage />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "admin/competition/:compIdx/round/:roundIdx/projector",
+        element: (
+          <AdminRoute>
+            <RoundProjectorPage />
           </AdminRoute>
         ),
       },

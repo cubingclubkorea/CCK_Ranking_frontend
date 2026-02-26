@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { getErrorMessage, getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
+import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 import { PageHeader, RoundPageSkeleton } from "@/widgets";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { RecordTable } from "./components/RecordTable";
@@ -49,6 +50,7 @@ const formatTimeValue = (value?: number | null) => {
 };
 
 export const RoundPage = () => {
+  const navigate = useNavigate();
   const { compIdx, roundIdx } = useParams();
   const [round, setRound] = useState<Round | null>(null);
   const [records, setRecords] = useState<Record[]>([]);
@@ -60,6 +62,7 @@ export const RoundPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<{ record: Record; rank: number } | null>(null);
   const [compactRecordView, setCompactRecordView] = useState(() => window.matchMedia(COMPACT_RECORD_QUERY).matches);
+  const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
@@ -106,6 +109,16 @@ export const RoundPage = () => {
     setCompactRecordView(mediaQuery.matches);
     mediaQuery.addEventListener("change", syncCompactMode);
     return () => mediaQuery.removeEventListener("change", syncCompactMode);
+  }, []);
+
+  useEffect(() => {
+    const syncAuthState = () => setIsAdmin(hasAdminRole());
+    window.addEventListener(authChangeEvent, syncAuthState);
+    window.addEventListener("storage", syncAuthState);
+    return () => {
+      window.removeEventListener(authChangeEvent, syncAuthState);
+      window.removeEventListener("storage", syncAuthState);
+    };
   }, []);
 
   const sortedRecords = useMemo(() => {
@@ -225,11 +238,17 @@ export const RoundPage = () => {
                 return;
               }
               target.dataset.fallback = "true";
-              target.src = "/icon/events/Question.svg";
+              target.src = `${import.meta.env.VITE_EVENT_ICON_BASE_URL}/Question.svg`;
             }}
           />
         }
         actions={[
+          {
+            label: "프로젝터 모드",
+            iconSrc: "/page-title/projector.svg",
+            to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}/projector`,
+            adminOnly: true,
+          },
           {
             label: "라운드 관리",
             iconSrc: "/icon/button/hammer.svg",
