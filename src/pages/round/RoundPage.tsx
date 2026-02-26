@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
@@ -50,7 +50,6 @@ const formatTimeValue = (value?: number | null) => {
 };
 
 export const RoundPage = () => {
-  const navigate = useNavigate();
   const { compIdx, roundIdx } = useParams();
   const [round, setRound] = useState<Round | null>(null);
   const [records, setRecords] = useState<Record[]>([]);
@@ -64,6 +63,8 @@ export const RoundPage = () => {
   const [compactRecordView, setCompactRecordView] = useState(() => window.matchMedia(COMPACT_RECORD_QUERY).matches);
   const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  console.log(isAdmin);
 
   useEffect(() => {
     let mounted = true;
