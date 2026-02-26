@@ -6367,8 +6367,13 @@ body {
 [data-theme="dark"] .comp-stat-panel,
 [data-theme="dark"] .comp-stat-ranking-item,
 [data-theme="dark"] .comp-stat-extra-item {
-    background: #2d333b;
-    border-color: #444c56;
+    background: #252525;
+    border-color: #353535;
+}
+
+[data-theme="dark"] .comp-stat-panel .profile-stat-card {
+    background: #222222;
+    border-color: #333333;
 }
 
 [data-theme="dark"] .comp-stat-ranking-rank,
@@ -6391,7 +6396,7 @@ body {
 }
 
 [data-theme="dark"] .comp-stat-bar-track {
-    background: #3d444d;
+    background: #313131;
 }
 
 [data-theme="dark"] .comp-stat-bar-fill {
@@ -6403,21 +6408,21 @@ body {
 }
 
 [data-theme="dark"] .comp-stat-toggle-btn {
-    background: #303846;
-    border-color: #4a5563;
-    color: #c7d5f5;
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+    color: #aab9d8;
 }
 
 [data-theme="dark"] .comp-stat-toggle-btn:hover {
-    background: #374154;
+    background: #313131;
 }
 
 [data-theme="dark"] .comp-break-record {
-    color: #b9c6df;
+    color: #aeb8cc;
 }
 
 [data-theme="dark"] .comp-break-list--collapsed::after {
-    background: linear-gradient(180deg, rgba(45, 51, 59, 0) 0%, #2d333b 92%);
+    background: linear-gradient(180deg, rgba(37, 37, 37, 0) 0%, #252525 92%);
 }
 
 [data-theme="dark"] .comp-break-more-hint {
@@ -6547,8 +6552,8 @@ body {
 }
 
 [data-theme="dark"] .new-record-panel {
-    border-color: #444c56;
-    background: #2d333b;
+    border-color: #353535;
+    background: #252525;
 }
 
 [data-theme="dark"] .new-record-panel-meta {
@@ -6560,13 +6565,13 @@ body {
 }
 
 [data-theme="dark"] .new-record-item {
-    background: #2d333b;
-    border-color: #444c56;
+    background: #252525;
+    border-color: #353535;
 }
 
 [data-theme="dark"] .new-record-item:hover {
-    background: #313943;
-    border-color: #545e6b;
+    background: #2b2b2b;
+    border-color: #3f3f3f;
 }
 
 [data-theme="dark"] .new-record-title {
