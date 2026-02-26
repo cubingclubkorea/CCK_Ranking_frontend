@@ -10,12 +10,13 @@ import {
   type CompStaffCountItem,
   type Competition,
 } from "@/entities";
-import { getRecordList } from "@/entities/record";
+import { getRecordList, type Record } from "@/entities/record";
 import { getRoundByDayCount, type Round } from "@/entities/round";
 import { getNewRecordBadgeSrc } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { RecordDetailModal } from "../round/components/RecordDetailModal";
 
 const formatDate = (date: Date) => {
   const year = date.getFullYear();
@@ -89,6 +90,7 @@ type CompBreakEntry = {
   value: number | null;
   name: string;
   roundName: string;
+  record: Record;
 };
 
 const formatRecordValue = (value: number | null) => {
@@ -97,6 +99,19 @@ const formatRecordValue = (value: number | null) => {
   if (value >= 60) {
     const minutes = Math.floor(value / 60);
     const seconds = value - minutes * 60;
+    return `${minutes}:${seconds.toFixed(2).padStart(5, "0")}`;
+  }
+  return value.toFixed(2);
+};
+
+const formatTimeValue = (value?: number | null) => {
+  if (value === null || value === undefined) return "-";
+  if (value === -1) return "DNF";
+  if (value === -2) return "DNS";
+  const absValue = Math.abs(value);
+  if (absValue >= 60) {
+    const minutes = Math.floor(absValue / 60);
+    const seconds = absValue - minutes * 60;
     return `${minutes}:${seconds.toFixed(2).padStart(5, "0")}`;
   }
   return value.toFixed(2);
@@ -149,6 +164,9 @@ export const CompetitionStatisticsPage = () => {
   const [dnfCount, setDnfCount] = useState<CompDnfCount>({ dnfCount: 0, successCount: 0, totalCount: 0 });
   const [participantCount, setParticipantCount] = useState(0);
   const [renewedRecordCount, setRenewedRecordCount] = useState(0);
+  const [selectedRecord, setSelectedRecord] = useState<{ record: Record; rank: number } | null>(null);
+  const [breakExpanded, setBreakExpanded] = useState(false);
+  const [breakPreviewCount, setBreakPreviewCount] = useState(4);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [partialError, setPartialError] = useState<string | null>(null);
@@ -205,6 +223,44 @@ export const CompetitionStatisticsPage = () => {
           .flatMap((item) => {
             const mapped: CompBreakEntry[] = [];
             if (isMajorBreakType(item.averageBestType)) {
+              const record: Record = {
+                idx: item.idx,
+                pdx: item.pdx ?? 0,
+                name: item.name,
+                state: item.state ?? "",
+                cckId: item.cckId,
+                roundIdx: item.roundIdx,
+                roundName: item.roundName,
+                roundGroup: item.roundGroup ?? "",
+                roundAdvance: item.roundAdvance ?? undefined,
+                compIdx: item.compIdx,
+                compName: item.compName,
+                eventName: item.eventName,
+                avgCalc: item.avgCalc,
+                attempts: item.attempts.map((attempt) => ({
+                  idx: attempt.idx,
+                  recordIdx: attempt.recordIdx,
+                  attemptTry: attempt.attemptTry,
+                  time: attempt.time,
+                  scramblerName: attempt.scramblerName ?? "",
+                  scramblerCckId: attempt.scramblerCckId ?? "",
+                  judgeName: attempt.judgeName ?? "",
+                  judgeCckId: attempt.judgeCckId ?? "",
+                  extra: attempt.extra,
+                  exReason: attempt.exReason ?? undefined,
+                  delegateName: attempt.delegateName ?? undefined,
+                  delegateCckId: attempt.delegateCckId ?? undefined,
+                  exScramblerName: attempt.exScramblerName ?? undefined,
+                  exScramblerCckId: attempt.exScramblerCckId ?? undefined,
+                })),
+                single: item.single ?? undefined,
+                average: item.average ?? undefined,
+                ranking: item.ranking ?? undefined,
+                stateRanking: item.stateRanking ?? undefined,
+                singleBestType: item.singleBestType ?? undefined,
+                averageBestType: item.averageBestType ?? undefined,
+                note: item.note ?? undefined,
+              };
               mapped.push({
                 id: `${item.idx}-average-${item.averageBestType}`,
                 bestType: item.averageBestType,
@@ -213,9 +269,48 @@ export const CompetitionStatisticsPage = () => {
                 value: item.average,
                 name: item.name,
                 roundName: item.roundName,
+                record,
               });
             }
             if (isMajorBreakType(item.singleBestType)) {
+              const record: Record = {
+                idx: item.idx,
+                pdx: item.pdx ?? 0,
+                name: item.name,
+                state: item.state ?? "",
+                cckId: item.cckId,
+                roundIdx: item.roundIdx,
+                roundName: item.roundName,
+                roundGroup: item.roundGroup ?? "",
+                roundAdvance: item.roundAdvance ?? undefined,
+                compIdx: item.compIdx,
+                compName: item.compName,
+                eventName: item.eventName,
+                avgCalc: item.avgCalc,
+                attempts: item.attempts.map((attempt) => ({
+                  idx: attempt.idx,
+                  recordIdx: attempt.recordIdx,
+                  attemptTry: attempt.attemptTry,
+                  time: attempt.time,
+                  scramblerName: attempt.scramblerName ?? "",
+                  scramblerCckId: attempt.scramblerCckId ?? "",
+                  judgeName: attempt.judgeName ?? "",
+                  judgeCckId: attempt.judgeCckId ?? "",
+                  extra: attempt.extra,
+                  exReason: attempt.exReason ?? undefined,
+                  delegateName: attempt.delegateName ?? undefined,
+                  delegateCckId: attempt.delegateCckId ?? undefined,
+                  exScramblerName: attempt.exScramblerName ?? undefined,
+                  exScramblerCckId: attempt.exScramblerCckId ?? undefined,
+                })),
+                single: item.single ?? undefined,
+                average: item.average ?? undefined,
+                ranking: item.ranking ?? undefined,
+                stateRanking: item.stateRanking ?? undefined,
+                singleBestType: item.singleBestType ?? undefined,
+                averageBestType: item.averageBestType ?? undefined,
+                note: item.note ?? undefined,
+              };
               mapped.push({
                 id: `${item.idx}-single-${item.singleBestType}`,
                 bestType: item.singleBestType,
@@ -224,6 +319,7 @@ export const CompetitionStatisticsPage = () => {
                 value: item.single,
                 name: item.name,
                 roundName: item.roundName,
+                record,
               });
             }
             return mapped;
@@ -260,6 +356,25 @@ export const CompetitionStatisticsPage = () => {
     };
   }, [compId, compIdx]);
 
+  useEffect(() => {
+    const syncPreviewCount = () => {
+      const width = window.innerWidth;
+      if (width <= 760) {
+        setBreakPreviewCount(1);
+        return;
+      }
+      if (width <= 1100) {
+        setBreakPreviewCount(2);
+        return;
+      }
+      setBreakPreviewCount(5);
+    };
+
+    syncPreviewCount();
+    window.addEventListener("resize", syncPreviewCount);
+    return () => window.removeEventListener("resize", syncPreviewCount);
+  }, []);
+
   const extraSum = useMemo(
     () => extraList.reduce((sum, item) => sum + (Number.isFinite(item.extra) ? item.extra : 0), 0),
     [extraList]
@@ -284,6 +399,8 @@ export const CompetitionStatisticsPage = () => {
     <span>대회 ID {compIdx ?? "-"}</span>
   );
   const competitionPath = competition ? `/competition/${competition.idx}` : "/competition";
+  const visibleBreakEntries = breakExpanded ? breakEntries : breakEntries.slice(0, breakPreviewCount);
+  const canToggleBreakEntries = breakEntries.length > breakPreviewCount;
 
   return (
     <div className="main-page">
@@ -347,17 +464,38 @@ export const CompetitionStatisticsPage = () => {
         </section>
 
         <section className="comp-stat-panel">
-          <div className="comp-stat-panel-head">
-            <h2>깨진 신기록</h2>
+          <div className="comp-stat-panel-head comp-stat-panel-head--between">
+            <h2>갱신된 신기록</h2>
+            {canToggleBreakEntries ? (
+              <button
+                type="button"
+                className="comp-stat-toggle-btn"
+                onClick={() => setBreakExpanded((prev) => !prev)}
+              >
+                {breakExpanded ? "접기" : "전체보기"}
+              </button>
+            ) : null}
           </div>
           {breakEntries.length === 0 ? (
             <div className="round-list-empty">표시할 CCR/SR 신기록이 없습니다.</div>
           ) : (
-            <div className="new-record-list comp-break-list">
-              {breakEntries.map((item) => {
+            <div className={`new-record-list comp-break-list ${!breakExpanded && canToggleBreakEntries ? "comp-break-list--collapsed" : ""}`.trim()}>
+              {visibleBreakEntries.map((item) => {
                 const badgeSrc = getNewRecordBadgeSrc(item.bestType);
                 return (
-                  <article className="new-record-item comp-break-item" key={item.id}>
+                  <article
+                    className="new-record-item comp-break-item"
+                    key={item.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedRecord({ record: item.record, rank: item.record.ranking ?? 0 })}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        setSelectedRecord({ record: item.record, rank: item.record.ranking ?? 0 });
+                      }
+                    }}
+                  >
                     <div className="new-record-badge-wrap">
                       {badgeSrc ? (
                         <img
@@ -377,6 +515,11 @@ export const CompetitionStatisticsPage = () => {
               })}
             </div>
           )}
+          {!breakExpanded && canToggleBreakEntries ? (
+            <div className="comp-break-more-hint">
+              <span>{`${breakEntries.length - visibleBreakEntries.length}개의 항목이 더 있습니다`}</span>
+            </div>
+          ) : null}
         </section>
 
         <div className="comp-stat-staff-grid">
@@ -391,6 +534,7 @@ export const CompetitionStatisticsPage = () => {
           </>
         )}
       </div>
+      <RecordDetailModal selected={selectedRecord} onClose={() => setSelectedRecord(null)} formatTimeValue={formatTimeValue} />
     </div>
   );
 };

@@ -64,22 +64,55 @@ const parseBreakBestType = (value: unknown): CompBreakBestType => {
   return null;
 };
 
+const parseBreakAttempts = (value: unknown): CompBreakItem["attempts"] => {
+  if (!Array.isArray(value)) return [];
+  return value.map((row) => {
+    const source = (row ?? {}) as Record<string, unknown>;
+    return {
+      idx: parseNumber(source.idx),
+      recordIdx: parseNumber(source.recordIdx),
+      attemptTry: parseNumber(source.attemptTry),
+      time: typeof source.time === "number" && Number.isFinite(source.time) ? source.time : null,
+      scramblerName: parseNullableString(source.scramblerName),
+      scramblerCckId: parseNullableString(source.scramblerCckId),
+      judgeName: parseNullableString(source.judgeName),
+      judgeCckId: parseNullableString(source.judgeCckId),
+      extra: parseNumber(source.extra),
+      exReason: parseNullableString(source.exReason),
+      delegateName: parseNullableString(source.delegateName),
+      delegateCckId: parseNullableString(source.delegateCckId),
+      exScramblerName: parseNullableString(source.exScramblerName),
+      exScramblerCckId: parseNullableString(source.exScramblerCckId),
+    };
+  });
+};
+
 const parseBreakList = (rows: unknown): CompBreakItem[] => {
   if (!Array.isArray(rows)) return [];
   return rows.map((row) => {
     const source = (row ?? {}) as Record<string, unknown>;
     return {
       idx: parseNumber(source.idx),
+      pdx: typeof source.pdx === "number" ? source.pdx : null,
       name: parseNullableString(source.name) ?? "-",
       cckId: parseNullableString(source.cckId) ?? "-",
       state: parseNullableString(source.state),
+      roundIdx: parseNumber(source.roundIdx),
       compName: parseNullableString(source.compName) ?? "-",
+      compIdx: parseNumber(source.compIdx),
       eventName: parseNullableString(source.eventName) ?? "-",
+      avgCalc: parseNullableString(source.avgCalc) ?? "ao5",
       roundName: parseNullableString(source.roundName) ?? "-",
+      roundGroup: parseNullableString(source.roundGroup),
+      roundAdvance: typeof source.roundAdvance === "number" ? source.roundAdvance : null,
+      attempts: parseBreakAttempts(source.attempts),
       single: typeof source.single === "number" && Number.isFinite(source.single) ? source.single : null,
       average: typeof source.average === "number" && Number.isFinite(source.average) ? source.average : null,
+      ranking: typeof source.ranking === "number" ? source.ranking : null,
+      stateRanking: typeof source.stateRanking === "number" ? source.stateRanking : null,
       singleBestType: parseBreakBestType(source.singleBestType),
       averageBestType: parseBreakBestType(source.averageBestType),
+      note: parseNullableString(source.note),
     };
   });
 };
