@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCubeEventList } from "@/entities/cubeEvent";
 import { type GlobalSingleRankingRecord } from "@/entities/statistics";
-import { isBo3AvgCalc, isSingleAvgCalc, mapRegionName, REGION_FILTER_OPTIONS } from "@/shared";
+import { isBo3AvgCalc, isSingleAvgCalc, REGION_FILTER_OPTIONS, resolveRegionKey } from "@/shared";
 import { getRankingRecords } from "../api/getRankingRecords";
 import {
   getErrorMessage,
@@ -12,11 +12,13 @@ import {
 } from "../model/ranking";
 
 export const useRankingData = () => {
+  const rankingSizeOptions = [10, 30, 50, 100, 150] as const;
   const [orderedEventNames, setOrderedEventNames] = useState<string[]>([]);
   const [eventAvgCalcMap, setEventAvgCalcMap] = useState<Record<string, string>>({});
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [metric, setMetric] = useState<RankingMetric>("single");
   const [selectedRegion, setSelectedRegion] = useState("전체 지역");
+  const [rankingSize, setRankingSize] = useState<number>(50);
   const [eventLoading, setEventLoading] = useState(true);
   const [rankingLoading, setRankingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,8 +82,8 @@ export const useRankingData = () => {
   }, [averageEnabled, metric]);
 
   const cacheKey = useMemo(
-    () => `${metric}:${selectedEvent}` as MetricEventKey,
-    [metric, selectedEvent]
+    () => `${metric}:${selectedEvent}:${selectedRegion}:${rankingSize}` as MetricEventKey,
+    [metric, selectedEvent, selectedRegion, rankingSize]
   );
 
   useEffect(() => {
@@ -107,7 +109,13 @@ export const useRankingData = () => {
       setError(null);
 
       try {
-        const rows = await getRankingRecords(metric, selectedEvent);
+        const selectedRegionKey =
+          selectedRegion === "전체 지역" ? undefined : resolveRegionKey(selectedRegion);
+        if (selectedRegion !== "전체 지역" && !selectedRegionKey) {
+          throw new Error("선택한 지역 정보를 확인할 수 없습니다.");
+        }
+
+        const rows = await getRankingRecords(metric, selectedEvent, rankingSize, selectedRegionKey);
         if (!mounted) return;
         setRankingCache((prev) => ({
           ...prev,
@@ -126,23 +134,13 @@ export const useRankingData = () => {
     return () => {
       mounted = false;
     };
-  }, [averageEnabled, cacheKey, metric, rankingCache, selectedEvent]);
+  }, [averageEnabled, cacheKey, metric, rankingCache, rankingSize, selectedEvent, selectedRegion]);
 
   const rankingRows = selectedEvent ? rankingCache[cacheKey] ?? [] : [];
   const regionOptions = useMemo(
     () => ["전체 지역", ...REGION_FILTER_OPTIONS],
     []
   );
-  const filteredRankingRows = useMemo(() => {
-    if (selectedRegion === "전체 지역") {
-      return rankingRows;
-    }
-    return rankingRows.filter((row) => {
-      const mappedRegion = mapRegionName(row.state);
-      return mappedRegion === selectedRegion;
-    });
-  }, [rankingRows, selectedRegion]);
-
   const handleSetMetric = (nextMetric: RankingMetric) => {
     if (nextMetric === "average" && !averageEnabled) return;
     setMetric(nextMetric);
@@ -161,6 +159,9 @@ export const useRankingData = () => {
     selectedRegion,
     setSelectedRegion,
     regionOptions,
-    rankingRows: filteredRankingRows,
+    rankingSize,
+    setRankingSize,
+    rankingSizeOptions: [...rankingSizeOptions],
+    rankingRows,
   };
 };

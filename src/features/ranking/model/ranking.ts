@@ -3,7 +3,7 @@ import type { GlobalSingleRankingRecord } from "@/entities/statistics";
 import { resolveAverageValue } from "@/shared";
 
 export type RankingMetric = "single" | "average";
-export type MetricEventKey = `${RankingMetric}:${string}`;
+export type MetricEventKey = `${RankingMetric}:${string}:${string}:${number}`;
 
 const EVENT_ORDER_CANDIDATES: string[][] = [
   ["3x3x3"],
