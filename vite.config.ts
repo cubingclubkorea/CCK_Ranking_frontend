@@ -16,7 +16,7 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api/v1': {
-        target: 'https://test.ranking.cubingclub.com',
+        target: 'https://ranking.cubingclub.com',
         changeOrigin: true,
         secure: true,
       },

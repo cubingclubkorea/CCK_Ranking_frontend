@@ -6,7 +6,7 @@ export type AuthInfoResponse = {
   state: string;
   gender: string;
   cckId: string;
-  role: string;
+  position: string;
 };
 
 export const getAuthInfo = async (cckId: string): Promise<AuthInfoResponse> => {
