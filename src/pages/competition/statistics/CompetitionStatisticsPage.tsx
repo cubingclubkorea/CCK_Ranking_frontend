@@ -16,7 +16,7 @@ import { getNewRecordBadgeSrc } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal.tsx";
+import { RecordDetailModal } from "@/pages/competition/round/components/RecordDetailModal.tsx";
 
 const getDayRange = (start: Date, end: Date): number[] => {
   const items: number[] = [];

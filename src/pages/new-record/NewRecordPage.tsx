@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NEW_RECORD_DAYS, type NewRecordItem, useNewRecords } from "@/features/newRecord";
 import { formatTimeValue } from "@/features/ranking";
 import { shouldUseRequestErrorPage } from "@/shared";
-import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
+import { RecordDetailModal } from "@/pages/competition/round/components/RecordDetailModal";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
 import { PageHeader } from "@/widgets";
 import { NewRecordList } from "./components/NewRecordList";

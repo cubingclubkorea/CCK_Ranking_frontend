@@ -588,7 +588,7 @@ export const RoundRecordEditPage = () => {
         subtitle={round.compName ? `라운드 관리 모드 · ${round.compName}` : undefined}
         actions={[
           {
-            label: "라운드로 돌아가기",
+            label: "라운드 페이지",
             iconSrc: "/icon/button/back.svg",
             to: `/competition/${Number(backTarget)}/round/${Number(round.idx)}`,
           },

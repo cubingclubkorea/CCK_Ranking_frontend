@@ -86,7 +86,13 @@ export const PageHeader = ({
       {visibleActions.length > 0 ? (
         <div className="page-actions">
           {visibleActions.map((action, index) => {
-            const className = ["page-action-btn", action.className].filter(Boolean).join(" ");
+            const className = [
+              "page-action-btn",
+              action.adminOnly ? "page-action-btn--admin" : "",
+              action.className,
+            ]
+              .filter(Boolean)
+              .join(" ");
             const iconNode = action.iconSrc ? (
               <img
                 className={action.iconClassName ?? "page-action-icon"}

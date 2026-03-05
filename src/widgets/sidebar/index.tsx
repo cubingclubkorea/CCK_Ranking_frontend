@@ -27,7 +27,6 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
     card: "/icon/sidebar/card.svg",
     lock: "/icon/sidebar/lock.svg",
     form: "/icon/sidebar/form.svg",
-    dashboard: "/icon/sidebar/dashboard.svg",
   };
 
   useEffect(() => {
@@ -66,7 +65,6 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
               <div className="admin-group">
                 <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" onNavigate={isMobile ? onClose : undefined} />
                 <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" onNavigate={isMobile ? onClose : undefined} />
-                <MenuItem text="API 대시보드" icon={icons.dashboard} to="/admin/api-dashboard" onNavigate={isMobile ? onClose : undefined} />
               </div>
             </>
           )}

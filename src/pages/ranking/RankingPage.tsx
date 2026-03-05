@@ -5,7 +5,7 @@ import { formatTimeValue, toRecord, type RankingMetric, useRankingData } from "@
 import { mapRegionKeyToLabel, resolveRegionKey, shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
-import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
+import { RecordDetailModal } from "@/pages/competition/round/components/RecordDetailModal";
 import { RankingControls } from "./components/RankingControls";
 import { RankingPanelSkeleton } from "./components/RankingPanelSkeleton";
 import { RankingTable } from "./components/RankingTable";

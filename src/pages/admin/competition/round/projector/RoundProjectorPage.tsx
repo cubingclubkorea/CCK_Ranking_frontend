@@ -19,7 +19,7 @@ import {
   shouldUseRequestErrorPage,
 } from "@/shared";
 import { RoundPageSkeleton } from "@/widgets";
-import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage.tsx";
 
 const PROJECTOR_PAGE_DURATION_MS = 10000;
 const PROJECTOR_MIN_ROWS = 5;

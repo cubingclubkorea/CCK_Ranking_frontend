@@ -398,6 +398,16 @@ body {
     color: #2f5fc3;
 }
 
+.page-action-btn--admin {
+    border-color: #c9dafc;
+    background: #eaf1ff;
+    color: #234ea5;
+}
+
+.page-action-btn--admin:hover {
+    color: #1c3f87;
+}
+
 [data-theme="dark"] .page-action-btn:hover,
 [data-theme="dark"] .header-user-menu-item:hover {
     color: #a9c4ff;
@@ -406,6 +416,16 @@ body {
 [data-theme="dark"] .page-action-btn:link,
 [data-theme="dark"] .page-action-btn:visited {
     color: #d4d4d4;
+}
+
+[data-theme="dark"] .page-action-btn--admin {
+    background: #1f2f4d;
+    border-color: #2e4b82;
+    color: #b7d2ff;
+}
+
+[data-theme="dark"] .page-action-btn--admin:hover {
+    color: #d2e2ff;
 }
 
 .page-action-icon {
@@ -7316,6 +7336,40 @@ body {
     color: #d4d4d4;
 }
 
+[data-theme="dark"] .page-action-btn.page-action-btn--admin {
+    background: #1f2f4d;
+    border-color: #2e4b82;
+    color: #b7d2ff;
+}
+
+[data-theme="dark"] .page-action-btn.page-action-btn--admin:hover {
+    color: #d2e2ff;
+}
+
+[data-theme="dark"] .add-competitor-selected-list,
+[data-theme="dark"] .add-competitor-table-wrap {
+    border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .add-competitor-selected-item {
+    background: #252525;
+    border-top-color: #353535;
+}
+
+[data-theme="dark"] .add-competitor-selected-name {
+    color: #e6e6e6;
+}
+
+[data-theme="dark"] .add-competitor-selected-id {
+    color: #a0a7ba;
+}
+
+[data-theme="dark"] .add-competitor-step {
+    background: #243457;
+    border-color: #355492;
+    color: #c9dbff;
+}
+
 [data-theme="dark"] .card-list,
 [data-theme="dark"] .round-card,
 [data-theme="dark"] .round-panel,
@@ -7836,4 +7890,58 @@ body {
     background: #2a2a2a;
     border-color: #3a3a3a;
     color: #d4d4d4;
+}
+
+/* Profile dark mode final override (ranking-like black palette) */
+[data-theme="dark"] .profile-page .profile-identity-card--competitor,
+[data-theme="dark"] .profile-page .profile-event-card,
+[data-theme="dark"] .profile-page .profile-record-current-card,
+[data-theme="dark"] .profile-page .profile-record-history-card,
+[data-theme="dark"] .profile-page .profile-stats-subsection,
+[data-theme="dark"] .profile-page .profile-record-history-table-wrap {
+    background: #252525;
+    border-color: #353535;
+}
+
+[data-theme="dark"] .profile-page .profile-stat-card,
+[data-theme="dark"] .profile-page .profile-record-summary-item,
+[data-theme="dark"] .profile-page .profile-record-history-item {
+    background: #232323;
+    border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .profile-page .profile-main-section-title,
+[data-theme="dark"] .profile-page .profile-section-title,
+[data-theme="dark"] .profile-page .profile-name,
+[data-theme="dark"] .profile-page .profile-name-en,
+[data-theme="dark"] .profile-page .profile-meta-value,
+[data-theme="dark"] .profile-page .profile-event-title,
+[data-theme="dark"] .profile-page .profile-stat-card p,
+[data-theme="dark"] .profile-page .profile-record-history-comp,
+[data-theme="dark"] .profile-page .profile-record-history-value {
+    color: #e6e6e6;
+}
+
+[data-theme="dark"] .profile-page .profile-meta-key,
+[data-theme="dark"] .profile-page .profile-event-row,
+[data-theme="dark"] .profile-page .profile-event-row-key,
+[data-theme="dark"] .profile-page .profile-record-history-round,
+[data-theme="dark"] .profile-page .profile-stats-subtitle,
+[data-theme="dark"] .profile-page .profile-stat-card h4,
+[data-theme="dark"] .profile-page .profile-stat-card h5 {
+    color: #a9a9a9;
+}
+
+[data-theme="dark"] .profile-page .profile-event-row-value {
+    border-left-color: #4a4a4a;
+}
+
+[data-theme="dark"] .profile-page .profile-event-card--clickable:hover,
+[data-theme="dark"] .profile-page .profile-record-history-item:hover {
+    border-color: #4a4a4a;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] .profile-page .profile-record-history-row--clickable:hover td {
+    background: #2f2f2f;
 }

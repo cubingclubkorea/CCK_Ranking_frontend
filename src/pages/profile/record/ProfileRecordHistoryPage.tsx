@@ -9,7 +9,7 @@ import {
 import type { Record as RoundRecord } from "@/entities/record";
 import { formatTimeValue, toRecord } from "@/features/ranking";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
-import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
+import { RecordDetailModal } from "@/pages/competition/round/components/RecordDetailModal";
 import { getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RecordHistoryChart } from "./components/RecordHistoryChart";
