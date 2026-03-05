@@ -22,6 +22,7 @@ import {
   CompetitionCreatePage,
   CompetitionManagePage,
   RoundRecordEditPage,
+  AddCompetitorPage,
   RoundProjectorPage,
   EventAdminPage,
   ScrambleAdminPage,
@@ -284,6 +285,14 @@ export const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <RoundRecordEditPage />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "admin/competition/:compIdx/round/:roundIdx/add-competitior",
+        element: (
+          <AdminRoute>
+            <AddCompetitorPage />
           </AdminRoute>
         ),
       },

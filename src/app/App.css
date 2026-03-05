@@ -4808,6 +4808,83 @@ body {
     padding-bottom: 14px;
 }
 
+.add-competitor-page {
+    gap: 14px;
+}
+
+.add-competitor-panel {
+    background: #ffffff;
+}
+
+.add-competitor-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.add-competitor-step {
+    font-size: 12px;
+    font-weight: 700;
+    color: #596079;
+    background: #eef2ff;
+    border: 1px solid #d8deef;
+    border-radius: 999px;
+    padding: 5px 10px;
+}
+
+.add-competitor-selected-list {
+    border: 1px solid #e2e4ef;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.add-competitor-selected-item {
+    background: #ffffff;
+    border-top: 1px solid #ececf2;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.add-competitor-selected-item:first-child {
+    border-top: 0;
+}
+
+.add-competitor-selected-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2b2f3c;
+}
+
+.add-competitor-selected-id {
+    font-size: 12px;
+    color: #7a7f90;
+    margin-top: 2px;
+}
+
+.add-competitor-table-wrap {
+    border: 1px solid #ececf2;
+    border-radius: 12px;
+    overflow-x: auto;
+}
+
+.add-competitor-table {
+    min-width: 680px;
+}
+
+.add-competitor-input {
+    min-width: 90px;
+}
+
+@media (max-width: 720px) {
+    .add-competitor-table {
+        min-width: 760px;
+    }
+}
+
 
 @media (max-width: 720px) {
     .comp-content {
