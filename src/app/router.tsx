@@ -224,6 +224,10 @@ export const router = createBrowserRouter([
         element: <RoundPage />,
       },
       {
+        path: "competition/:compIdx/round/:roundIdx/record/:recordIdx",
+        element: <RoundPage />,
+      },
+      {
         path: "competition/:compIdx/round/:roundIdx/statistics",
         element: <RoundStatisticsPage />,
       },

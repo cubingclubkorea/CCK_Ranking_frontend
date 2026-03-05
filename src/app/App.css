@@ -4022,6 +4022,7 @@ body {
     align-items: center;
     gap: 8px;
     margin-left: auto;
+    position: relative;
 }
 
 .record-modal-title {
@@ -4047,6 +4048,40 @@ body {
     height: 20px;
     display: block;
     filter: brightness(0) saturate(100%);
+}
+
+.record-share-menu {
+    position: fixed;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    border-radius: 10px;
+    border: 1px solid #d9dce5;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+    z-index: 10020;
+}
+
+.record-share-menu-item {
+    border: none;
+    background: transparent;
+    color: #111322;
+    border-radius: 8px;
+    padding: 9px 10px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.25;
+    cursor: pointer;
+}
+
+.record-share-menu-item:hover:not(:disabled) {
+    background: #f3f5fa;
+}
+
+.record-share-menu-item:disabled {
+    opacity: 0.6;
+    cursor: default;
 }
 
 .record-modal-close {
@@ -7095,6 +7130,20 @@ body {
 
 [data-theme="dark"] .record-modal-profile-btn img {
     filter: brightness(0) invert(0.92);
+}
+
+[data-theme="dark"] .record-share-menu {
+    border-color: #3a4354;
+    background: #111827;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+}
+
+[data-theme="dark"] .record-share-menu-item {
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .record-share-menu-item:hover:not(:disabled) {
+    background: #1f2937;
 }
 
 

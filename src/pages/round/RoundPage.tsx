@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
@@ -49,7 +49,8 @@ const formatTimeValue = (value?: number | null) => {
 };
 
 export const RoundPage = () => {
-  const { compIdx, roundIdx } = useParams();
+  const { compIdx, roundIdx, recordIdx } = useParams();
+  const navigate = useNavigate();
   const [round, setRound] = useState<Round | null>(null);
   const [records, setRecords] = useState<Record[]>([]);
   const [search, setSearch] = useState("");
@@ -122,6 +123,22 @@ export const RoundPage = () => {
     });
   }, [records]);
 
+  const selectedFromUrl = useMemo(() => {
+    const parsedRecordIdx = Number(recordIdx);
+    if (!recordIdx || !Number.isFinite(parsedRecordIdx) || parsedRecordIdx <= 0) {
+      return null;
+    }
+    const targetIndex = sortedRecords.findIndex((record) => record.idx === parsedRecordIdx);
+    if (targetIndex < 0) {
+      return null;
+    }
+    const targetRecord = sortedRecords[targetIndex];
+    return {
+      record: targetRecord,
+      rank: targetRecord.ranking ?? targetIndex + 1,
+    };
+  }, [recordIdx, sortedRecords]);
+
   const filteredRecords = useMemo(() => {
     const keyword = search.trim().toLowerCase();
     if (!keyword) return sortedRecords;
@@ -160,6 +177,22 @@ export const RoundPage = () => {
     suggestionRefs.current[searchActiveIndex]?.scrollIntoView({ block: "nearest" });
   }, [searchActiveIndex, searchOpen]);
 
+  useEffect(() => {
+    if (!recordIdx) {
+      setSelectedRecord(null);
+      return;
+    }
+    if (!selectedFromUrl) {
+      return;
+    }
+    setSelectedRecord((prev) => {
+      if (prev?.record.idx === selectedFromUrl.record.idx && prev.rank === selectedFromUrl.rank) {
+        return prev;
+      }
+      return selectedFromUrl;
+    });
+  }, [recordIdx, selectedFromUrl]);
+
   const getNextSearchIndex = (prev: number, direction: 1 | -1) => {
     if (searchResults.length === 0) return -1;
     if (prev < 0) {
@@ -189,6 +222,7 @@ export const RoundPage = () => {
   }
 
   const backTarget = compIdx ?? String(round.compIdx);
+  const baseRoundPath = `/competition/${Number(backTarget)}/round/${Number(round.idx)}`;
   const roundDateTime = formatRoundDateTime(round.eventStart, round.eventEnd);
   return (
     <div className="main-page">
@@ -353,13 +387,22 @@ export const RoundPage = () => {
           advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
           compactAttempts={compactRecordView}
-          onSelect={(record, rank) => setSelectedRecord({ record, rank })}
+          onSelect={(record, rank) => {
+            setSelectedRecord({ record, rank });
+            navigate(`${baseRoundPath}/record/${record.idx}`);
+          }}
+          selectedRecordIdx={selectedRecord?.record.idx}
         />
       </section>
 
       <RecordDetailModal
         selected={selectedRecord}
-        onClose={() => setSelectedRecord(null)}
+        onClose={() => {
+          setSelectedRecord(null);
+          if (recordIdx) {
+            navigate(baseRoundPath, { replace: true });
+          }
+        }}
         formatTimeValue={formatTimeValue}
       />
     </div>
