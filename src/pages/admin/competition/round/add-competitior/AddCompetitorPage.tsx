@@ -315,7 +315,7 @@ export const AddCompetitorPage = () => {
         subtitle={`${round.compName} · ${round.cubeEventName} ${round.roundName}`}
         actions={[
           {
-            label: "라운드 관리로 돌아가기",
+            label: "라운드 관리 페이지",
             iconSrc: "/icon/button/back.svg",
             to: `/admin/competition/${Number(resolvedCompIdx)}/round/${Number(round.idx)}`,
           },

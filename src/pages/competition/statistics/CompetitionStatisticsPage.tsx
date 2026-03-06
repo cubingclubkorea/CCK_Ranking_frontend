@@ -474,11 +474,6 @@ export const CompetitionStatisticsPage = () => {
             iconSrc: "/icon/button/back.svg",
             to: competitionPath,
           },
-          {
-            label: "랭킹 홈",
-            iconSrc: "/icon/button/home.svg",
-            to: "/",
-          },
         ]}
       />
 

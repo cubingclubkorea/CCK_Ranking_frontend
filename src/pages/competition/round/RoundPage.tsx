@@ -286,11 +286,6 @@ export const RoundPage = () => {
             iconSrc: "/icon/button/statistics.svg",
             to: `/competition/${Number(backTarget)}/round/${Number(round.idx)}/statistics`,
           },
-          {
-            label: "랭킹 홈",
-            iconSrc: "/icon/button/home.svg",
-            to: "/",
-          },
         ]}
       />
 

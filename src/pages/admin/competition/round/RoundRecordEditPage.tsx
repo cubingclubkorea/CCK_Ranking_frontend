@@ -592,11 +592,6 @@ export const RoundRecordEditPage = () => {
             iconSrc: "/icon/button/back.svg",
             to: `/competition/${Number(backTarget)}/round/${Number(round.idx)}`,
           },
-          {
-            label: "랭킹 홈",
-            iconSrc: "/icon/button/home.svg",
-            to: "/",
-          },
         ]}
       />
 

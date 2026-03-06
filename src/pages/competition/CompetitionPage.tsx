@@ -236,11 +236,6 @@ export const CompetitionPage = () => {
             iconClassName: "page-action-icon page-action-icon--logo",
             href: "https://cubingclub.com/pages/competition",
           },
-          {
-            label: "랭킹 홈",
-            iconSrc: "/icon/button/home.svg",
-            to: "/",
-          },
         ]}
       />
       <div className="comp-content">

@@ -219,14 +219,8 @@ export const ScrambleAdminPage = () => {
         }
         actions={[
           {
-            label: "대회로 돌아가기",
+            label: "대회 페이지",
             iconSrc: "/icon/button/back.svg",
-            onClick: () => navigate(`/competition/${competitionId}`),
-            disabled: !competitionId,
-          },
-          {
-            label: "대회 페이지 보기",
-            iconSrc: "/icon/button/home.svg",
             onClick: () => navigate(`/competition/${competitionId}`),
             disabled: !competitionId,
           },
