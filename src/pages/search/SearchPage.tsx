@@ -12,7 +12,6 @@ import { getCubeEventList } from "@/entities/cubeEvent";
 import type { GlobalSingleRankingRecord } from "@/entities/statistics";
 import {
   formatTimeValue,
-  getRankingEventNames,
   getRankingRecords,
   sortEventNames,
   type RankingRecordMetric,
@@ -217,34 +216,16 @@ export const SearchPage = () => {
       setEventLoading(true);
       try {
         const eventList = await getCubeEventList();
+        if (cancelled) return;
         const names = sortEventNames(Array.from(new Set(eventList.map((event) => event.eventName))));
-        if (!cancelled && names.length > 0) {
-          setEventNames(names);
-          return;
-        }
+        setEventNames(names);
       } catch (error) {
-        if (!cancelled) {
-          console.warn("종목 목록 조회 실패, 랭킹 종목 목록 폴백 사용:", error);
-        }
+        if (cancelled) return;
+        console.error("종목 목록 조회 실패:", error);
+        setEventNames([]);
+      } finally {
+        if (!cancelled) setEventLoading(false);
       }
-
-      try {
-        const names = await getRankingEventNames();
-        const resolved = sortEventNames(Array.from(new Set(names)));
-        if (!cancelled && resolved.length > 0) {
-          setEventNames(resolved);
-          return;
-        }
-      } catch (error) {
-        if (!cancelled) {
-          console.warn("랭킹 종목 목록 조회 실패, 기본 종목 폴백 사용:", error);
-        }
-      }
-
-      if (!cancelled) {
-        setEventNames(["3x3x3", "2x2x2", "4x4x4", "Pyraminx", "Skewb"]);
-      }
-      if (!cancelled) setEventLoading(false);
     };
 
     fetchEvents();
@@ -493,16 +474,13 @@ export const SearchPage = () => {
       .slice(0, 80);
   }, [hasKeyword, includeRecords, keyword, recordMetric, recordRows]);
 
-  const hasAnyResult =
-    filteredCompetitions.length > 0 || playerResults.length > 0 || filteredRecords.length > 0;
-
   return (
     <div className="main-page search-page">
       <PageHeader
         containerClassName="comp-header search-header"
         iconSrc="/icon/sidebar/search.svg"
         title="검색"
-        subtitle="Search."
+        subtitle="Search"
       />
 
       <section className="search-panel">
@@ -517,7 +495,7 @@ export const SearchPage = () => {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="선수명, CCK ID, 대회명, 종목명, 기록값(예: 13.41)"
+              placeholder="이름, 대회명, 기록 값 등으로 검색"
               autoComplete="off"
             />
           </label>
@@ -702,15 +680,6 @@ export const SearchPage = () => {
               </section>
             ) : null}
 
-            {!playerLoading &&
-            !competitionLoading &&
-            !recordLoading &&
-            !playerError &&
-            !competitionError &&
-            !recordError &&
-            !hasAnyResult ? (
-              <div className="search-empty-hint">현재 조건에서 검색 결과가 없습니다.</div>
-            ) : null}
           </>
         )}
       </section>
