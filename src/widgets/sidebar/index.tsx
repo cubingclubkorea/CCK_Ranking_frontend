@@ -27,6 +27,7 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
     card: "/icon/sidebar/card.svg",
     lock: "/icon/sidebar/lock.svg",
     form: "/icon/sidebar/form.svg",
+    search: "/icon/sidebar/search.svg",
   };
 
   useEffect(() => {
@@ -51,6 +52,7 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
           {/* 일반 메뉴 */}
           <div className="menu-group">
             <MenuItem text="대회 목록" icon={icons.list} to="/" onNavigate={isMobile ? onClose : undefined} />
+            <MenuItem text="검색" icon={icons.search} to="/search" onNavigate={isMobile ? onClose : undefined} />
             <MenuItem text="신기록" icon={icons.record} to="/new-record" onNavigate={isMobile ? onClose : undefined} />
             <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" onNavigate={isMobile ? onClose : undefined} />
             {isLoggedIn && <MenuItem text="나의 정보" icon={icons.person} to={myCckId ? `/profile/${encodeURIComponent(myCckId)}` : "/profile"} onNavigate={isMobile ? onClose : undefined} />}

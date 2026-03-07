@@ -1,6 +1,7 @@
 // Barrel for `src/pages`
 // Add page exports here (route components)
 export { MainPage } from './main/MainPage.tsx';
+export { SearchPage } from "./search/SearchPage";
 export { CompetitionPage } from './competition/CompetitionPage';
 export { CompetitionStatisticsPage } from './competition/statistics/CompetitionStatisticsPage.tsx';
 export { RoundPage } from '@/pages/competition/round/RoundPage';

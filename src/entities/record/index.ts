@@ -1,2 +1,2 @@
 export * from './types';
-export { getRecordList } from './api/getRecord';
+export { getRecordList, getRecordByIdx } from './api/getRecord';

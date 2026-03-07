@@ -1,6 +1,7 @@
 import { createBrowserRouter, Outlet, useLocation } from "react-router-dom";
 import {
   MainPage,
+  SearchPage,
   CompetitionPage,
   CompetitionStatisticsPage,
   RoundPage,
@@ -202,6 +203,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <MainPage />,
+      },
+      {
+        path: "search",
+        element: <SearchPage />,
       },
       {
         path: "competition/:compIdx",
