@@ -32,9 +32,9 @@ const normalizeName = (value?: string) => (value && value.trim() ? value.trim() 
 const normalizePosition = (value?: string | null) => (value && value.trim() ? value.trim().toUpperCase() : "");
 const mapGenderLabel = (value?: string | null) => {
   const normalized = value?.trim().toUpperCase();
-  if (normalized === "Male") return "남성";
-  if (normalized === "Female") return "여성";
-  if (normalized === "Unknown") return "-";
+  if (normalized === "MALE") return "남성";
+  if (normalized === "FEMALE") return "여성";
+  if (normalized === "UNKNOWN") return "-";
   return "-";
 };
 

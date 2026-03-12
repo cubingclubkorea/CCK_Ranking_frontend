@@ -1598,8 +1598,13 @@ body {
     .profile-identity-card--organizer::before,
     .profile-identity-card--organizer::after,
     .profile-identity-organizer-mark,
-    .profile-identity-competitor-mark {
+    .profile-identity-competitor-mark,
+    .profile-role-tip--identity-card {
         animation: none;
+    }
+
+    .profile-role-info-btn--identity-card.profile-role-info-btn--active {
+        transform: none;
     }
 }
 
@@ -1716,6 +1721,11 @@ body {
     box-shadow: 0 1px 3px rgba(31, 41, 55, 0.16);
 }
 
+.profile-role-info-btn--identity-card.profile-role-info-btn--active {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.22), 0 4px 10px rgba(31, 41, 55, 0.24);
+}
+
 .profile-role-tip {
     position: absolute;
     left: 0;
@@ -1738,6 +1748,8 @@ body {
 .profile-role-tip--identity-card {
     left: auto;
     right: -17px;
+    transform-origin: top right;
+    animation: organizerTipReveal 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .profile-role-tip--identity-card::before {
@@ -1759,6 +1771,24 @@ body {
 
 .profile-role-tip.profile-role-tip--identity-card::before {
     right: 19px;
+}
+
+@keyframes organizerTipReveal {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, -6px, 0) scale(0.96);
+        filter: blur(1px);
+    }
+    65% {
+        opacity: 1;
+        transform: translate3d(0, 1px, 0) scale(1.01);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0);
+    }
 }
 
 .profile-meta-grid {
@@ -1816,6 +1846,11 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 18px;
+}
+
+.profile-event-grid > .round-list-empty {
+    grid-column: 1 / -1;
+    width: 100%;
 }
 
 .profile-event-card {
@@ -7945,6 +7980,29 @@ body {
 
 [data-theme="dark"] .profile-page .profile-record-history-row--clickable:hover td {
     background: #2f2f2f;
+}
+
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-name,
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-name-en,
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-meta-key,
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-meta-value,
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-region-value,
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-region-value span {
+    color: #111827;
+}
+
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-role-info-btn {
+    border-color: rgba(17, 24, 39, 0.5);
+    background: rgba(255, 255, 255, 0.78);
+    color: #111827;
+}
+
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-role-info-btn:hover {
+    background: rgba(255, 255, 255, 0.96);
+}
+
+[data-theme="dark"] .profile-page .profile-identity-card--organizer .profile-role-info-btn--identity-card.profile-role-info-btn--active {
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.14), 0 4px 10px rgba(2, 6, 23, 0.3);
 }
 
 /* ===== Search Page ===== */

@@ -39,7 +39,7 @@ export const ProfileIdentityCard = ({
         <div className="profile-organizer-info-wrap">
           <button
             type="button"
-            className="profile-role-info-btn profile-role-info-btn--identity-card"
+            className={`profile-role-info-btn profile-role-info-btn--identity-card${organizerTipOpen ? " profile-role-info-btn--active" : ""}`}
             onClick={() => setOrganizerTipOpen((prev) => !prev)}
             aria-expanded={organizerTipOpen}
             aria-controls="organizer-info-tip"
