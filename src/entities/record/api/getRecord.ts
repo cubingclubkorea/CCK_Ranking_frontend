@@ -13,3 +13,11 @@ export const getRecordList = async (roundIdx: number): Promise<Record[]> => {
   
   return data.map(RecordMapper);
 };
+
+/**
+ * 단일 기록 상세 조회
+ */
+export const getRecordByIdx = async (recordIdx: number): Promise<Record> => {
+  const data = await apiClient.get<RecordDTO>(`${BASE_URL}/info/${recordIdx}`);
+  return RecordMapper(data);
+};

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { addPlayer, advancePlayer, deleteRecord } from "@/features/record";
@@ -69,6 +70,7 @@ export const RoundManagementPanel = ({
   onRecordsRefresh,
   onAdvanceUpdated,
 }: RoundManagementPanelProps) => {
+  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState<ManageModalKey>(null);
   const [addForm, setAddForm] = useState<PlayerAddDTO>({
     pdx: 0,
@@ -232,7 +234,11 @@ export const RoundManagementPanel = ({
       </div>
 
       <div className="record-manage-actions">
-        <button type="button" className="record-edit-btn record-edit-btn--primary" onClick={() => setOpenModal("add")}>
+        <button
+          type="button"
+          className="record-edit-btn record-edit-btn--primary"
+          onClick={() => navigate(`/admin/competition/${round.compIdx}/round/${round.idx}/add-competitior`)}
+        >
           선수 추가
         </button>
         <button type="button" className="record-edit-btn record-edit-btn--primary" onClick={() => setOpenModal("dns")}>

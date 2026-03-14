@@ -226,15 +226,15 @@ export const CompetitionPage = () => {
             adminOnly: true,
           },
           {
+            label: "대회 통계",
+            iconSrc: "/icon/button/statistics.svg",
+            to: `/competition/${competition.idx}/statistics`,
+          },
+          {
             label: "대회 정보",
             iconSrc: "/logo/cck-logo.png",
             iconClassName: "page-action-icon page-action-icon--logo",
             href: "https://cubingclub.com/pages/competition",
-          },
-          {
-            label: "랭킹 홈",
-            iconSrc: "/icon/button/home.svg",
-            to: "/",
           },
         ]}
       />

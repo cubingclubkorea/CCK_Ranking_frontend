@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getRound } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import type { Round } from "@/entities/round";
 import type { Record } from "@/entities/record";
 import { getErrorMessage, getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
-import { authChangeEvent, hasAdminRole } from "@/features/auth/utils/tokenStorage";
 import { PageHeader, RoundPageSkeleton } from "@/widgets";
-import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
-import { RecordTable } from "./components/RecordTable";
-import { RecordDetailModal } from "./components/RecordDetailModal";
+import { RequestErrorPage } from "@/pages/error/RequestErrorPage.tsx";
+import { RecordTable } from "./components/RecordTable.tsx";
+import { RecordDetailModal } from "./components/RecordDetailModal.tsx";
 
 const COMPACT_RECORD_QUERY = "(max-width: 980px), (max-aspect-ratio: 5/4)";
 const isValidDate = (value?: Date): value is Date => value instanceof Date && !Number.isNaN(value.getTime());
@@ -50,7 +49,8 @@ const formatTimeValue = (value?: number | null) => {
 };
 
 export const RoundPage = () => {
-  const { compIdx, roundIdx } = useParams();
+  const { compIdx, roundIdx, recordIdx } = useParams();
+  const navigate = useNavigate();
   const [round, setRound] = useState<Round | null>(null);
   const [records, setRecords] = useState<Record[]>([]);
   const [search, setSearch] = useState("");
@@ -61,10 +61,7 @@ export const RoundPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<{ record: Record; rank: number } | null>(null);
   const [compactRecordView, setCompactRecordView] = useState(() => window.matchMedia(COMPACT_RECORD_QUERY).matches);
-  const [isAdmin, setIsAdmin] = useState(hasAdminRole());
   const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
-
-  console.log(isAdmin);
 
   useEffect(() => {
     let mounted = true;
@@ -112,16 +109,6 @@ export const RoundPage = () => {
     return () => mediaQuery.removeEventListener("change", syncCompactMode);
   }, []);
 
-  useEffect(() => {
-    const syncAuthState = () => setIsAdmin(hasAdminRole());
-    window.addEventListener(authChangeEvent, syncAuthState);
-    window.addEventListener("storage", syncAuthState);
-    return () => {
-      window.removeEventListener(authChangeEvent, syncAuthState);
-      window.removeEventListener("storage", syncAuthState);
-    };
-  }, []);
-
   const sortedRecords = useMemo(() => {
     return [...records].sort((a, b) => {
       const rankA = a.ranking ?? Number.MAX_SAFE_INTEGER;
@@ -135,6 +122,22 @@ export const RoundPage = () => {
       return singleA - singleB;
     });
   }, [records]);
+
+  const selectedFromUrl = useMemo(() => {
+    const parsedRecordIdx = Number(recordIdx);
+    if (!recordIdx || !Number.isFinite(parsedRecordIdx) || parsedRecordIdx <= 0) {
+      return null;
+    }
+    const targetIndex = sortedRecords.findIndex((record) => record.idx === parsedRecordIdx);
+    if (targetIndex < 0) {
+      return null;
+    }
+    const targetRecord = sortedRecords[targetIndex];
+    return {
+      record: targetRecord,
+      rank: targetRecord.ranking ?? targetIndex + 1,
+    };
+  }, [recordIdx, sortedRecords]);
 
   const filteredRecords = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -174,6 +177,22 @@ export const RoundPage = () => {
     suggestionRefs.current[searchActiveIndex]?.scrollIntoView({ block: "nearest" });
   }, [searchActiveIndex, searchOpen]);
 
+  useEffect(() => {
+    if (!recordIdx) {
+      setSelectedRecord(null);
+      return;
+    }
+    if (!selectedFromUrl) {
+      return;
+    }
+    setSelectedRecord((prev) => {
+      if (prev?.record.idx === selectedFromUrl.record.idx && prev.rank === selectedFromUrl.rank) {
+        return prev;
+      }
+      return selectedFromUrl;
+    });
+  }, [recordIdx, selectedFromUrl]);
+
   const getNextSearchIndex = (prev: number, direction: 1 | -1) => {
     if (searchResults.length === 0) return -1;
     if (prev < 0) {
@@ -203,8 +222,8 @@ export const RoundPage = () => {
   }
 
   const backTarget = compIdx ?? String(round.compIdx);
+  const baseRoundPath = `/competition/${Number(backTarget)}/round/${Number(round.idx)}`;
   const roundDateTime = formatRoundDateTime(round.eventStart, round.eventEnd);
-
   return (
     <div className="main-page">
       <PageHeader
@@ -247,6 +266,7 @@ export const RoundPage = () => {
           {
             label: "프로젝터 모드",
             iconSrc: "/page-title/projector.svg",
+            className: "page-action-btn--projector",
             to: `/admin/competition/${Number(backTarget)}/round/${Number(round.idx)}/projector`,
             adminOnly: true,
           },
@@ -257,14 +277,14 @@ export const RoundPage = () => {
             adminOnly: true,
           },
           {
-            label: "라운드 목록",
+            label: "대회 페이지",
             iconSrc: "/icon/button/back.svg",
             to: `/competition/${Number(backTarget)}`,
           },
           {
-            label: "랭킹 홈",
-            iconSrc: "/icon/button/home.svg",
-            to: "/",
+            label: "라운드 통계",
+            iconSrc: "/icon/button/statistics.svg",
+            to: `/competition/${Number(backTarget)}/round/${Number(round.idx)}/statistics`,
           },
         ]}
       />
@@ -362,13 +382,22 @@ export const RoundPage = () => {
           advanceCount={round.advance}
           formatTimeValue={formatTimeValue}
           compactAttempts={compactRecordView}
-          onSelect={(record, rank) => setSelectedRecord({ record, rank })}
+          onSelect={(record, rank) => {
+            setSelectedRecord({ record, rank });
+            navigate(`${baseRoundPath}/record/${record.idx}`);
+          }}
+          selectedRecordIdx={selectedRecord?.record.idx}
         />
       </section>
 
       <RecordDetailModal
         selected={selectedRecord}
-        onClose={() => setSelectedRecord(null)}
+        onClose={() => {
+          setSelectedRecord(null);
+          if (recordIdx) {
+            navigate(baseRoundPath, { replace: true });
+          }
+        }}
         formatTimeValue={formatTimeValue}
       />
     </div>

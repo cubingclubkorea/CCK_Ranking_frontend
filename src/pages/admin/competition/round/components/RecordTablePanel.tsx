@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Record } from "@/entities/record";
-import { RecordTable } from "@/pages/round/components/RecordTable";
+import { RecordTable } from "@/pages/competition/round/components/RecordTable.tsx";
 
 type RecordTablePanelProps = {
   records: Record[];

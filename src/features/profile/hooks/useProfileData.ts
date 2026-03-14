@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPlayerCount, getPlayerRanking, getPlayerStaffCount, type PlayerEventRanking } from "@/entities/statistics";
 import { getAuthInfo, useAuthInfo } from "@/entities/authInfo";
-import { getAuthUserProfile, hasAdminRole } from "@/features/auth/utils/tokenStorage";
+import { getAuthUserProfile } from "@/features/auth/utils/tokenStorage";
 import { mapRegionName } from "@/shared";
 
 type ProfileData = {
@@ -21,8 +21,6 @@ type ProfileData = {
   region: string;
 };
 
-const organizerPattern = /ADMIN|ORGANIZER|ROOT|관리자|운영/i;
-
 const getErrorMessage = (error: unknown) => {
   if (error instanceof Error) return error.message;
   if (typeof error === "string") return error;
@@ -31,6 +29,14 @@ const getErrorMessage = (error: unknown) => {
 
 const normalizeText = (value?: string) => (value && value.trim() ? value.trim() : "-");
 const normalizeName = (value?: string) => (value && value.trim() ? value.trim() : "사용자");
+const normalizePosition = (value?: string | null) => (value && value.trim() ? value.trim().toUpperCase() : "");
+const mapGenderLabel = (value?: string | null) => {
+  const normalized = value?.trim().toUpperCase();
+  if (normalized === "MALE") return "남성";
+  if (normalized === "FEMALE") return "여성";
+  if (normalized === "UNKNOWN") return "-";
+  return "-";
+};
 
 export const useProfileData = (cckId?: string) => {
   const [loading, setLoading] = useState(true);
@@ -41,11 +47,11 @@ export const useProfileData = (cckId?: string) => {
   const [totalStaffCount, setTotalStaffCount] = useState(0);
   const [competitionCount, setCompetitionCount] = useState(0);
   const [completeCount, setCompleteCount] = useState(0);
-  const [isOrganizer, setIsOrganizer] = useState(false);
   const [resolvedKoreanName, setResolvedKoreanName] = useState<string | null>(null);
   const [resolvedEnglishName, setResolvedEnglishName] = useState<string | null>(null);
   const [resolvedGender, setResolvedGender] = useState<string | null>(null);
   const [resolvedRegion, setResolvedRegion] = useState<string | null>(null);
+  const [resolvedPosition, setResolvedPosition] = useState<string | null>(null);
 
   const authProfile = useMemo(() => getAuthUserProfile(), []);
   const { authInfo: myAuthInfo } = useAuthInfo();
@@ -80,9 +86,6 @@ export const useProfileData = (cckId?: string) => {
         setCompetitionCount(playerCountData.competitionCount ?? 0);
         setCompleteCount(playerCountData.completeCount ?? 0);
 
-        const roleLabel = staffData.role ?? authProfile?.role ?? "";
-        const detectedOrganizer = Boolean(staffData.isOrganizer || organizerPattern.test(roleLabel));
-        setIsOrganizer(detectedOrganizer || (isMyProfile && hasAdminRole()));
       } catch (fetchError) {
         if (!mounted) return;
         setError(getErrorMessage(fetchError));
@@ -95,7 +98,7 @@ export const useProfileData = (cckId?: string) => {
     return () => {
       mounted = false;
     };
-  }, [authProfile?.role, isMyProfile, normalizedCckId]);
+  }, [isMyProfile, normalizedCckId]);
 
   // 본인 프로필: context에서 가져오기
   useEffect(() => {
@@ -104,6 +107,7 @@ export const useProfileData = (cckId?: string) => {
     setResolvedEnglishName(myAuthInfo.enName?.trim() || null);
     setResolvedGender(myAuthInfo.gender?.trim() || null);
     setResolvedRegion(myAuthInfo.state?.trim() || null);
+    setResolvedPosition(myAuthInfo.position?.trim() || null);
   }, [isMyProfile, myAuthInfo]);
 
   // 타인 프로필: 별도 API 호출
@@ -116,6 +120,7 @@ export const useProfileData = (cckId?: string) => {
     setResolvedEnglishName(null);
     setResolvedGender(null);
     setResolvedRegion(null);
+    setResolvedPosition(null);
     if (!normalizedCckId) return;
 
     const fetchAuthInfo = async () => {
@@ -126,12 +131,14 @@ export const useProfileData = (cckId?: string) => {
         setResolvedEnglishName(authInfo.enName?.trim() || null);
         setResolvedGender(authInfo.gender?.trim() || null);
         setResolvedRegion(authInfo.state?.trim() || null);
+        setResolvedPosition(authInfo.position?.trim() || null);
       } catch {
         if (!mounted) return;
         setResolvedKoreanName(null);
         setResolvedEnglishName(null);
         setResolvedGender(null);
         setResolvedRegion(null);
+        setResolvedPosition(null);
       }
     };
 
@@ -143,8 +150,10 @@ export const useProfileData = (cckId?: string) => {
 
   const koreanName = normalizeName(resolvedKoreanName ?? (isMyProfile ? authProfile?.name : undefined));
   const englishName = normalizeText(resolvedEnglishName ?? (isMyProfile ? authProfile?.englishName : undefined) ?? "User");
-  const gender = normalizeText(resolvedGender ?? (isMyProfile ? authProfile?.gender : undefined));
+  const gender = mapGenderLabel(resolvedGender ?? (isMyProfile ? authProfile?.gender : undefined));
   const region = normalizeText(mapRegionName(resolvedRegion ?? (isMyProfile ? authProfile?.region : undefined)) ?? undefined);
+  const position = normalizePosition(resolvedPosition ?? (isMyProfile ? authProfile?.role : undefined));
+  const isOrganizer = position === "ADMIN" || position === "ROOT";
 
   const data: ProfileData = {
     loading,

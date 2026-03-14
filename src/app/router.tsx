@@ -1,25 +1,20 @@
 import { createBrowserRouter, Outlet, useLocation } from "react-router-dom";
 import {
   MainPage,
-  ApiDashboardPage,
-  ApiDashboardCompetitionTestPage,
-  ApiDashboardCompetitionCUDTestPage,
+  SearchPage,
   CompetitionPage,
+  CompetitionStatisticsPage,
   RoundPage,
+  RoundStatisticsPage,
   RankingPage,
   NewRecordPage,
   ProfilePage,
   ProfileRecordHistoryPage,
-  ApiDashboardCubeEventTestPage,
-  ApiDashboardRoundTestPage,
-  ApiDashboardRoundCUDTestPage,
-  ApiDashboardRecordTestPage,
-  ApiDashboardRecordCUDTestPage,
-  ApiDashboardScrambleTestPage,
   CompetitionAdminPage,
   CompetitionCreatePage,
   CompetitionManagePage,
   RoundRecordEditPage,
+  AddCompetitorPage,
   RoundProjectorPage,
   EventAdminPage,
   ScrambleAdminPage,
@@ -210,12 +205,28 @@ export const router = createBrowserRouter([
         element: <MainPage />,
       },
       {
+        path: "search",
+        element: <SearchPage />,
+      },
+      {
         path: "competition/:compIdx",
         element: <CompetitionPage />,
       },
       {
+        path: "competition/:compIdx/statistics",
+        element: <CompetitionStatisticsPage />,
+      },
+      {
         path: "competition/:compIdx/round/:roundIdx",
         element: <RoundPage />,
+      },
+      {
+        path: "competition/:compIdx/round/:roundIdx/record/:recordIdx",
+        element: <RoundPage />,
+      },
+      {
+        path: "competition/:compIdx/round/:roundIdx/statistics",
+        element: <RoundStatisticsPage />,
       },
       {
         path: "new-record",
@@ -274,6 +285,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "admin/competition/:compIdx/round/:roundIdx/add-competitior",
+        element: (
+          <AdminRoute>
+            <AddCompetitorPage />
+          </AdminRoute>
+        ),
+      },
+      {
         path: "admin/competition/:compIdx/round/:roundIdx/projector",
         element: (
           <AdminRoute>
@@ -308,78 +327,6 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginRedirect />,
-      },
-      {
-        path: "admin/api-dashboard",
-        element: (
-          <AdminRoute>
-            <ApiDashboardPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/competition",
-        element: (
-          <AdminRoute>
-            <ApiDashboardCompetitionTestPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/competition/cud",
-        element: (
-          <AdminRoute>
-            <ApiDashboardCompetitionCUDTestPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/event",
-        element: (
-          <AdminRoute>
-            <ApiDashboardCubeEventTestPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/round",
-        element: (
-          <AdminRoute>
-            <ApiDashboardRoundTestPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/round/cud",
-        element: (
-          <AdminRoute>
-            <ApiDashboardRoundCUDTestPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/new-record",
-        element: (
-          <AdminRoute>
-            <ApiDashboardRecordTestPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/new-record/cud",
-        element: (
-          <AdminRoute>
-            <ApiDashboardRecordCUDTestPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "admin/api-dashboard/scramble",
-        element: (
-          <AdminRoute>
-            <ApiDashboardScrambleTestPage />
-          </AdminRoute>
-        ),
       },
       {
         path: "*",

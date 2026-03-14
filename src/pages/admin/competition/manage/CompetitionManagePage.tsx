@@ -111,6 +111,8 @@ export const CompetitionManagePage = () => {
   const [roundError, setRoundError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [section, setSection] = useState<"competition" | "round">("competition");
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
   const scrollToTop = () => {
     const scrollContainer = document.querySelector<HTMLElement>(".content-area");
     if (scrollContainer) {
@@ -394,14 +396,28 @@ export const CompetitionManagePage = () => {
     setNotice("라운드가 목록에서 제거되었습니다. 저장하면 삭제가 반영됩니다.");
   };
 
+  const openDeleteConfirmModal = () => {
+    if (!competition) return;
+    setDeleteConfirmInput("");
+    setDeleteConfirmOpen(true);
+  };
+
+  const closeDeleteConfirmModal = () => {
+    if (saving) return;
+    setDeleteConfirmOpen(false);
+    setDeleteConfirmInput("");
+  };
+
   const handleDeleteCompetition = async () => {
     if (!competition) return;
-    const confirmed = window.confirm("정말로 이 대회를 삭제할까요?");
-    if (!confirmed) return;
+    if (deleteConfirmInput !== competition.compName) return;
     setSaving(true);
     setError(null);
+    setNotice(null);
     try {
       await deleteCompetition(competition.idx);
+      setDeleteConfirmOpen(false);
+      setDeleteConfirmInput("");
       navigate("/admin/competition", { state: { notice: "대회가 삭제되었습니다." } });
     } catch (err) {
       setError(getErrorMessage(err));
@@ -427,9 +443,10 @@ export const CompetitionManagePage = () => {
     ? { variant: "error" as const, message: roundError, onClose: () => setRoundError(null) }
     : error
       ? { variant: "error" as const, message: error, onClose: () => setError(null) }
-      : notice
-        ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
-        : null;
+        : notice
+          ? { variant: "success" as const, message: notice, onClose: () => setNotice(null) }
+          : null;
+  const isDeleteNameMatched = !!competition && deleteConfirmInput === competition.compName;
 
 
   return (
@@ -534,7 +551,7 @@ export const CompetitionManagePage = () => {
           <button
             type="button"
             className="competition-manage-action-btn competition-manage-action-btn--danger"
-            onClick={handleDeleteCompetition}
+            onClick={openDeleteConfirmModal}
             disabled={saving || roundSaving}
           >
             <img className="competition-manage-action-icon" src="/icon/button/delete.svg" alt="" aria-hidden="true" />
@@ -542,6 +559,80 @@ export const CompetitionManagePage = () => {
           </button>
         </div>
       </div>
+
+      {deleteConfirmOpen && competition ? (
+        <div className="record-modal-backdrop" onClick={closeDeleteConfirmModal}>
+          <div
+            className="record-modal record-extra-modal competition-delete-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="competition-delete-confirm-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="record-modal-header">
+              <div id="competition-delete-confirm-title" className="record-modal-title">대회 삭제 확인</div>
+              <button
+                type="button"
+                className="record-modal-close"
+                onClick={closeDeleteConfirmModal}
+                aria-label="닫기"
+                disabled={saving}
+              >
+                <img src="/icon/modal/close.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+
+            <form
+              className="record-modal-body"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void handleDeleteCompetition();
+              }}
+            >
+              <p className="competition-delete-modal-desc">
+                대회를 삭제하려면 아래 입력칸에 대회명을 정확히 입력하세요.
+              </p>
+              <p className="competition-delete-modal-target">
+                입력 대상: <strong>{competition.compName}</strong>
+              </p>
+              <div className="dashboard-test-status dashboard-test-status--error">
+                이 작업은 되돌릴 수 없습니다.
+              </div>
+              <div className="dashboard-test-field">
+                <label className="dashboard-test-label">
+                  대회명 확인 입력
+                  <input
+                    type="text"
+                    className="dashboard-test-input"
+                    value={deleteConfirmInput}
+                    onChange={(event) => setDeleteConfirmInput(event.target.value)}
+                    placeholder="대회명을 그대로 입력"
+                    autoFocus
+                    disabled={saving}
+                  />
+                </label>
+              </div>
+              <div className="dashboard-test-actions">
+                <button
+                  type="button"
+                  className="dashboard-test-button"
+                  onClick={closeDeleteConfirmModal}
+                  disabled={saving}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="dashboard-test-button dashboard-test-button--danger"
+                  disabled={!isDeleteNameMatched || saving}
+                >
+                  {saving ? "삭제 중..." : "대회 삭제"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

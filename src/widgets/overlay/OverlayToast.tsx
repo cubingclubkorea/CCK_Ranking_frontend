@@ -12,8 +12,8 @@ type OverlayToastProps = {
 };
 
 const iconMap: Record<OverlayToastVariant, string | null> = {
-  success: "/icon/info/check.svg",
-  error: "/icon/info/error.svg",
+  success: "/icon/notice/check.svg",
+  error: "/icon/notice/error.svg",
   info: null,
 };
 

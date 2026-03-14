@@ -27,7 +27,7 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
     card: "/icon/sidebar/card.svg",
     lock: "/icon/sidebar/lock.svg",
     form: "/icon/sidebar/form.svg",
-    dashboard: "/icon/sidebar/dashboard.svg",
+    search: "/icon/sidebar/search.svg",
   };
 
   useEffect(() => {
@@ -52,6 +52,7 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
           {/* 일반 메뉴 */}
           <div className="menu-group">
             <MenuItem text="대회 목록" icon={icons.list} to="/" onNavigate={isMobile ? onClose : undefined} />
+            <MenuItem text="검색" icon={icons.search} to="/search" onNavigate={isMobile ? onClose : undefined} />
             <MenuItem text="신기록" icon={icons.record} to="/new-record" onNavigate={isMobile ? onClose : undefined} />
             <MenuItem text="랭킹" icon={icons.trophy} to="/ranking" onNavigate={isMobile ? onClose : undefined} />
             {isLoggedIn && <MenuItem text="나의 정보" icon={icons.person} to={myCckId ? `/profile/${encodeURIComponent(myCckId)}` : "/profile"} onNavigate={isMobile ? onClose : undefined} />}
@@ -66,7 +67,6 @@ function Sidebar({ collapsed, isMobile, mobileOpen, onClose, theme, onToggleThem
               <div className="admin-group">
                 <MenuItem text="대회 관리" icon={icons.pencil} to="/admin/competition" onNavigate={isMobile ? onClose : undefined} />
                 <MenuItem text="큐브 종목 관리" icon={icons.cube} to="/admin/event" onNavigate={isMobile ? onClose : undefined} />
-                <MenuItem text="API 대시보드" icon={icons.dashboard} to="/admin/api-dashboard" onNavigate={isMobile ? onClose : undefined} />
               </div>
             </>
           )}

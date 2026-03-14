@@ -1,0 +1,195 @@
+import { apiClient } from "@/shared/api/base";
+import type { CompBreakBestType, CompBreakItem, CompDnfCount, CompExtraItem, CompStaffCountItem } from "../model/competitionStatistics";
+
+const parseNumber = (value: unknown): number => {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  return 0;
+};
+
+const parseNullableString = (value: unknown): string | null => {
+  if (typeof value === "string" && value.trim()) return value;
+  return null;
+};
+
+const parseExtraList = (rows: unknown): CompExtraItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((row) => {
+    const source = (row ?? {}) as Record<string, unknown>;
+    return {
+      idx: parseNumber(source.idx),
+      recordIdx: parseNumber(source.recordIdx),
+      attemptTry: parseNumber(source.attemptTry),
+      time: typeof source.time === "number" && Number.isFinite(source.time) ? source.time : null,
+      scramblerName: parseNullableString(source.scramblerName),
+      scramblerCckId: parseNullableString(source.scramblerCckId),
+      judgeName: parseNullableString(source.judgeName),
+      judgeCckId: parseNullableString(source.judgeCckId),
+      extra: parseNumber(source.extra),
+      exReason: parseNullableString(source.exReason),
+      delegateName: parseNullableString(source.delegateName),
+      delegateCckId: parseNullableString(source.delegateCckId),
+      exScramblerName: parseNullableString(source.exScramblerName),
+      exScramblerCckId: parseNullableString(source.exScramblerCckId),
+    };
+  });
+};
+
+const parseStaffCountList = (rows: unknown): CompStaffCountItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((row) => {
+    const source = (row ?? {}) as Record<string, unknown>;
+    return {
+      count: parseNumber(source.count),
+      staffName: parseNullableString(source.staffName) ?? "-",
+      staffCckId: parseNullableString(source.staffCckId),
+    };
+  });
+};
+
+const parseDnfCount = (value: unknown): CompDnfCount => {
+  if (!value || typeof value !== "object") {
+    return { dnfCount: 0, successCount: 0, totalCount: 0 };
+  }
+
+  const source = value as Record<string, unknown>;
+  return {
+    dnfCount: parseNumber(source.dnfCount ?? source.dnf_count ?? source.dnf),
+    successCount: parseNumber(source.successCount ?? source.success_count ?? source.success),
+    totalCount: parseNumber(source.totalCount ?? source.total_count ?? source.total),
+  };
+};
+
+const parseBreakBestType = (value: unknown): CompBreakBestType => {
+  if (value === "PR" || value === "SR" || value === "CCR") return value;
+  return null;
+};
+
+const parseBreakAttempts = (value: unknown): CompBreakItem["attempts"] => {
+  if (!Array.isArray(value)) return [];
+  return value.map((row) => {
+    const source = (row ?? {}) as Record<string, unknown>;
+    return {
+      idx: parseNumber(source.idx),
+      recordIdx: parseNumber(source.recordIdx),
+      attemptTry: parseNumber(source.attemptTry),
+      time: typeof source.time === "number" && Number.isFinite(source.time) ? source.time : null,
+      scramblerName: parseNullableString(source.scramblerName),
+      scramblerCckId: parseNullableString(source.scramblerCckId),
+      judgeName: parseNullableString(source.judgeName),
+      judgeCckId: parseNullableString(source.judgeCckId),
+      extra: parseNumber(source.extra),
+      exReason: parseNullableString(source.exReason),
+      delegateName: parseNullableString(source.delegateName),
+      delegateCckId: parseNullableString(source.delegateCckId),
+      exScramblerName: parseNullableString(source.exScramblerName),
+      exScramblerCckId: parseNullableString(source.exScramblerCckId),
+    };
+  });
+};
+
+const parseBreakList = (rows: unknown): CompBreakItem[] => {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((row) => {
+    const source = (row ?? {}) as Record<string, unknown>;
+    return {
+      idx: parseNumber(source.idx),
+      pdx: typeof source.pdx === "number" ? source.pdx : null,
+      name: parseNullableString(source.name) ?? "-",
+      cckId: parseNullableString(source.cckId) ?? "-",
+      state: parseNullableString(source.state),
+      roundIdx: parseNumber(source.roundIdx),
+      compName: parseNullableString(source.compName) ?? "-",
+      compIdx: parseNumber(source.compIdx),
+      eventName: parseNullableString(source.eventName) ?? "-",
+      avgCalc: parseNullableString(source.avgCalc) ?? "ao5",
+      roundName: parseNullableString(source.roundName) ?? "-",
+      roundGroup: parseNullableString(source.roundGroup),
+      roundAdvance: typeof source.roundAdvance === "number" ? source.roundAdvance : null,
+      attempts: parseBreakAttempts(source.attempts),
+      single: typeof source.single === "number" && Number.isFinite(source.single) ? source.single : null,
+      average: typeof source.average === "number" && Number.isFinite(source.average) ? source.average : null,
+      ranking: typeof source.ranking === "number" ? source.ranking : null,
+      stateRanking: typeof source.stateRanking === "number" ? source.stateRanking : null,
+      singleBestType: parseBreakBestType(source.singleBestType),
+      averageBestType: parseBreakBestType(source.averageBestType),
+      note: parseNullableString(source.note),
+    };
+  });
+};
+
+const callWithFallback = async <T>(endpoints: string[]): Promise<T> => {
+  let lastError: unknown;
+  for (const endpoint of endpoints) {
+    try {
+      return await apiClient.get<T>(endpoint);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("통계 API 호출에 실패했습니다.");
+};
+
+const buildCandidates = (compIdx: number, suffixes: string[]): string[] => {
+  const candidates = suffixes.flatMap((suffix) => [
+    `/statistics/comp/${compIdx}/${suffix}`,
+    `/statistics/competition/${compIdx}/${suffix}`,
+    `/statistics/${compIdx}/${suffix}`,
+    `/statistics/comp/${suffix}/${compIdx}`,
+    `/statistics/competition/${suffix}/${compIdx}`,
+    `/statistics/${suffix}/${compIdx}`,
+    `/competition/${compIdx}/statistics/${suffix}`,
+  ]);
+
+  return Array.from(new Set(candidates));
+};
+
+const COMP_EXTRA_SUFFIXES = ["extra", "extra-list", "comp-extra-list", "get-comp-extra-list", "GetCompExtraList"];
+const JUDGE_COUNT_SUFFIXES = ["judge", "judge-count", "comp-judge-count", "get-judge-count", "GetJudgeCount"];
+const SCRAMBLER_COUNT_SUFFIXES = ["scrambler", "scrambler-count", "comp-scrambler-count", "get-scrambler-count", "GetScramblerCount"];
+const DNF_COUNT_SUFFIXES = ["dnf", "dnf-count", "dnf-count-by-comp", "get-dnf-count-by-comp", "GetDNFCountByComp"];
+
+export const getCompExtraList = async (compIdx: number): Promise<CompExtraItem[]> => {
+  const payload = await callWithFallback<unknown>(buildCandidates(compIdx, COMP_EXTRA_SUFFIXES));
+  return parseExtraList(payload);
+};
+
+export const getJudgeCount = async (compIdx: number): Promise<CompStaffCountItem[]> => {
+  const payload = await callWithFallback<unknown>(buildCandidates(compIdx, JUDGE_COUNT_SUFFIXES));
+  return parseStaffCountList(payload);
+};
+
+export const getScramblerCount = async (compIdx: number): Promise<CompStaffCountItem[]> => {
+  const payload = await callWithFallback<unknown>(buildCandidates(compIdx, SCRAMBLER_COUNT_SUFFIXES));
+  return parseStaffCountList(payload);
+};
+
+export const getDnfCountByComp = async (compIdx: number): Promise<CompDnfCount> => {
+  const payload = await callWithFallback<unknown>(buildCandidates(compIdx, DNF_COUNT_SUFFIXES));
+  return parseDnfCount(payload);
+};
+
+export const getCompBreakCount = async (compIdx: number): Promise<number> => {
+  const rows = await getCompBreakList(compIdx);
+  return rows.length;
+};
+
+export const getCompBreakList = async (compIdx: number): Promise<CompBreakItem[]> => {
+  const payload = await callWithFallback<unknown>([
+    `/comp/${compIdx}/break`,
+    `/competition/${compIdx}/break`,
+  ]);
+
+  if (Array.isArray(payload)) {
+    return parseBreakList(payload);
+  }
+
+  if (payload && typeof payload === "object") {
+    const source = payload as Record<string, unknown>;
+    if (Array.isArray(source.content)) {
+      return parseBreakList(source.content);
+    }
+  }
+
+  return [];
+};

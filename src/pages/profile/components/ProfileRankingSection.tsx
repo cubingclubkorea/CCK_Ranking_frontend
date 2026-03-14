@@ -1,4 +1,5 @@
 import type { PlayerEventRanking } from "@/entities/statistics";
+import { sortEventNames } from "@/features/ranking";
 import { getEventIconSrc } from "@/shared";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +26,16 @@ const formatCcrRank = (value?: number | null) => {
 
 export const ProfileRankingSection = ({ cckId, eventRankings }: ProfileRankingSectionProps) => {
   const navigate = useNavigate();
+  const sortedEventRankings = (() => {
+    const order = sortEventNames(eventRankings.map((item) => item.eventName));
+    const orderIndex = new Map(order.map((name, index) => [name, index]));
+    return [...eventRankings].sort((left, right) => {
+      const leftIndex = orderIndex.get(left.eventName) ?? Number.MAX_SAFE_INTEGER;
+      const rightIndex = orderIndex.get(right.eventName) ?? Number.MAX_SAFE_INTEGER;
+      if (leftIndex !== rightIndex) return leftIndex - rightIndex;
+      return left.eventName.localeCompare(right.eventName);
+    });
+  })();
 
   return (
     <section className="profile-section">
@@ -32,7 +43,7 @@ export const ProfileRankingSection = ({ cckId, eventRankings }: ProfileRankingSe
         <h3 className="profile-main-section-title">큐브 개인 기록</h3>
       </div>
       <div className="profile-event-grid">
-        {eventRankings.map((item) => (
+        {sortedEventRankings.map((item) => (
           <article
             className="profile-event-card profile-event-card--clickable"
             key={item.eventName}
@@ -64,7 +75,7 @@ export const ProfileRankingSection = ({ cckId, eventRankings }: ProfileRankingSe
             </div>
           </article>
         ))}
-        {eventRankings.length === 0 ? <div className="round-list-empty">표시할 종목 기록이 없습니다.</div> : null}
+        {sortedEventRankings.length === 0 ? <div className="round-list-empty">표시할 종목 기록이 없습니다.</div> : null}
       </div>
     </section>
   );

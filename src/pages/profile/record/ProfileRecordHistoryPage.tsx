@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  getPlayerBreakRecord,
   getPlayerRanking,
   getPlayerRecordHistory,
   type GlobalSingleRankingRecord,
@@ -9,7 +10,7 @@ import {
 import type { Record as RoundRecord } from "@/entities/record";
 import { formatTimeValue, toRecord } from "@/features/ranking";
 import { RequestErrorPage } from "@/pages/error/RequestErrorPage";
-import { RecordDetailModal } from "@/pages/round/components/RecordDetailModal";
+import { RecordDetailModal } from "@/pages/competition/round/components/RecordDetailModal";
 import { getEventIconSrc, resolveAverageValue, shouldUseRequestErrorPage } from "@/shared";
 import { PageHeader } from "@/widgets";
 import { RecordHistoryChart } from "./components/RecordHistoryChart";
@@ -19,10 +20,19 @@ import type { ThemeMode, TrendPoint } from "./types";
 const normalizeEventName = (value?: string) => {
   if (!value) return "";
   try {
-    return decodeURIComponent(value);
+    return decodeURIComponent(value).replace(/_/g, " ");
   } catch {
-    return value;
+    return value.replace(/_/g, " ");
   }
+};
+
+const normalizeEventKey = (value?: string) => {
+  if (!value) return "";
+  return value
+    .normalize("NFKC")
+    .replace(/\s+/g, "")
+    .toLowerCase()
+    .trim();
 };
 
 const normalizeRecordValue = (value: number | null | undefined, row: GlobalSingleRankingRecord) => {
@@ -52,6 +62,7 @@ export const ProfileRecordHistoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [historyRows, setHistoryRows] = useState<GlobalSingleRankingRecord[]>([]);
+  const [breakRows, setBreakRows] = useState<GlobalSingleRankingRecord[]>([]);
   const [eventRanking, setEventRanking] = useState<PlayerEventRanking | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<{ record: RoundRecord; rank: number } | null>(null);
   const [themeMode, setThemeMode] = useState<ThemeMode>(
@@ -79,13 +90,20 @@ export const ProfileRecordHistoryPage = () => {
       setLoading(true);
       setError(null);
       setEventRanking(null);
+      setBreakRows([]);
 
       try {
-        const [rows, rankings] = await Promise.all([getPlayerRecordHistory(cckId, eventName), getPlayerRanking(cckId)]);
+        const [rows, rankings, breakRecords] = await Promise.all([
+          getPlayerRecordHistory(cckId, eventName),
+          getPlayerRanking(cckId),
+          getPlayerBreakRecord(cckId),
+        ]);
         if (!mounted) return;
 
         setHistoryRows([...rows].sort((a, b) => a.idx - b.idx));
         setEventRanking(rankings.find((row) => row.eventName === eventName) ?? null);
+        // break API는 0번이 최신, 뒤로 갈수록 과거 데이터이므로 서버 순서를 그대로 유지한다.
+        setBreakRows(breakRecords);
       } catch (fetchError) {
         if (!mounted) return;
         if (fetchError instanceof Error) {
@@ -135,6 +153,27 @@ export const ProfileRecordHistoryPage = () => {
     return cckId;
   }, [cckId, historyRows]);
 
+  const breakTrendPoints = useMemo<TrendPoint[]>(() => {
+    const normalizedEvent = normalizeEventKey(eventName);
+    const filtered = breakRows.filter((row) => normalizeEventKey(row.eventName) === normalizedEvent);
+
+    // API는 최신 -> 과거 순서이므로, 추이 차트는 과거 -> 최신으로 뒤집어 표시한다.
+    const chronological = [...filtered].reverse();
+
+    return chronological.map((row, index) => ({
+      idx: index + 1,
+      recordId: row.idx,
+      label: `#${index + 1}`,
+      compName: row.compName,
+      roundName: row.roundName,
+      roundIdx: row.roundIdx,
+      compIdx: row.compIdx,
+      // break API 응답을 누락 없이 반영하기 위해 값은 최대한 원본을 유지
+      single: row.single,
+      average: resolveAverageValue(row.attempts, row.avgCalc, row.average),
+    }));
+  }, [breakRows, eventName]);
+
   if (loading) {
     return (
       <div className="main-page profile-page">
@@ -174,11 +213,6 @@ export const ProfileRecordHistoryPage = () => {
             label: "선수 페이지",
             iconSrc: "/icon/button/back.svg",
             onClick: () => navigate(`/profile/${encodeURIComponent(cckId)}`),
-          },
-          {
-            label: "랭킹 홈",
-            iconSrc: "/icon/button/home.svg",
-            to: "/",
           },
         ]}
       />
@@ -225,6 +259,39 @@ export const ProfileRecordHistoryPage = () => {
               points={trendPoints}
               onSelectPoint={(point) => {
                 const selected = toSelectedRecord(point, historyRows);
+                if (!selected) return;
+                setSelectedRecord(selected);
+              }}
+            />
+          ) : null}
+        </div>
+
+        <div className="profile-record-history-card">
+          <div className="profile-record-history-head">
+            <h3 className="profile-main-section-title">종목별 기록 갱신</h3>
+            <span className="profile-record-history-meta">
+              총 {breakTrendPoints.length.toLocaleString()}개 갱신 기록
+            </span>
+          </div>
+
+          {breakTrendPoints.length > 0 ? (
+            <RecordHistoryChart
+              points={breakTrendPoints}
+              themeMode={themeMode}
+              onSelectPoint={(point) => {
+                const selected = toSelectedRecord(point, breakRows);
+                if (!selected) return;
+                setSelectedRecord(selected);
+              }}
+            />
+          ) : (
+            <div className="round-list-empty">현재 종목의 갱신 기록이 없습니다.</div>
+          )}
+          {breakTrendPoints.length > 0 ? (
+            <RecordHistoryTable
+              points={breakTrendPoints}
+              onSelectPoint={(point) => {
+                const selected = toSelectedRecord(point, breakRows);
                 if (!selected) return;
                 setSelectedRecord(selected);
               }}
