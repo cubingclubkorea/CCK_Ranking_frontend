@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSearchInfo, type SearchInfo } from "@/entities/auth";
+import {
+  getCompetitionParticipantHints,
+  getSearchInfo,
+  type CompetitionParticipantHint,
+  type SearchInfo,
+} from "@/entities/auth";
 import { getRound, type Round } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import { addPlayer } from "@/features/record";
@@ -12,11 +17,35 @@ type DraftCompetitor = {
   name: string;
   cckId: string;
   state: string;
+  compIdx: number;
   pdx: number;
   roundGroup: string;
+  paymentConfirmed: boolean | null;
 };
 
 const SEARCH_DEBOUNCE_MS = 220;
+
+const normalizeGroupToken = (value: string) => value.replace(/\s+/g, "").toUpperCase();
+
+const resolveRoundGroup = (suggested: string | undefined, groupOptions: string[]): string => {
+  if (!suggested) return groupOptions[0] ?? "";
+  if (groupOptions.length === 0) return suggested;
+
+  const exact = groupOptions.find((group) => group === suggested);
+  if (exact) return exact;
+
+  const normalizedSuggested = normalizeGroupToken(suggested);
+  const normalizedMatch = groupOptions.find((group) => normalizeGroupToken(group) === normalizedSuggested);
+  if (normalizedMatch) return normalizedMatch;
+
+  return groupOptions[0] ?? "";
+};
+
+const getPaymentLabel = (value: boolean | null) => {
+  if (value === true) return "결제완료";
+  if (value === false) return "미결제";
+  return "-";
+};
 
 export const AddCompetitorPage = () => {
   const { compIdx, roundIdx } = useParams();
@@ -35,6 +64,7 @@ export const AddCompetitorPage = () => {
   const [activeSearchIndex, setActiveSearchIndex] = useState(-1);
   const [selectedPlayers, setSelectedPlayers] = useState<SearchInfo[]>([]);
   const [draftRows, setDraftRows] = useState<DraftCompetitor[]>([]);
+  const [participantHintMap, setParticipantHintMap] = useState<Map<string, CompetitionParticipantHint>>(new Map());
   const [saving, setSaving] = useState(false);
 
   const [status, setStatus] = useState<string | null>(null);
@@ -69,12 +99,14 @@ export const AddCompetitorPage = () => {
       setError(null);
 
       try {
-        const [roundData, records] = await Promise.all([
-          getRound(Number(roundIdx)),
+        const roundData = await getRound(Number(roundIdx));
+        const [records, hints] = await Promise.all([
           getRecordList(Number(roundIdx)),
+          getCompetitionParticipantHints(roundData.compIdx, Number(roundIdx)).catch(() => []),
         ]);
         if (!mounted) return;
         setRound(roundData);
+        setParticipantHintMap(new Map(hints.map((hint) => [hint.cckId, hint])));
         const nextMaxPdx = records.reduce((max, record) => Math.max(max, record.pdx), 0);
         setMaxPdx(nextMaxPdx);
       } catch (fetchError) {
@@ -151,7 +183,7 @@ export const AddCompetitorPage = () => {
   };
 
   const handleNextStep = () => {
-    if (!roundIdx) {
+    if (!roundIdx || !round) {
       setFormError("라운드 정보가 없습니다.");
       return;
     }
@@ -171,12 +203,15 @@ export const AddCompetitorPage = () => {
       if (existing) {
         return existing;
       }
+      const hint = participantHintMap.get(player.cckId);
       const created: DraftCompetitor = {
         name: player.name,
         cckId: player.cckId,
-        state: player.state,
+        state: hint?.state ?? player.state,
+        compIdx: round.compIdx,
         pdx: nextPdx,
-        roundGroup: groupOptions[0] ?? "",
+        roundGroup: resolveRoundGroup(hint?.confirmedGroup, groupOptions),
+        paymentConfirmed: hint?.paymentConfirmed ?? null,
       };
       nextPdx += 1;
       return created;
@@ -388,7 +423,16 @@ export const AddCompetitorPage = () => {
                     <div key={player.cckId} className="add-competitor-selected-item">
                       <div>
                         <div className="add-competitor-selected-name">{player.name}</div>
-                        <div className="add-competitor-selected-id">{player.cckId}</div>
+                        <div className="add-competitor-selected-id">
+                          {player.cckId}
+                          {participantHintMap.get(player.cckId)?.state ? ` · ${participantHintMap.get(player.cckId)?.state}` : ""}
+                          {participantHintMap.get(player.cckId)?.confirmedGroup
+                            ? ` · 그룹 ${participantHintMap.get(player.cckId)?.confirmedGroup}`
+                            : ""}
+                          {participantHintMap.get(player.cckId)?.paymentConfirmed !== undefined
+                            ? ` · ${getPaymentLabel(participantHintMap.get(player.cckId)?.paymentConfirmed ?? null)}`
+                            : ""}
+                        </div>
                       </div>
                       <button
                         type="button"
@@ -431,6 +475,9 @@ export const AddCompetitorPage = () => {
                   <tr>
                     <th>이름</th>
                     <th>CCK ID</th>
+                    <th>지역</th>
+                    <th>대회 ID</th>
+                    <th>결제</th>
                     <th>PDX</th>
                     <th>그룹</th>
                     <th>제거</th>
@@ -441,6 +488,9 @@ export const AddCompetitorPage = () => {
                     <tr key={row.cckId}>
                       <td>{row.name}</td>
                       <td className="admin-id">{row.cckId}</td>
+                      <td>{row.state || "-"}</td>
+                      <td className="admin-id">#{row.compIdx}</td>
+                      <td>{getPaymentLabel(row.paymentConfirmed)}</td>
                       <td>
                         <input
                           className="record-edit-input add-competitor-input"
@@ -481,6 +531,9 @@ export const AddCompetitorPage = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+            <div className="record-edit-help">
+              CCK Groups/Payments/Auth 데이터가 있으면 그룹, 지역, 결제 상태가 자동 완성됩니다.
             </div>
 
             <div className="record-edit-actions">

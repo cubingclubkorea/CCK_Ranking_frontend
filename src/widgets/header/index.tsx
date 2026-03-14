@@ -130,6 +130,10 @@ function Header({
           Payment
         </a>
 
+        <a className="menu" href="https://groups.cubingclub.com" target="_self">
+          Groups
+        </a>
+
         <a className="menu" href="https://recorder.cubingclub.com" target="_self">
           Recorder
         </a>
