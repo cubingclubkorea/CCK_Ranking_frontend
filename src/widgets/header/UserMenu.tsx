@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 type UserMenuProps = {
-  avatarSrc: string;
+  avatarInitial: string;
   name: string;
   cckId: string;
   onProfile: () => void;
@@ -9,7 +9,7 @@ type UserMenuProps = {
   onLogout: () => void;
 };
 
-export const UserMenu = ({ avatarSrc, name, cckId, onProfile, onSettings, onLogout }: UserMenuProps) => {
+export const UserMenu = ({ avatarInitial, name, cckId, onProfile, onSettings, onLogout }: UserMenuProps) => {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -35,9 +35,12 @@ export const UserMenu = ({ avatarSrc, name, cckId, onProfile, onSettings, onLogo
         className="avatar-btn"
         aria-haspopup="menu"
         aria-expanded={menuOpen}
+        aria-label={`${name} 사용자 메뉴`}
         onClick={() => setMenuOpen((prev) => !prev)}
       >
-        <img src={avatarSrc} alt="프로필" className="avatar-img" />
+        <span className="avatar-initial" aria-hidden="true">
+          {avatarInitial}
+        </span>
       </button>
       {menuOpen && (
         <div className="header-user-menu" role="menu">

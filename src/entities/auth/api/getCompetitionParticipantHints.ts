@@ -1,4 +1,5 @@
 import { apiClient } from "@/shared/api/base";
+import { getRoundGroupAssignments } from "@/entities/round";
 
 export type CompetitionParticipantHint = {
   cckId: string;
@@ -143,22 +144,6 @@ const fetchFirstSuccess = async (endpoints: string[]): Promise<CompetitionPartic
   return [];
 };
 
-const buildGroupCandidates = (compIdx: number, roundIdx: number): string[] => {
-  const list = [
-    `/group/comp/${compIdx}/round/${roundIdx}`,
-    `/group/competition/${compIdx}/round/${roundIdx}`,
-    `/groups/comp/${compIdx}/round/${roundIdx}`,
-    `/groups/competition/${compIdx}/round/${roundIdx}`,
-    `/comp/${compIdx}/round/${roundIdx}/group`,
-    `/comp/${compIdx}/round/${roundIdx}/groups`,
-    `/competition/${compIdx}/round/${roundIdx}/group`,
-    `/competition/${compIdx}/round/${roundIdx}/groups`,
-    `/round/${roundIdx}/group`,
-    `/round/${roundIdx}/groups`,
-  ];
-  return Array.from(new Set(list));
-};
-
 const buildPaymentCandidates = (compIdx: number): string[] => {
   const list = [
     `/payment/comp/${compIdx}`,
@@ -178,7 +163,14 @@ export const getCompetitionParticipantHints = async (
   roundIdx: number
 ): Promise<CompetitionParticipantHint[]> => {
   const [groupHints, paymentHints] = await Promise.all([
-    fetchFirstSuccess(buildGroupCandidates(compIdx, roundIdx)),
+    getRoundGroupAssignments(roundIdx)
+      .then((rows) =>
+        rows.map((row) => ({
+          cckId: row.cckId,
+          confirmedGroup: row.group || undefined,
+        }))
+      )
+      .catch(() => []),
     fetchFirstSuccess(buildPaymentCandidates(compIdx)),
   ]);
 

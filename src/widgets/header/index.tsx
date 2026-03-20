@@ -26,6 +26,9 @@ function Header({
   const isDark = theme === "dark";
   const profilePath = profile?.cckId ? `/profile/${encodeURIComponent(profile.cckId)}` : "/profile";
   const displayName = authInfo?.name?.trim() || profile?.name || "사용자";
+  const englishName = authInfo?.enName?.trim() || profile?.englishName?.trim() || "";
+  const menuDisplayName = englishName && englishName !== displayName ? `${displayName} (${englishName})` : displayName;
+  const avatarInitial = displayName.trim().charAt(0) || "사";
 
   useEffect(() => {
     const syncAuthState = () => setToken(getAccessToken());
@@ -70,8 +73,8 @@ function Header({
         <div className="header-right header-mobile-actions">
           {isLoggedIn ? (
             <UserMenu
-              avatarSrc="/icon/sidebar/person.svg"
-              name={displayName}
+              avatarInitial={avatarInitial}
+              name={menuDisplayName}
               cckId={profile?.cckId ?? ""}
               onProfile={() => navigate(profilePath)}
               onSettings={() => navigate("/settings")}
@@ -143,8 +146,8 @@ function Header({
       <div className="header-right">
         {isLoggedIn ? (
           <UserMenu
-            avatarSrc="/icon/sidebar/person.svg"
-            name={displayName}
+            avatarInitial={avatarInitial}
+            name={menuDisplayName}
             cckId={profile?.cckId ?? ""}
             onProfile={() => navigate(profilePath)}
             onSettings={() => navigate("/settings")}
