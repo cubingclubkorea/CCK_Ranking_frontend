@@ -296,10 +296,6 @@ export const ScrambleAdminPage = () => {
                       <span>CCK ID</span>
                       <strong>{scramblerCard?.cckId ?? "-"}</strong>
                     </div>
-                    <div className="scramble-admin-profile-row">
-                      <span>UID</span>
-                      <strong>{scramblerCard?.uid ?? "-"}</strong>
-                    </div>
                   </div>
 
                   <button
