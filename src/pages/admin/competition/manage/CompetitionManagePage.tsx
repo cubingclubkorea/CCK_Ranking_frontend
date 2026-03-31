@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { OverlayToast, PageHeader } from "@/widgets";
 import { getCompetition } from "@/entities/competition";
 import type { Competition } from "@/entities/competition";
-import { getRoundByDayCount } from "@/entities/round";
+import { getRoundByDayCount, getRoundGroups } from "@/entities/round";
 import type { Round } from "@/entities/round";
 import { getCubeEventList } from "@/entities/cubeEvent";
 import type { CubeEvent } from "@/entities/cubeEvent";
@@ -47,13 +47,13 @@ const parseGroupList = (value: string) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-const mapRoundToForm = (round: Round): RoundForm => ({
+const mapRoundToForm = (round: Round, groups: string[]): RoundForm => ({
   idx: round.idx,
   cubeEvent: round.cubeEventName,
   roundName: round.roundName,
   eventStart: formatDateTimeInput(round.eventStart),
   eventEnd: formatDateTimeInput(round.eventEnd),
-  groupList: round.roundGroupList?.join(", ") ?? "",
+  groupList: groups.join(", "),
   cutoff: round.cutoff,
   timeLimit: round.timeLimit,
   advance: round.advance,
@@ -202,7 +202,19 @@ export const CompetitionManagePage = () => {
         return list.findIndex((item) => item.idx === round.idx) === index;
       });
       const roundList = uniqueRounds.sort((a, b) => a.eventStart.getTime() - b.eventStart.getTime());
-      setRounds(roundList.map(mapRoundToForm));
+      const roundGroups = await Promise.all(
+        roundList.map(async (round) => {
+          try {
+            const groups = await getRoundGroups(round.idx);
+            return [round.idx, groups] as const;
+          } catch {
+            return [round.idx, [] as string[]] as const;
+          }
+        })
+      );
+      const roundGroupMap = new Map<number, string[]>(roundGroups);
+
+      setRounds(roundList.map((round) => mapRoundToForm(round, roundGroupMap.get(round.idx) ?? [])));
       setNewRounds([]);
       setDeletedRoundIds([]);
     } catch (err) {

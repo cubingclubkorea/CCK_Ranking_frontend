@@ -6,7 +6,8 @@ import {
   type CompetitionParticipantHint,
   type SearchInfo,
 } from "@/entities/auth";
-import { getRound, type Round } from "@/entities/round";
+import { getAuthInfo } from "@/entities/authInfo";
+import { getRound, getRoundGroupAssignments, getRoundGroups, type Round } from "@/entities/round";
 import { getRecordList } from "@/entities/record";
 import { addPlayer } from "@/features/record";
 import { getErrorMessage as getRequestErrorMessage, shouldUseRequestErrorPage } from "@/shared";
@@ -64,8 +65,11 @@ export const AddCompetitorPage = () => {
   const [activeSearchIndex, setActiveSearchIndex] = useState(-1);
   const [selectedPlayers, setSelectedPlayers] = useState<SearchInfo[]>([]);
   const [draftRows, setDraftRows] = useState<DraftCompetitor[]>([]);
+  const [roundGroups, setRoundGroups] = useState<string[]>([]);
   const [participantHintMap, setParticipantHintMap] = useState<Map<string, CompetitionParticipantHint>>(new Map());
+  const [existingCckIdSet, setExistingCckIdSet] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
+  const [collectingAuto, setCollectingAuto] = useState(false);
 
   const [status, setStatus] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -100,13 +104,16 @@ export const AddCompetitorPage = () => {
 
       try {
         const roundData = await getRound(Number(roundIdx));
-        const [records, hints] = await Promise.all([
+        const [records, hints, groups] = await Promise.all([
           getRecordList(Number(roundIdx)),
           getCompetitionParticipantHints(roundData.compIdx, Number(roundIdx)).catch(() => []),
+          getRoundGroups(Number(roundIdx)).catch(() => []),
         ]);
         if (!mounted) return;
         setRound(roundData);
+        setRoundGroups(groups);
         setParticipantHintMap(new Map(hints.map((hint) => [hint.cckId, hint])));
+        setExistingCckIdSet(new Set(records.map((record) => record.cckId)));
         const nextMaxPdx = records.reduce((max, record) => Math.max(max, record.pdx), 0);
         setMaxPdx(nextMaxPdx);
       } catch (fetchError) {
@@ -165,9 +172,39 @@ export const AddCompetitorPage = () => {
   }, [keyword, selectedPlayers, step]);
 
   const groupOptions = useMemo(() => {
-    if (!round?.roundGroupList) return [];
-    return round.roundGroupList.filter((group) => group.trim().length > 0);
-  }, [round?.roundGroupList]);
+    return roundGroups.filter((group) => group.trim().length > 0);
+  }, [roundGroups]);
+
+  const buildDraftRows = (players: SearchInfo[], groupOverrideMap?: Map<string, string>): DraftCompetitor[] => {
+    if (!round) return [];
+
+    const existingByCckId = new Map(draftRows.map((row) => [row.cckId, row]));
+    let nextPdx = Math.max(
+      maxPdx + 1,
+      ...draftRows.map((row) => row.pdx + 1).filter((value) => Number.isFinite(value))
+    );
+
+    return players.map((player) => {
+      const existing = existingByCckId.get(player.cckId);
+      if (existing) {
+        return existing;
+      }
+
+      const hint = participantHintMap.get(player.cckId);
+      const preferredGroup = groupOverrideMap?.get(player.cckId) ?? hint?.confirmedGroup;
+      const created: DraftCompetitor = {
+        name: player.name,
+        cckId: player.cckId,
+        state: hint?.state ?? player.state,
+        compIdx: round.compIdx,
+        pdx: nextPdx,
+        roundGroup: resolveRoundGroup(preferredGroup, groupOptions),
+        paymentConfirmed: hint?.paymentConfirmed ?? null,
+      };
+      nextPdx += 1;
+      return created;
+    });
+  };
 
   const applySelectPlayer = (player: SearchInfo) => {
     if (selectedPlayers.some((item) => item.cckId === player.cckId)) return;
@@ -192,34 +229,89 @@ export const AddCompetitorPage = () => {
       return;
     }
 
-    const existingByCckId = new Map(draftRows.map((row) => [row.cckId, row]));
-    let nextPdx = Math.max(
-      maxPdx + 1,
-      ...draftRows.map((row) => row.pdx + 1).filter((value) => Number.isFinite(value))
-    );
-
-    const nextRows: DraftCompetitor[] = selectedPlayers.map((player) => {
-      const existing = existingByCckId.get(player.cckId);
-      if (existing) {
-        return existing;
-      }
-      const hint = participantHintMap.get(player.cckId);
-      const created: DraftCompetitor = {
-        name: player.name,
-        cckId: player.cckId,
-        state: hint?.state ?? player.state,
-        compIdx: round.compIdx,
-        pdx: nextPdx,
-        roundGroup: resolveRoundGroup(hint?.confirmedGroup, groupOptions),
-        paymentConfirmed: hint?.paymentConfirmed ?? null,
-      };
-      nextPdx += 1;
-      return created;
-    });
+    const nextRows = buildDraftRows(selectedPlayers);
 
     setDraftRows(nextRows);
     setStep(2);
     setFormError(null);
+  };
+
+  const handleCollectAutoPlayers = async () => {
+    if (!roundIdx || !round) {
+      setFormError("라운드 정보가 없습니다.");
+      return;
+    }
+
+    setCollectingAuto(true);
+    setFormError(null);
+    setStatus(null);
+
+    try {
+      const candidates = await getRoundGroupAssignments(Number(roundIdx));
+      if (candidates.length === 0) {
+        setFormError("Groups API에서 자동 추가할 선수를 찾지 못했습니다.");
+        return;
+      }
+
+      const pending = candidates.filter((row) => !existingCckIdSet.has(row.cckId));
+      if (pending.length === 0) {
+        setStatus("이미 라운드에 등록된 선수만 조회되어 자동 추가할 대상이 없습니다.");
+        return;
+      }
+
+      const authResults = await Promise.all(
+        pending.map(async (row) => {
+          try {
+            const auth = await getAuthInfo(row.cckId);
+            return { row, auth };
+          } catch {
+            return { row, auth: null };
+          }
+        })
+      );
+
+      const autoPlayers: SearchInfo[] = authResults.map(({ row, auth }) => {
+        const hint = participantHintMap.get(row.cckId);
+        return {
+          name: auth?.name?.trim() || row.cckId,
+          enName: auth?.enName?.trim() || "",
+          state: auth?.state?.trim() || hint?.state || "",
+          gender: "Unknown",
+          cckId: row.cckId,
+          wcaId: "",
+        };
+      });
+
+      const groupOverrideMap = new Map(pending.map((row) => [row.cckId, row.group]));
+      const mergedMap = new Map<string, SearchInfo>(selectedPlayers.map((player) => [player.cckId, player]));
+      autoPlayers.forEach((player) => mergedMap.set(player.cckId, player));
+      const mergedPlayers = Array.from(mergedMap.values());
+
+      const nextRows = buildDraftRows(mergedPlayers, groupOverrideMap);
+      if (nextRows.length === 0) {
+        setFormError("자동 추가할 선수가 없습니다.");
+        return;
+      }
+
+      setSelectedPlayers(mergedPlayers);
+      setDraftRows(nextRows);
+      setStep(2);
+
+      const skipped = candidates.length - pending.length;
+      const alreadySelected = autoPlayers.filter((player) => selectedPlayers.some((prev) => prev.cckId === player.cckId)).length;
+      if (skipped > 0 || alreadySelected > 0) {
+        setStatus(
+          `자동으로 ${autoPlayers.length}명을 불러왔습니다. 기존 등록 ${skipped}명, 기존 선택 ${alreadySelected}명은 제외/병합되어 총 ${nextRows.length}명입니다.`
+        );
+      } else {
+        setStatus(`자동으로 ${autoPlayers.length}명을 불러왔습니다. 검토 후 모두 추가를 눌러 반영하세요.`);
+      }
+    } catch (collectError) {
+      console.error("자동 선수 수집 실패:", collectError);
+      setFormError(getRequestErrorMessage(collectError, "자동 선수 불러오기에 실패했습니다."));
+    } finally {
+      setCollectingAuto(false);
+    }
   };
 
   const handleRowChange = (cckId: string, patch: Partial<DraftCompetitor>) => {
@@ -278,6 +370,11 @@ export const AddCompetitorPage = () => {
       setDraftRows([]);
       setKeyword("");
       setStep(1);
+      setExistingCckIdSet((prev) => {
+        const next = new Set(prev);
+        draftRows.forEach((row) => next.add(row.cckId));
+        return next;
+      });
 
       const nextMax = draftRows.reduce((max, row) => Math.max(max, row.pdx), maxPdx);
       setMaxPdx(nextMax);
@@ -454,14 +551,23 @@ export const AddCompetitorPage = () => {
                 className="record-edit-btn record-edit-btn--ghost"
                 type="button"
                 onClick={() => navigate(`/admin/competition/${Number(resolvedCompIdx)}/round/${Number(round.idx)}`)}
+                disabled={collectingAuto}
               >
                 취소
+              </button>
+              <button
+                className="record-edit-btn record-edit-btn--ghost"
+                type="button"
+                onClick={handleCollectAutoPlayers}
+                disabled={collectingAuto}
+              >
+                {collectingAuto ? "자동 불러오는 중..." : "자동 추가"}
               </button>
               <button
                 className="record-edit-btn record-edit-btn--primary"
                 type="button"
                 onClick={handleNextStep}
-                disabled={selectedPlayers.length === 0}
+                disabled={selectedPlayers.length === 0 || collectingAuto}
               >
                 다음 단계
               </button>
